@@ -307,6 +307,7 @@ A card can be **exclusive** with other cards or tool enchantments, or **require*
 | `requires` | Upgrade ids (the farm_upgrade file id, e.g. `easy_farms:smelter`) that must be installed as well. |
 | `excludes` | Upgrade ids that cannot be installed together with this card. Both ways: you only have to write it on one of the two cards. |
 | `excludes_enchantments` | Enchantments on the farm's tool that make the card unusable. |
+| `requires_block_below` | Block ids or `#tags`; the farm must stand on one of them, or the card is refused and does nothing. Use it for heat sources (`create:blaze_burner`, `minecraft:lava`, `minecraft:magma_block`, `#minecraft:campfires`). Rechecked about once a second, so moving the farm switches the card off. |
 
 What happens:
 * **Adding a card** that breaks a rule is refused (Upgrades screen, shift-click, sneaking with the card, hoppers). While
@@ -344,7 +345,8 @@ processing (crushing, pressing, casing, alloying...) becomes a card with no code
     { "from": "#minecraft:logs", "to": "create:andesite_casing" },
     { "from": "minecraft:raw_iron",
       "to": [ { "item": "create:crushed_raw_iron" }, { "item": "create:experience_nugget", "chance": 0.75 } ] },
-    { "from": "minecraft:gold_ingot", "per": 2, "to": { "item": "create:precision_mechanism", "count": 1 } }
+    { "from": "minecraft:gold_ingot", "per": 2, "to": { "item": "create:precision_mechanism", "count": 1 } },
+    { "from": "minecraft:copper_ingot", "with": [ { "from": "create:zinc_ingot", "source": "catalyst" } ], "to": { "item": "create:brass_ingot", "count": 2 } }
   ]
 }
 ```
@@ -353,11 +355,37 @@ processing (crushing, pressing, casing, alloying...) becomes a card with no code
 |---|---|---|
 | `from` | required | An item id, or `#namespace:tag` for an item tag. |
 | `per` | 1 | How many `from` items make one conversion. Leftovers are kept as they were. |
+| `with` | none | Extra ingredients the rule needs together with `from`, each `{ "from": item or #tag, "per": n, "source": "drops" or "catalyst" }`. One conversion uses up `per` of `from` and of every extra; as many conversions happen as the scarcest ingredient allows. `source: "drops"` (default) takes the extra from the same cycle's drops. `source: "catalyst"` takes it from the card's catalyst slot, see below. |
 | `to` | required | One output or a list. An output is an item id, or `{ "item", "count" (1), "chance" (1.0) }`; the chance is rolled once per conversion. |
 
 A drop stack is handled by the first rule that matches it. A rule whose output items do not exist (the other mod is
 not installed) is skipped, so the drops stay unchanged. Cards run in slot order, so conversions can be chained: a
 Smelter card turns ore into ingots, then a pressing card turns the ingots into sheets.
+
+#### Multi-ingredient rules and catalysts
+
+Example, brass: a Brass card for the Resource Farm that mixes the farm's copper ingots with zinc ingots the player supplies.
+
+```json
+{
+  "item": "easy_farms:upgrade_card", "card": "mypack:brass", "name": "Brass Card", "kinds": ["resource"],
+  "effects": [ { "type": "easy_farms:convert_drops", "rules": [
+    { "from": "minecraft:copper_ingot",
+      "with": [ { "from": "create:zinc_ingot", "source": "catalyst" } ],
+      "to": { "item": "create:brass_ingot", "count": 2 } }
+  ] } ]
+}
+```
+
+On a farm whose drops include copper ingots (a Copper Farm with the Smelter card), each conversion uses up 1 copper ingot from the
+drops and 1 zinc ingot from the card's catalyst slot, and makes 2 brass ingots. If the catalyst slot is empty the copper ingots are
+left alone. `"source": "drops"` (the default) is for an ingredient that the same cycle drops, for example `{"from": "minecraft:bone"}`
+next to `minecraft:arrow` on a skeleton farm.
+
+**Catalyst slots.** Any installed card with a `"source": "catalyst"` ingredient makes a second arrow button appear under the Upgrades
+arrow on the farm screen (it disappears again when no installed card needs a catalyst). It opens the separate Catalysts screen, which
+has one slot per such card, in card-slot order, and each slot accepts only that card's catalyst items. Taking the card out of the
+Upgrades screen removes its catalyst slot and drops whatever was in it. Catalysts are kept when the farm is picked up with Silk Touch.
 
 ### Writing your own effect (Java)
 

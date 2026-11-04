@@ -4,6 +4,7 @@ import com.awesomeshot5051.easyfarms.client.ClientCommon;
 import com.awesomeshot5051.easyfarms.client.ConfigScreen;
 import com.awesomeshot5051.easyfarms.client.FarmRenderer;
 import com.awesomeshot5051.easyfarms.client.FarmScreen;
+import com.awesomeshot5051.easyfarms.client.FarmCatalystScreen;
 import com.awesomeshot5051.easyfarms.client.FarmUpgradeScreen;
 import com.awesomeshot5051.easyfarms.gui.ModMenus;
 import net.minecraft.world.level.block.Block;
@@ -40,5 +41,6 @@ public class EasyFarmsNeoForgeClient {
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.FARM.get(), FarmScreen::new);
         event.register(ModMenus.FARM_UPGRADES.get(), FarmUpgradeScreen::new);
+        event.register(ModMenus.FARM_CATALYSTS.get(), FarmCatalystScreen::new);
     }
 }

@@ -75,6 +75,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("dimension.minecraft.overworld", "the Overworld");
         add("gui.easy_farms.jei.min_tier", "Tool tier %s or higher");
         add("message.easy_farms.upgrade_installed", "Installed: %s");
+        add("gui.easy_farms.catalysts", "Catalysts");
+        add("gui.easy_farms.catalyst_slot", "Catalyst for %s");
+        add("gui.easy_farms.catalyst_accepts", "Accepts: %s");
+        add("tooltip.easy_farms.card_catalyst", "Needs a catalyst: %s (put it in the farm's Catalysts screen)");
+        add("gui.easy_farms.restriction.requires_block_below", "Needs one of these under the farm: %s");
         add("gui.easy_farms.restriction.requires", "Requires: %s");
         add("gui.easy_farms.restriction.excludes", "Incompatible with: %s");
         add("gui.easy_farms.restriction.excludes_enchantment", "Incompatible with %s on the tool");

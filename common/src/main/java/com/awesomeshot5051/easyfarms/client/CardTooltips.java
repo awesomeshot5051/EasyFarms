@@ -27,15 +27,25 @@ public final class CardTooltips {
         if (!upgrade.requires().equals("any")) {
             tooltip.add(Component.translatable("gui.easy_farms.requires." + upgrade.requires()).withStyle(ChatFormatting.DARK_GRAY));
         }
+        List<String> catalyst = upgrade.catalystItems();
+        if (!catalyst.isEmpty()) {
+            List<Component> names = catalyst.stream().map(com.awesomeshot5051.easyfarms.upgrade.UpgradeRules::itemName).toList();
+            tooltip.add(Component.translatable("tooltip.easy_farms.card_catalyst", ComponentUtils.formatList(names, Component.literal(", "))).withStyle(ChatFormatting.AQUA));
+        }
         addRestrictions(upgrade, level.registryAccess(), tooltip);
     }
 
     private static void addRestrictions(FarmUpgrade upgrade, net.minecraft.core.RegistryAccess access, List<Component> tooltip) {
         for (var r : upgrade.restrictions()) {
-            if (r.requires().isEmpty() && r.excludes().isEmpty() && r.excludesEnchantments().isEmpty()) continue;
+            if (r.requires().isEmpty() && r.excludes().isEmpty() && r.excludesEnchantments().isEmpty() && r.requiresBlockBelow().isEmpty()) continue;
             if (!r.whenDrops().isEmpty()) {
                 List<Component> drops = r.whenDrops().stream().map(CardTooltips::dropName).toList();
                 tooltip.add(Component.translatable("tooltip.easy_farms.card_when", ComponentUtils.formatList(drops, Component.literal(", "))).withStyle(ChatFormatting.DARK_GRAY));
+            }
+            if (!r.requiresBlockBelow().isEmpty()) {
+                List<Component> names = r.requiresBlockBelow().stream().map(com.awesomeshot5051.easyfarms.upgrade.UpgradeRules::blockName).toList();
+                tooltip.add(Component.translatable("gui.easy_farms.restriction.requires_block_below",
+                        ComponentUtils.formatList(names, Component.literal(", "))).withStyle(ChatFormatting.YELLOW));
             }
             for (var id : r.requires()) {
                 FarmUpgrade other = FarmUpgrade.byId(access, id);

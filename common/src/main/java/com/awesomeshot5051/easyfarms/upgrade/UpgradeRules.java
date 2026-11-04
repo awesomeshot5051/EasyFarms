@@ -26,7 +26,8 @@ public final class UpgradeRules {
     }
 
     /** What the rules look at: the farm's current recipe (may be null) and the tool in its tool slot. */
-    public record Context(RegistryAccess access, @Nullable FarmRecipe recipe, ItemStack tool) {
+    public record Context(RegistryAccess access, @Nullable FarmRecipe recipe, ItemStack tool,
+                          @Nullable net.minecraft.world.level.block.state.BlockState below) {
     }
 
     /**
@@ -49,6 +50,12 @@ public final class UpgradeRules {
                 if (hasEnchantment(ctx, enchantment)) {
                     return Component.translatable("gui.easy_farms.restriction.excludes_enchantment", enchantmentName(enchantment));
                 }
+            }
+            if (!r.blockBelowOk(ctx.below())) {
+                List<Component> names = new ArrayList<>();
+                for (String scope : r.requiresBlockBelow()) names.add(blockName(scope));
+                return Component.translatable("gui.easy_farms.restriction.requires_block_below",
+                        net.minecraft.network.chat.ComponentUtils.formatList(names, Component.literal(", ")));
             }
             for (Identifier required : r.requires()) {
                 boolean present = false;
@@ -104,6 +111,28 @@ public final class UpgradeRules {
         var registry = ctx.access().lookupOrThrow(Registries.ENCHANTMENT);
         Holder<Enchantment> holder = registry.get(id).orElse(null);
         return holder != null && EnchantmentHelper.getItemEnchantmentLevel(holder, ctx.tool()) > 0;
+    }
+
+    /** An item id as its name, or a {@code #tag} as written. */
+    public static Component itemName(String scope) {
+        if (scope.startsWith("#")) return Component.literal(scope);
+        Identifier id = Identifier.tryParse(scope);
+        return id == null ? Component.literal(scope)
+                : net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(id).<Component>map(i -> i.getName(new ItemStack(i))).orElse(Component.literal(scope));
+    }
+
+    /** True if the stack is one of the listed items (ids or {@code #tags}). */
+    public static boolean matchesAny(List<String> scopes, ItemStack stack) {
+        for (String scope : scopes) if (UpgradeEffects.ConvertDrops.Rule.matchesItem(scope, stack)) return true;
+        return false;
+    }
+
+    /** A block id as its name, or a {@code #tag} as written. */
+    public static Component blockName(String scope) {
+        if (scope.startsWith("#")) return Component.literal(scope);
+        Identifier id = Identifier.tryParse(scope);
+        return id == null ? Component.literal(scope)
+                : net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(id).<Component>map(b -> b.getName()).orElse(Component.literal(scope));
     }
 
     private static Component enchantmentName(Identifier id) {

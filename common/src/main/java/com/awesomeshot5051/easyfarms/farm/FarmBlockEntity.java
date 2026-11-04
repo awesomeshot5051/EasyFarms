@@ -98,6 +98,19 @@ public class FarmBlockEntity extends BlockEntity {
     public static final net.minecraft.tags.TagKey<Item> PRESS_TAG = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
             net.minecraft.resources.Identifier.fromNamespaceAndPath(com.awesomeshot5051.easyfarms.EasyFarms.MODID, "inscriber_presses"));
 
+    /** One catalyst stack per upgrade slot: the items a card in that slot needs (see the Catalysts screen). */
+    private final ItemStackHandler catalysts = new ItemStackHandler(UPGRADE_SLOTS) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return isCatalystValid(slot, stack);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+    };
+
     private final ItemStackHandler upgrades = new ItemStackHandler(UPGRADE_SLOTS) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
@@ -112,6 +125,7 @@ public class FarmBlockEntity extends BlockEntity {
         @Override
         protected void onContentsChanged(int slot) {
             contentsChanged();
+            dropOrphanCatalyst(slot);
         }
     };
 
@@ -198,6 +212,9 @@ public class FarmBlockEntity extends BlockEntity {
     /** Fractions of a durability point owed to the tool; it wears out exactly as the lifetime ends. */
     private double toolWear;
     private List<UpgradeEffect> effectCache;
+    /** Cards with a block-below rule depend on the world, so their cached effects are rebuilt now and then. */
+    private boolean effectsDependOnWorld;
+    private long effectCacheTick;
     private java.util.UUID lastUser;
     @Nullable
     private RecipeHolder<FarmRecipe> recipe;
@@ -229,6 +246,35 @@ public class FarmBlockEntity extends BlockEntity {
 
     public ItemStackHandler toolSlot() {
         return toolSlot;
+    }
+
+    public ItemStackHandler catalysts() {
+        return catalysts;
+    }
+
+    /** The catalyst items the card in this upgrade slot needs (empty if there is no card, or it needs none). */
+    public List<String> catalystItemsFor(int slot) {
+        if (level == null) return List.of();
+        com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), upgrades.getStackInSlot(slot));
+        return upgrade == null ? List.of() : upgrade.catalystItems();
+    }
+
+    public boolean isCatalystValid(int slot, ItemStack stack) {
+        return com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.matchesAny(catalystItemsFor(slot), stack);
+    }
+
+    /** Bit i is set while the card in upgrade slot i needs a catalyst (shown by the Catalysts button and screen). */
+    public int catalystMask() {
+        int mask = 0;
+        for (int i = 0; i < UPGRADE_SLOTS; i++) if (!catalystItemsFor(i).isEmpty()) mask |= 1 << i;
+        return mask;
+    }
+
+    /** A card that needed a catalyst was taken out: its catalyst stack goes back into the world. */
+    private void dropOrphanCatalyst(int slot) {
+        if (level == null || level.isClientSide() || catalysts.getStackInSlot(slot).isEmpty() || !catalystItemsFor(slot).isEmpty()) return;
+        Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ(), catalysts.getStackInSlot(slot));
+        catalysts.setStackInSlot(slot, ItemStack.EMPTY);
     }
 
     public ItemStackHandler outputs() {
@@ -369,7 +415,7 @@ public class FarmBlockEntity extends BlockEntity {
                 }
             }
         }
-        return new com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.Context(level.registryAccess(), current, getTool());
+        return new com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.Context(level.registryAccess(), current, getTool(), level.getBlockState(worldPosition.below()));
     }
 
     /** Puts an upgrade card into the first free upgrade slot if this farm accepts it and doesn't have it yet. */
@@ -398,13 +444,18 @@ public class FarmBlockEntity extends BlockEntity {
     /** The effects of every card installed in this farm (cached; cleared whenever a slot or the farm data changes). */
     public List<UpgradeEffect> effects() {
         List<UpgradeEffect> cached = effectCache;
-        if (cached != null) return cached;
+        if (cached != null && !(effectsDependOnWorld && level != null && level.getGameTime() - effectCacheTick >= 20)) return cached;
         List<UpgradeEffect> list = new ArrayList<>();
+        effectsDependOnWorld = false;
         if (level != null) {
+            effectCacheTick = level.getGameTime();
             // Cards whose requirements are missing, or that clash with an earlier card or the tool's enchantments, are off.
             for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade :
                     com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.working(rulesContext(), installedUpgrades(-1))) {
                 list.addAll(upgrade.effects());
+            }
+            for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade : installedUpgrades(-1)) {
+                for (var restriction : upgrade.restrictions()) effectsDependOnWorld |= !restriction.requiresBlockBelow().isEmpty();
             }
         }
         return effectCache = List.copyOf(list);
@@ -685,7 +736,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     public void dropContents() {
         if (level == null || keepContents) return;
-        for (ItemStackHandler handler : List.of(inputs, toolSlot, outputs, upgrades, press)) {
+        for (ItemStackHandler handler : List.of(inputs, toolSlot, outputs, upgrades, press, catalysts)) {
             for (int i = 0; i < handler.getSlots(); i++) {
                 Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), handler.getStackInSlot(i));
             }
@@ -702,6 +753,7 @@ public class FarmBlockEntity extends BlockEntity {
         outputs.serialize(tag.child("Outputs"));
         upgrades.serialize(tag.child("Upgrades"));
         press.serialize(tag.child("Press"));
+        catalysts.serialize(tag.child("Catalysts"));
         tag.putDouble("ToolWear", toolWear);
         tag.putLong("Timer", timer);
         tag.putLong("OperatingTicks", operatingTicks);
@@ -733,6 +785,8 @@ public class FarmBlockEntity extends BlockEntity {
             for (int i = 0; i < kept.size(); i++) upgrades.setStackInSlot(i, kept.get(i));
         }
         press.deserialize(tag.childOrEmpty("Press"));
+        catalysts.deserialize(tag.childOrEmpty("Catalysts"));
+        if (catalysts.getSlots() < UPGRADE_SLOTS) catalysts.setSize(UPGRADE_SLOTS);
         toolWear = tag.getDoubleOr("ToolWear", 0);
         timer = tag.getLongOr("Timer", 0);
         operatingTicks = tag.getLongOr("OperatingTicks", 0);
@@ -751,7 +805,7 @@ public class FarmBlockEntity extends BlockEntity {
     // ---- Silk Touch pickup: contents travel in the item ----
 
     private List<ItemStackHandler> allHandlers() {
-        return List.of(inputs, toolSlot, outputs, upgrades, press);
+        return List.of(inputs, toolSlot, outputs, upgrades, press, catalysts);
     }
 
     private FarmContents snapshot() {
@@ -791,7 +845,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     @Override
     public void removeComponentsFromTag(ValueOutput tag) {
-        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "OperatingTicks", "Color"}) tag.discard(key);
+        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "OperatingTicks", "Color"}) tag.discard(key);
     }
 
     @Override

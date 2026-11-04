@@ -72,6 +72,7 @@ public class FarmMenu extends AbstractContainerMenu {
                     case 3 -> farm.hasInfiniteInputs() ? 1 : 0;
                     case 4 -> farm.isRunning() ? 1 : 0;
                     case 6 -> farm.usesTool() ? 1 : 0;
+                    case 7 -> farm.catalystMask();
                     default -> farm.environmentOk() ? 1 : 0;
                 };
             }
@@ -82,9 +83,9 @@ public class FarmMenu extends AbstractContainerMenu {
 
             @Override
             public int getCount() {
-                return 7;
+                return 8;
             }
-        } : new SimpleContainerData(7);
+        } : new SimpleContainerData(8);
         addDataSlots(data);
     }
 
@@ -116,11 +117,20 @@ public class FarmMenu extends AbstractContainerMenu {
         return data.get(4) == 1;
     }
 
-    /** Button 0: open the Upgrades screen. */
+    /** True while an installed card needs a catalyst: the Catalysts button is shown. */
+    public boolean hasCatalystCards() {
+        return data.get(7) != 0;
+    }
+
+    /** Button 0: open the Upgrades screen. Button 1: open the Catalysts screen (only if a card needs one). */
     @Override
     public boolean clickMenuButton(Player player, int button) {
         if (button == 0 && farm != null && player instanceof ServerPlayer server) {
             MenuOpener.openUpgrades(server, pos, farm, Component.translatable("gui.easy_farms.upgrades"));
+            return true;
+        }
+        if (button == 1 && farm != null && farm.catalystMask() != 0 && player instanceof ServerPlayer server) {
+            MenuOpener.openCatalysts(server, pos, farm, Component.translatable("gui.easy_farms.catalysts"));
             return true;
         }
         return false;
