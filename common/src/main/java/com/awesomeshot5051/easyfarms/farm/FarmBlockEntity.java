@@ -127,59 +127,70 @@ public class FarmBlockEntity extends BlockEntity {
         }
     };
 
-    /** Outside view for hoppers and pipes: inputs accept, outputs only give. Each loader exposes it through its own item-transfer API. */
+    /**
+     * Outside view for hoppers and pipes. Every side except the back lets inputs accept and outputs only give. The back
+     * (the side opposite the way the farm faces) only feeds the catalyst slots, so a hopper or pipe there keeps them stocked.
+     * Slots 0-2 are the inputs, 3-6 the outputs, 7-24 the catalysts. Each loader exposes it through its own item-transfer API.
+     */
     private final WorldlyContainer automation = new WorldlyContainer() {
-        private final int[] slots = {0, 1, 2, 3, 4, 5, 6};
+        private static final int FIRST_OUTPUT = INPUTS, FIRST_CATALYST = INPUTS + OUTPUTS;
+        private final int[] sides = {0, 1, 2, 3, 4, 5, 6};
+        private final int[] back = java.util.stream.IntStream.range(FIRST_CATALYST, FIRST_CATALYST + UPGRADE_SLOTS).toArray();
 
         @Override
         public int[] getSlotsForFace(Direction side) {
-            return slots;
+            return side == getBlockState().getValue(FarmBlock.FACING).getOpposite() ? back : sides;
         }
 
         @Override
         public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-            return slot < INPUTS && inputs.isItemValid(slot, stack);
+            return canPlaceItem(slot, stack);
         }
 
         @Override
         public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-            return slot >= INPUTS;
+            return slot >= FIRST_OUTPUT && slot < FIRST_CATALYST;
         }
 
         @Override
         public int getContainerSize() {
-            return INPUTS + OUTPUTS;
+            return FIRST_CATALYST + UPGRADE_SLOTS;
         }
 
         @Override
         public boolean isEmpty() {
-            return inputs.isEmpty() && outputs.isEmpty();
+            return inputs.isEmpty() && outputs.isEmpty() && catalysts.isEmpty();
         }
 
         @Override
         public ItemStack getItem(int slot) {
-            return slot < INPUTS ? inputs.getStackInSlot(slot) : outputs.getStackInSlot(slot - INPUTS);
+            if (slot < FIRST_OUTPUT) return inputs.getStackInSlot(slot);
+            if (slot < FIRST_CATALYST) return outputs.getStackInSlot(slot - FIRST_OUTPUT);
+            return catalysts.getStackInSlot(slot - FIRST_CATALYST);
         }
 
         @Override
         public ItemStack removeItem(int slot, int amount) {
-            return slot < INPUTS ? ItemStack.EMPTY : outputs.extractItem(slot - INPUTS, amount, false);
+            return canTakeItemThroughFace(slot, ItemStack.EMPTY, null) ? outputs.extractItem(slot - FIRST_OUTPUT, amount, false) : ItemStack.EMPTY;
         }
 
         @Override
         public ItemStack removeItemNoUpdate(int slot) {
-            return slot < INPUTS ? ItemStack.EMPTY : outputs.removeItemNoUpdate(slot - INPUTS);
+            return canTakeItemThroughFace(slot, ItemStack.EMPTY, null) ? outputs.removeItemNoUpdate(slot - FIRST_OUTPUT) : ItemStack.EMPTY;
         }
 
         @Override
         public void setItem(int slot, ItemStack stack) {
-            if (slot < INPUTS) inputs.setStackInSlot(slot, stack);
-            else outputs.setStackInSlot(slot - INPUTS, stack);
+            if (slot < FIRST_OUTPUT) inputs.setStackInSlot(slot, stack);
+            else if (slot < FIRST_CATALYST) outputs.setStackInSlot(slot - FIRST_OUTPUT, stack);
+            else catalysts.setStackInSlot(slot - FIRST_CATALYST, stack);
         }
 
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return slot < INPUTS && inputs.isItemValid(slot, stack);
+            if (slot < FIRST_OUTPUT) return inputs.isItemValid(slot, stack);
+            if (slot < FIRST_CATALYST) return false;
+            return catalysts.isItemValid(slot - FIRST_CATALYST, stack);
         }
 
         @Override

@@ -389,6 +389,11 @@ used by several rules is one slot), up to 18 for a single card, and each slot ac
 card, in card-slot order. A card that would need more slots than are left is refused with a tooltip. Taking a card out removes its
 slots and drops their contents; catalysts stay put when other cards come and go, and are kept when the farm is picked up with Silk Touch.
 
+**Feeding catalysts.** Hoppers, pipes and other mods reach the catalyst slots through the **back** of the farm: the side opposite the
+way it faces (a farm facing west is fed from its east side). That side only accepts catalysts, each into the slot that takes it; the
+other sides still use the input and output slots. Catalysts are never taken back out by automation. The **Infinity upgrade** keeps the
+catalysts as well as the tool and inputs: they must still be present, but are not used up.
+
 ### Writing your own effect (Java)
 
 Effect types live in the registry `easy_farms:upgrade_effect_type`. Implement `UpgradeEffect`, give it a `MapCodec`,

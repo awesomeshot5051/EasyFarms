@@ -15,6 +15,9 @@ Versions are listed newest first, each with its commit and date.
 - A card with a catalyst ingredient adds a Catalysts button under the Upgrades button on the farm screen. It opens its own
   Catalysts screen. The farm has 18 catalyst slots shared between its cards: a card gets one slot per distinct catalyst
   ingredient it uses (up to 18), and each slot accepts only that ingredient.
+- Hoppers and pipes feed the catalyst slots through the back of the farm (opposite its facing); the other sides are unchanged.
+  The Infinity upgrade now keeps catalysts as well as the tool and inputs.
+- The Upgrades and Catalysts arrows show their name as a tooltip only; the label no longer scrolls over the arrow.
 - Restrictions take `requires_block_below`: the farm must stand on one of the listed blocks or `#tags` (heat sources for
   Create-style cards). It is rechecked about once a second.
 

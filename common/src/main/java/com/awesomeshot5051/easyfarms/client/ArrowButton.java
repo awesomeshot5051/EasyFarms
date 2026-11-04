@@ -4,10 +4,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-/** A small square button showing a left arrow (drawn in code, so no texture is needed). */
+/**
+ * A small square button showing a left arrow (drawn in code, so no texture is needed). Its name is only a tooltip: the
+ * button itself has no label, so no text scrolls over the arrow.
+ */
 public class ArrowButton extends Button {
     public ArrowButton(int x, int y, Component tooltipName, OnPress onPress) {
-        super(x, y, 14, 14, tooltipName, onPress, DEFAULT_NARRATION);
+        super(x, y, 14, 14, Component.empty(), onPress, narration -> Component.translatable("gui.narrate.button", tooltipName));
         setTooltip(net.minecraft.client.gui.components.Tooltip.create(tooltipName));
     }
 

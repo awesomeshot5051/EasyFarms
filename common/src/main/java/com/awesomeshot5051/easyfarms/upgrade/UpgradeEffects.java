@@ -279,7 +279,10 @@ public final class UpgradeEffects {
                 if (conversions <= 0) continue;
                 takeFrom(drops, rule.from(), conversions * rule.per());
                 for (Extra extra : rule.with()) {
-                    if (extra.catalyst()) takeFrom(farm.catalysts(), extra.from(), conversions * extra.per());
+                    // The Infinity card keeps catalysts as well as the tool: they are needed but not used up.
+                    if (extra.catalyst()) {
+                        if (!farm.hasInfiniteInputs()) takeFrom(farm.catalysts(), extra.from(), conversions * extra.per());
+                    }
                     else takeFrom(drops, extra.from(), conversions * extra.per());
                 }
                 for (Output out : rule.to()) {
