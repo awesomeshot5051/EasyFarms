@@ -22,6 +22,7 @@ public class FarmUpgradeMenu extends AbstractContainerMenu {
     private final BlockPos pos;
     private final FarmBlockEntity farm;
     private final FarmKind kind;
+    private final net.minecraft.world.level.Level level;
     private final List<FarmUpgrade> upgrades;
 
     public FarmUpgradeMenu(int id, Inventory inventory, BlockPos pos, FarmBlockEntity farm) {
@@ -35,6 +36,7 @@ public class FarmUpgradeMenu extends AbstractContainerMenu {
         this.farm = farm;
         if (farm != null && inventory.player instanceof net.minecraft.server.level.ServerPlayer) farm.setLastUser(inventory.player.getUUID());
         this.kind = kind;
+        this.level = inventory.player.level();
         this.upgrades = FarmUpgrade.forKind(inventory.player.level().registryAccess(), kind);
         ItemStackHandler handler = farm != null ? farm.upgrades() : new ItemStackHandler(FarmBlockEntity.UPGRADE_SLOTS);
 
@@ -46,7 +48,7 @@ public class FarmUpgradeMenu extends AbstractContainerMenu {
                 public boolean mayPlace(ItemStack stack) {
                     // Any card this farm kind accepts, in any free slot, once. The server also checks the farm's other slots.
                     if (farm != null) return farm.canInstall(stack, index);
-                    return upgrades.stream().anyMatch(u -> u.matches(stack));
+                    return upgrades.stream().anyMatch(u -> u.matches(stack)) && restrictionProblem(stack, index) == null;
                 }
 
                 @Override
@@ -83,6 +85,23 @@ public class FarmUpgradeMenu extends AbstractContainerMenu {
     /** Y of the first player inventory row, as in a vanilla chest GUI with this many rows. */
     public int playerInventoryTop() {
         return 31 + rows() * 18;
+    }
+
+    /**
+     * Why a card's restrictions (exclusive cards, required cards, tool enchantments) forbid it in this slot, or null.
+     * Reads the cards from the menu's own slots, so it is right on the client while the screen is open.
+     */
+    public Component restrictionProblem(ItemStack stack, int slot) {
+        FarmUpgrade upgrade = FarmUpgrade.find(level.registryAccess(), stack);
+        FarmBlockEntity entity = farm != null ? farm : level.getBlockEntity(pos) instanceof FarmBlockEntity be ? be : null;
+        if (upgrade == null || entity == null) return null;
+        List<FarmUpgrade> installed = new java.util.ArrayList<>();
+        for (int i = 0; i < FarmBlockEntity.UPGRADE_SLOTS; i++) {
+            if (i == slot) continue;
+            FarmUpgrade other = FarmUpgrade.find(level.registryAccess(), slots.get(i).getItem());
+            if (other != null) installed.add(other);
+        }
+        return com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.installProblem(entity.rulesContext(), upgrade, installed);
     }
 
     public List<FarmUpgrade> upgrades() {

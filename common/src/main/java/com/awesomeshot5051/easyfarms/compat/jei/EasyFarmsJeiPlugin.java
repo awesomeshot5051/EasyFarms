@@ -129,6 +129,17 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
         registration.addExtraItemStacks(cards);
     }
 
+    /**
+     * Every datapack card is the same item (easy_farms:upgrade_card) told apart by its easy_farms:card component. Without
+     * this JEI treats them as duplicates and lists only one.
+     */
+    @Override
+    public void registerItemSubtypes(mezz.jei.api.registration.ISubtypeRegistration registration) {
+        registration.registerFromDataComponentTypes(com.awesomeshot5051.easyfarms.registry.ModItems.UPGRADE_CARD.get(),
+                com.awesomeshot5051.easyfarms.registry.ModDataComponents.CARD.get());
+    }
+
+
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         for (FarmKind kind : FarmKind.values()) {

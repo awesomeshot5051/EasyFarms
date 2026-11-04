@@ -49,6 +49,10 @@
   "gui.easy_farms.requires.nether": "Nether recipes: lets them run outside the Nether",
   "gui.easy_farms.requires.smeltable": "Only for recipes whose drops can be smelted",
   "gui.easy_farms.requires.toolless": "Only for recipes that need no tool",
+  "gui.easy_farms.restriction.cannot_add": "Can't be added here",
+  "gui.easy_farms.restriction.excludes": "Incompatible with: %s",
+  "gui.easy_farms.restriction.excludes_enchantment": "Incompatible with %s on the tool",
+  "gui.easy_farms.restriction.requires": "Requires: %s",
   "gui.easy_farms.tool_days": "Tool lasts %s more day(s)",
   "gui.easy_farms.tool_infinite": "Tool never wears out",
   "gui.easy_farms.upgrade_slot": "Upgrade card slot",
@@ -62,9 +66,11 @@
   "item.easy_farms.speed_upgrade": "Speed Upgrade",
   "item.easy_farms.upgrade_card": "Upgrade Card",
   "itemGroup.easy_farms": "Easy Farms",
+  "message.easy_farms.upgrade_blocked": "%s can't be installed: %s",
   "message.easy_farms.upgrade_installed": "Installed: %s",
   "message.easy_farms.upgrade_rejected": "%s does not fit this farm, or is already installed",
   "tooltip.easy_farms.card_kinds": "Fits: %s",
+  "tooltip.easy_farms.card_when": "When the farm drops %s:",
   "tooltip.easy_farms.contents": "Holds %s stack(s) of items",
   "tooltip.easy_farms.tool": "Tool: %s"
 }

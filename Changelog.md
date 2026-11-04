@@ -3,6 +3,14 @@
 This is the changelog for the `master` branch (Minecraft 1.21.1, NeoForge 21.1.265), written from the commit history.
 Versions are listed newest first, each with its commit and date.
 
+## 1.3.0
+
+### Upgrade cards
+- `farm_upgrade` files take a new optional `restrictions` list: a card can exclude other cards or tool enchantments
+  (`excludes`, `excludes_enchantments`) and require other cards (`requires`), optionally only for recipes that drop
+  certain items (`when_drops`). Refused cards explain why in a tooltip; rules are also enforced while running.
+  See the modpack authors guide.
+
 ## 1.2.0 (2026-11-04, commit 55963c0: "Added ability to change what upgrade cards override.")
 
 ### Upgrade cards

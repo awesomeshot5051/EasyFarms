@@ -75,6 +75,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("dimension.minecraft.overworld", "the Overworld");
         add("gui.easy_farms.jei.min_tier", "Tool tier %s or higher");
         add("message.easy_farms.upgrade_installed", "Installed: %s");
+        add("gui.easy_farms.restriction.requires", "Requires: %s");
+        add("gui.easy_farms.restriction.excludes", "Incompatible with: %s");
+        add("gui.easy_farms.restriction.excludes_enchantment", "Incompatible with %s on the tool");
+        add("gui.easy_farms.restriction.cannot_add", "Can't be added here");
+        add("tooltip.easy_farms.card_when", "When the farm drops %s:");
+        add("message.easy_farms.upgrade_blocked", "%s can't be installed: %s");
         add("message.easy_farms.upgrade_rejected", "%s does not fit this farm, or is already installed");
         // Jade refuses to load a tooltip provider (and fails the whole resource reload in dev) without this name.
         add("config.jade.plugin_easy_farms.farm", "Easy Farms");

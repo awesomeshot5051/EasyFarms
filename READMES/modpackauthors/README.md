@@ -256,6 +256,7 @@ card id (see [cards without registering an item](#cards-without-registering-an-i
 | `card` | Optional. For the generic `easy_farms:upgrade_card` item: the id its `easy_farms:card` component must hold. Without it, any stack of `item` is the card. |
 | `kinds` | `resource`, `plant` and/or `mob`: the farms that accept it. |
 | `requires` | Shown in the card's tooltip: the text key `gui.easy_farms.requires.<value>`. The built-ins are `any`, `smeltable`, `toolless`, `nether` and `inscriber`. Add your own key in your lang file. |
+| `restrictions` | Optional. Compatibility rules, see [Card restrictions](#card-restrictions). |
 | `effects` | What the card does (a list; a card can have several). Empty means nothing happens. |
 
 Cards are installed from the Upgrades screen, or by sneaking and right-clicking the farm with the card. A farm has 18
@@ -286,6 +287,33 @@ recipe makes it. The name, tooltip text and glint come from the `farm_upgrade`, 
 
 and the matching `data/mypack/easy_farms/farm_upgrade/andesite_casing.json` has `"item": "easy_farms:upgrade_card"`,
 `"card": "mypack:andesite_casing"` and its effects. Every card with a `card` id is listed in the creative tab, and JEI shows, on the page of each farm it applies to, a copy of every recipe whose drops a `convert_drops` card changes. See the Create datapack for a complete example.
+
+### Card restrictions
+
+A card can be **exclusive** with other cards or tool enchantments, or **require** other cards. Each entry in
+`restrictions` is a rule; all fields are optional:
+
+```json
+"restrictions": [
+  { "excludes_enchantments": ["minecraft:silk_touch"] },
+  { "when_drops": ["minecraft:raw_copper"], "requires": ["easy_farms:smelter"] },
+  { "when_drops": ["minecraft:quartz"], "excludes": ["easy_farms:smelter", "mypack:processor"] }
+]
+```
+
+| Field | Meaning |
+|---|---|
+| `when_drops` | Scope: the rule only applies while the farm's recipe drops one of these (item ids or `#tags`). Leave it out for a rule that always applies. A scoped rule does not apply while the farm has no recipe. |
+| `requires` | Upgrade ids (the farm_upgrade file id, e.g. `easy_farms:smelter`) that must be installed as well. |
+| `excludes` | Upgrade ids that cannot be installed together with this card. Both ways: you only have to write it on one of the two cards. |
+| `excludes_enchantments` | Enchantments on the farm's tool that make the card unusable. |
+
+What happens:
+* **Adding a card** that breaks a rule is refused (Upgrades screen, shift-click, sneaking with the card, hoppers). While
+  you hold the card over a slot, the tooltip says why. The card's own tooltip lists its rules too.
+* **Rules are checked all the time**, not just when adding: if the recipe, the tool's enchantments or the other cards
+  change so that a rule is broken, the card stays in its slot but is switched off. Where two cards clash, the one in
+  the earlier slot keeps working. A card with a missing requirement does nothing until the requirement returns.
 
 ### Built-in effects
 
