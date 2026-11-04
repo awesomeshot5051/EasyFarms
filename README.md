@@ -1,5 +1,5 @@
 # Easy Farms
-![projectLogo](src/main/resources/assets/easy_farms/icon.png)
+![projectLogo](common/src/main/resources/assets/easy_farms/icon.png)
 Three machines that farm almost everything in Minecraft: a **Resource Farm**, a **Plant Farm** and a **Mob Farm**.
 What a farm produces is not baked into the block. You put items into it, and it matches them against data-driven
 recipes. Swap the items, get a different result.
