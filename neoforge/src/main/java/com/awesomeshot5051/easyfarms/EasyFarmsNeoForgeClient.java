@@ -5,6 +5,7 @@ import com.awesomeshot5051.easyfarms.client.ConfigScreen;
 import com.awesomeshot5051.easyfarms.client.FarmItemRenderer;
 import com.awesomeshot5051.easyfarms.client.FarmRenderer;
 import com.awesomeshot5051.easyfarms.client.FarmScreen;
+import com.awesomeshot5051.easyfarms.client.FarmCatalystScreen;
 import com.awesomeshot5051.easyfarms.client.FarmUpgradeScreen;
 import com.awesomeshot5051.easyfarms.gui.ModMenus;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -50,6 +51,7 @@ public class EasyFarmsNeoForgeClient {
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.FARM.get(), FarmScreen::new);
         event.register(ModMenus.FARM_UPGRADES.get(), FarmUpgradeScreen::new);
+        event.register(ModMenus.FARM_CATALYSTS.get(), FarmCatalystScreen::new);
     }
 
     private static void registerExtensions(RegisterClientExtensionsEvent event) {

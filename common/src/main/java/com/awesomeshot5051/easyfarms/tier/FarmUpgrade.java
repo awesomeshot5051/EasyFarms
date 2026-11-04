@@ -82,6 +82,18 @@ public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<C
         return null;
     }
 
+    /** The catalyst items (ids or {@code #tags}) this card needs, one per distinct ingredient, so one catalyst slot each; empty if none. */
+    public List<String> catalystItems() {
+        List<String> items = new ArrayList<>();
+        for (var effect : effects) {
+            if (!(effect instanceof com.awesomeshot5051.easyfarms.upgrade.UpgradeEffects.ConvertDrops convert)) continue;
+            for (var rule : convert.rules()) {
+                for (var extra : rule.with()) if (extra.catalyst() && !items.contains(extra.from())) items.add(extra.from());
+            }
+        }
+        return items;
+    }
+
     /** The registry id of an upgrade (its farm_upgrade file), or null if it is not registered. */
     public static ResourceLocation id(RegistryAccess access, FarmUpgrade upgrade) {
         return access.registryOrThrow(REGISTRY_KEY).getKey(upgrade);

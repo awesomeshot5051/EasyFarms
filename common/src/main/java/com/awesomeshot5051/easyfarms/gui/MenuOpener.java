@@ -15,6 +15,13 @@ public final class MenuOpener {
         Services.PLATFORM.openMenu(player, title, pos, ModMenus.FARM_CODEC, (id, inv, p) -> new FarmMenu(id, inv, pos, farm));
     }
 
+    /** The Catalysts screen: one slot per installed card that needs a catalyst. */
+    public static void openCatalysts(ServerPlayer player, BlockPos pos, FarmBlockEntity farm, Component title) {
+        int[] owners = farm.catalystOwners();
+        Services.PLATFORM.openMenu(player, title, new ModMenus.CatalystOpening(pos, owners), ModMenus.CatalystOpening.CODEC,
+                (id, inv, p) -> new FarmCatalystMenu(id, inv, pos, farm, owners));
+    }
+
     public static void openUpgrades(ServerPlayer player, BlockPos pos, FarmBlockEntity farm, Component title) {
         Services.PLATFORM.openMenu(player, title, new ModMenus.UpgradeOpening(pos, farm.kind()), ModMenus.UpgradeOpening.CODEC,
                 (id, inv, p) -> new FarmUpgradeMenu(id, inv, pos, farm));

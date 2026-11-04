@@ -5,6 +5,7 @@ import com.awesomeshot5051.easyfarms.client.ClientCommon;
 import com.awesomeshot5051.easyfarms.client.FarmItemRenderer;
 import com.awesomeshot5051.easyfarms.client.FarmRenderer;
 import com.awesomeshot5051.easyfarms.client.FarmScreen;
+import com.awesomeshot5051.easyfarms.client.FarmCatalystScreen;
 import com.awesomeshot5051.easyfarms.client.FarmUpgradeScreen;
 import com.awesomeshot5051.easyfarms.client.SecretSync;
 import com.awesomeshot5051.easyfarms.gui.ModMenus;
@@ -32,6 +33,7 @@ public class EasyFarmsFabricClient implements ClientModInitializer {
         BlockEntityRenderers.register(EasyFarms.FARM_BE.get(), FarmRenderer::new);
         MenuScreens.register(ModMenus.FARM.get(), FarmScreen::new);
         MenuScreens.register(ModMenus.FARM_UPGRADES.get(), FarmUpgradeScreen::new);
+        MenuScreens.register(ModMenus.FARM_CATALYSTS.get(), FarmCatalystScreen::new);
 
         Block[] farms = EasyFarms.FARM_BLOCKS.values().stream().map(Supplier::get).toArray(Block[]::new);
         // The farm model's "render_type": "cutout" is a NeoForge model feature; Fabric registers it per block.

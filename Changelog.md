@@ -10,6 +10,13 @@ Versions are listed newest first, each with its commit and date.
   (`excludes`, `excludes_enchantments`) and require other cards (`requires`), optionally only for recipes that drop
   certain items (`when_drops`). Refused cards explain why in a tooltip; rules are also enforced while running.
   See the modpack authors guide.
+- `convert_drops` rules take `with`: extra ingredients used together with `from` (multi-ingredient recipes such as brass
+  or andesite alloy). An extra comes from the same cycle's drops, or (`"source": "catalyst"`) from a catalyst slot.
+- A card with a catalyst ingredient adds a Catalysts button under the Upgrades button on the farm screen. It opens its own
+  Catalysts screen. The farm has 18 catalyst slots shared between its cards: a card gets one slot per distinct catalyst
+  ingredient it uses (up to 18), and each slot accepts only that ingredient.
+- Restrictions take `requires_block_below`: the farm must stand on one of the listed blocks or `#tags` (heat sources for
+  Create-style cards). It is rechecked about once a second.
 
 ## 1.2.0 (2026-11-04, commit 55963c0: "Added ability to change what upgrade cards override.")
 

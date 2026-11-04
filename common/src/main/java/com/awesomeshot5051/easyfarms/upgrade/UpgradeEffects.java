@@ -172,17 +172,39 @@ public final class UpgradeEffects {
             public static final Codec<Output> CODEC = Codec.withAlternative(FULL, ResourceLocation.CODEC.xmap(id -> new Output(id, 1, 1F), Output::item));
         }
 
-        /** {@code from} is an item id, or {@code #namespace:tag} for an item tag. */
-        public record Rule(String from, int per, List<Output> to) {
+        /**
+         * An extra ingredient a conversion uses up, next to the rule's own {@code from}. {@code source} is {@code "drops"}
+         * (default: taken from the same cycle's drops) or {@code "catalyst"} (taken from the card's catalyst slot, which the
+         * player fills in the farm's Catalysts screen; such a card makes that screen's button appear).
+         */
+        public record Extra(String from, int per, boolean catalyst) {
+            public static final Codec<Extra> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    Codec.STRING.fieldOf("from").forGetter(Extra::from),
+                    Codec.intRange(1, 64).optionalFieldOf("per", 1).forGetter(Extra::per),
+                    Codec.STRING.optionalFieldOf("source", "drops").forGetter(e -> e.catalyst() ? "catalyst" : "drops")
+            ).apply(i, (from, per, source) -> new Extra(from, per, "catalyst".equals(source))));
+        }
+
+        /**
+         * {@code from} is an item id, or {@code #namespace:tag} for an item tag. With {@code with} the rule needs all of
+         * its ingredients at once (copper + zinc ingots -> brass); one conversion uses {@code per} of {@code from} and
+         * each extra's {@code per}, and makes as many conversions as the scarcest ingredient allows.
+         */
+        public record Rule(String from, int per, List<Extra> with, List<Output> to) {
             private static final Codec<List<Output>> OUTPUTS = Codec.withAlternative(Output.CODEC.listOf(),
                     Output.CODEC.xmap(List::of, l -> l.get(0)));
             public static final Codec<Rule> CODEC = RecordCodecBuilder.create(i -> i.group(
                     Codec.STRING.fieldOf("from").forGetter(Rule::from),
                     Codec.intRange(1, 64).optionalFieldOf("per", 1).forGetter(Rule::per),
+                    Extra.CODEC.listOf().optionalFieldOf("with", List.of()).forGetter(Rule::with),
                     OUTPUTS.fieldOf("to").forGetter(Rule::to)
             ).apply(i, Rule::new));
 
             boolean matches(ItemStack stack) {
+                return matchesItem(from, stack);
+            }
+
+            public static boolean matchesItem(String from, ItemStack stack) {
                 if (from.startsWith("#")) {
                     ResourceLocation tag = ResourceLocation.tryParse(from.substring(1));
                     return tag != null && stack.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, tag));
@@ -210,10 +232,11 @@ public final class UpgradeEffects {
         @Override
         public void modifyDrops(FarmBlockEntity farm, ServerLevel level, FarmRecipe r, List<ItemStack> drops) {
             List<ItemStack> result = new ArrayList<>();
+            List<ItemStack> combined = combine(farm, level, drops);
             for (ItemStack stack : drops) {
                 Rule rule = null;
                 for (Rule candidate : rules) {
-                    if (candidate.usable() && candidate.matches(stack)) {
+                    if (candidate.with().isEmpty() && candidate.usable() && candidate.matches(stack)) {
                         rule = candidate;
                         break;
                     }
@@ -235,8 +258,75 @@ public final class UpgradeEffects {
                     if (made > 0) add(result, new ItemStack(item.get(), made));
                 }
             }
+            for (ItemStack made : combined) add(result, made);
             drops.clear();
             drops.addAll(result);
+        }
+
+        /**
+         * Multi-ingredient rules ({@code with}): takes their ingredients out of {@code drops} (and the farm's catalyst slots
+         * for "catalyst" ingredients) and returns what they make, so single-item rules do not convert it again.
+         */
+        private List<ItemStack> combine(FarmBlockEntity farm, ServerLevel level, List<ItemStack> drops) {
+            List<ItemStack> made = new ArrayList<>();
+            for (Rule rule : rules) {
+                if (rule.with().isEmpty() || !rule.usable()) continue;
+                int conversions = countIn(drops, rule.from()) / rule.per();
+                for (Extra extra : rule.with()) {
+                    int available = extra.catalyst() ? countIn(farm.catalysts(), extra.from()) : countIn(drops, extra.from());
+                    conversions = Math.min(conversions, available / extra.per());
+                }
+                if (conversions <= 0) continue;
+                takeFrom(drops, rule.from(), conversions * rule.per());
+                for (Extra extra : rule.with()) {
+                    if (extra.catalyst()) takeFrom(farm.catalysts(), extra.from(), conversions * extra.per());
+                    else takeFrom(drops, extra.from(), conversions * extra.per());
+                }
+                for (Output out : rule.to()) {
+                    var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(out.item());
+                    if (item.isEmpty()) continue;
+                    int count = 0;
+                    for (int c = 0; c < conversions; c++) {
+                        if (out.chance() >= 1F || level.getRandom().nextFloat() < out.chance()) count += out.count();
+                    }
+                    if (count > 0) add(made, new ItemStack(item.get(), count));
+                }
+            }
+            return made;
+        }
+
+        private static int countIn(List<ItemStack> stacks, String from) {
+            int total = 0;
+            for (ItemStack stack : stacks) if (Rule.matchesItem(from, stack)) total += stack.getCount();
+            return total;
+        }
+
+        private static int countIn(com.awesomeshot5051.easyfarms.util.ItemStackHandler handler, String from) {
+            int total = 0;
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (Rule.matchesItem(from, stack)) total += stack.getCount();
+            }
+            return total;
+        }
+
+        private static void takeFrom(List<ItemStack> stacks, String from, int amount) {
+            for (ItemStack stack : stacks) {
+                if (amount <= 0) break;
+                if (!Rule.matchesItem(from, stack)) continue;
+                int taken = Math.min(amount, stack.getCount());
+                stack.shrink(taken);
+                amount -= taken;
+            }
+            stacks.removeIf(ItemStack::isEmpty);
+        }
+
+        private static void takeFrom(com.awesomeshot5051.easyfarms.util.ItemStackHandler handler, String from, int amount) {
+            for (int i = 0; i < handler.getSlots() && amount > 0; i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (!Rule.matchesItem(from, stack)) continue;
+                amount -= handler.extractItem(i, Math.min(amount, stack.getCount()), false).getCount();
+            }
         }
 
         @Override
@@ -248,7 +338,7 @@ public final class UpgradeEffects {
                 if (item.isPresent()) {
                     ItemStack probe = new ItemStack(item.get());
                     for (Rule candidate : rules) {
-                        if (candidate.usable() && candidate.matches(probe)) {
+                        if (candidate.with().isEmpty() && candidate.usable() && candidate.matches(probe)) {
                             rule = candidate;
                             break;
                         }

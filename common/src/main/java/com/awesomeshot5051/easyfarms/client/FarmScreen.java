@@ -16,6 +16,8 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     private static final int BAR_X = 52, BAR_Y = 41, BAR_W = 72, BAR_H = 4;
     private static final int FONT_COLOR = 0x404040;
 
+    private ArrowButton catalystButton;
+
     public FarmScreen(FarmMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
@@ -29,6 +31,16 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         // Top right corner: opens the Upgrades screen.
         addRenderableWidget(new ArrowButton(leftPos + imageWidth - 20, topPos + 5, Component.translatable("gui.easy_farms.upgrades"),
                 b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0)));
+        // Under it, only while an installed card needs a catalyst: opens the Catalysts screen.
+        catalystButton = addRenderableWidget(new ArrowButton(leftPos + imageWidth - 20, topPos + 21, Component.translatable("gui.easy_farms.catalysts"),
+                b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1)));
+        catalystButton.visible = menu.hasCatalystCards();
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        if (catalystButton != null) catalystButton.visible = menu.hasCatalystCards();
     }
 
     @Override

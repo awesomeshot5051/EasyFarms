@@ -95,6 +95,19 @@ public class FarmBlockEntity extends BlockEntity {
     public static final net.minecraft.tags.TagKey<Item> PRESS_TAG = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
             net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(com.awesomeshot5051.easyfarms.EasyFarms.MODID, "inscriber_presses"));
 
+    /** The farm's 18 catalyst slots, shared out between the installed cards (see {@link #catalystOwners()}). */
+    private final ItemStackHandler catalysts = new ItemStackHandler(UPGRADE_SLOTS) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return isCatalystValid(slot, stack);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+    };
+
     private final ItemStackHandler upgrades = new ItemStackHandler(UPGRADE_SLOTS) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
@@ -109,6 +122,8 @@ public class FarmBlockEntity extends BlockEntity {
         @Override
         protected void onContentsChanged(int slot) {
             contentsChanged();
+            if (catalystSync) catalystDirty = true;
+            else reconcileCatalysts();
         }
     };
 
@@ -186,7 +201,14 @@ public class FarmBlockEntity extends BlockEntity {
     private boolean recipeDirty = true;
     /** Fractions of a durability point owed to the tool; it wears out exactly as the lifetime ends. */
     private double toolWear;
+    private final int[] catalystOwner = newCatalystOwners();
+    /** Set after loading or restoring a farm without a saved layout: the next tick adopts the canonical layout without moving stacks. */
+    private boolean catalystSync;
+    private boolean catalystDirty;
     private List<UpgradeEffect> effectCache;
+    /** Cards with a block-below rule depend on the world, so their cached effects are rebuilt now and then. */
+    private boolean effectsDependOnWorld;
+    private long effectCacheTick;
     private java.util.UUID lastUser;
     @Nullable
     private RecipeHolder<FarmRecipe> recipe;
@@ -218,6 +240,116 @@ public class FarmBlockEntity extends BlockEntity {
 
     public ItemStackHandler toolSlot() {
         return toolSlot;
+    }
+
+    public ItemStackHandler catalysts() {
+        return catalysts;
+    }
+
+    /**
+     * The catalyst items the card in this upgrade slot needs, one entry per distinct catalyst ingredient (so one catalyst
+     * slot each); empty if there is no card, or it needs none.
+     */
+    public List<String> catalystItemsFor(int slot) {
+        if (level == null) return List.of();
+        com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), upgrades.getStackInSlot(slot));
+        return upgrade == null ? List.of() : upgrade.catalystItems();
+    }
+
+    /** Bit i is set while the card in upgrade slot i needs a catalyst (shown by the Catalysts button). */
+    public int catalystMask() {
+        int mask = 0;
+        for (int i = 0; i < UPGRADE_SLOTS; i++) if (!catalystItemsFor(i).isEmpty()) mask |= 1 << i;
+        return mask;
+    }
+
+    // ---- catalyst slots: 18 in all, shared out between the installed cards ----
+
+    /** For each catalyst slot, the upgrade slot whose card owns it, or -1. A card owns one slot per catalyst ingredient. */
+    public int[] catalystOwners() {
+        return catalystOwner.clone();
+    }
+
+    /** The catalyst slots owned by this upgrade slot's card, ascending; the j-th takes the card's j-th catalyst item. */
+    public List<Integer> catalystSlotsOf(int upgradeSlot) {
+        List<Integer> owned = new ArrayList<>();
+        for (int h = 0; h < catalystOwner.length; h++) if (catalystOwner[h] == upgradeSlot) owned.add(h);
+        return owned;
+    }
+
+    /** Which item the catalyst slot takes: the matching catalyst item of the card that owns it, or null if unowned. */
+    @org.jetbrains.annotations.Nullable
+    public String catalystItemOf(int catalystSlot) {
+        int owner = catalystOwner[catalystSlot];
+        if (owner < 0) return null;
+        List<String> items = catalystItemsFor(owner);
+        int sub = catalystSlotsOf(owner).indexOf(catalystSlot);
+        return sub >= 0 && sub < items.size() ? items.get(sub) : null;
+    }
+
+    public boolean isCatalystValid(int catalystSlot, ItemStack stack) {
+        String item = catalystItemOf(catalystSlot);
+        return item != null && com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.matchesAny(List.of(item), stack);
+    }
+
+    /** The layout the slots should have: each installed card, in slot order, gets the next free catalyst slots. */
+    private int[] canonicalCatalystLayout() {
+        int[] layout = new int[UPGRADE_SLOTS];
+        java.util.Arrays.fill(layout, -1);
+        int next = 0;
+        for (int i = 0; i < UPGRADE_SLOTS; i++) {
+            for (int n = catalystItemsFor(i).size(); n > 0 && next < UPGRADE_SLOTS; n--) layout[next++] = i;
+        }
+        return layout;
+    }
+
+    /**
+     * Rebuilds the catalyst layout after the cards changed. Stacks follow their (card, n-th ingredient) to the new slot;
+     * a stack that no longer has a home, or no longer fits its slot, goes back into the world.
+     */
+    private void reconcileCatalysts() {
+        if (level == null || level.isClientSide) return;
+        int[] target = canonicalCatalystLayout();
+        if (java.util.Arrays.equals(target, catalystOwner) && catalystStacksFit()) return;
+        // Key of an old slot: owner * 64 + n-th slot of that owner.
+        java.util.Map<Integer, ItemStack> keyed = new java.util.HashMap<>();
+        int[] seen = new int[UPGRADE_SLOTS];
+        for (int h = 0; h < UPGRADE_SLOTS; h++) {
+            ItemStack stack = catalysts.getStackInSlot(h);
+            int owner = catalystOwner[h];
+            if (owner < 0) {
+                dropCatalyst(stack);
+            } else if (!stack.isEmpty()) {
+                keyed.put(owner * 64 + seen[owner], stack.copy());
+            }
+            if (owner >= 0) seen[owner]++;
+            catalysts.setStackInSlot(h, ItemStack.EMPTY);
+        }
+        System.arraycopy(target, 0, catalystOwner, 0, UPGRADE_SLOTS);
+        int[] placed = new int[UPGRADE_SLOTS];
+        for (int h = 0; h < UPGRADE_SLOTS; h++) {
+            int owner = catalystOwner[h];
+            if (owner < 0) continue;
+            int sub = placed[owner]++;
+            ItemStack stack = keyed.remove(owner * 64 + sub);
+            if (stack == null) continue;
+            if (isCatalystValid(h, stack)) catalysts.setStackInSlot(h, stack);
+            else dropCatalyst(stack);
+        }
+        for (ItemStack leftover : keyed.values()) dropCatalyst(leftover);
+        setChanged();
+    }
+
+    private boolean catalystStacksFit() {
+        for (int h = 0; h < UPGRADE_SLOTS; h++) {
+            ItemStack stack = catalysts.getStackInSlot(h);
+            if (!stack.isEmpty() && !isCatalystValid(h, stack)) return false;
+        }
+        return true;
+    }
+
+    private void dropCatalyst(ItemStack stack) {
+        if (!stack.isEmpty()) Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ(), stack);
     }
 
     public ItemStackHandler outputs() {
@@ -348,7 +480,7 @@ public class FarmBlockEntity extends BlockEntity {
             current = level.getRecipeManager().getRecipeFor(ModRecipes.TYPES_BY_KIND.get(kind).get(), input, level)
                     .map(RecipeHolder::value).orElse(null);
         }
-        return new com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.Context(level.registryAccess(), current, getTool());
+        return new com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.Context(level.registryAccess(), current, getTool(), level.getBlockState(worldPosition.below()));
     }
 
     /** Puts an upgrade card into the first free upgrade slot if this farm accepts it and doesn't have it yet. */
@@ -377,13 +509,18 @@ public class FarmBlockEntity extends BlockEntity {
     /** The effects of every card installed in this farm (cached; cleared whenever a slot or the farm data changes). */
     public List<UpgradeEffect> effects() {
         List<UpgradeEffect> cached = effectCache;
-        if (cached != null) return cached;
+        if (cached != null && !(effectsDependOnWorld && level != null && level.getGameTime() - effectCacheTick >= 20)) return cached;
         List<UpgradeEffect> list = new ArrayList<>();
+        effectsDependOnWorld = false;
         if (level != null) {
+            effectCacheTick = level.getGameTime();
             // Cards whose requirements are missing, or that clash with an earlier card or the tool's enchantments, are off.
             for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade :
                     com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.working(rulesContext(), installedUpgrades(-1))) {
                 list.addAll(upgrade.effects());
+            }
+            for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade : installedUpgrades(-1)) {
+                for (var restriction : upgrade.restrictions()) effectsDependOnWorld |= !restriction.requiresBlockBelow().isEmpty();
             }
         }
         return effectCache = List.copyOf(list);
@@ -528,6 +665,12 @@ public class FarmBlockEntity extends BlockEntity {
             clientTick();
             return;
         }
+        if (catalystDirty) {
+            catalystDirty = false;
+            catalystSync = false;
+            System.arraycopy(canonicalCatalystLayout(), 0, catalystOwner, 0, UPGRADE_SLOTS);
+            reconcileCatalysts();
+        }
         if (recipeDirty) refreshRecipe();
         if (recipe == null || isPaused() || !hasOutputRoom() || !environmentOk()) return;
 
@@ -664,7 +807,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     public void dropContents() {
         if (level == null || keepContents) return;
-        for (ItemStackHandler handler : List.of(inputs, toolSlot, outputs, upgrades, press)) {
+        for (ItemStackHandler handler : List.of(inputs, toolSlot, outputs, upgrades, press, catalysts)) {
             for (int i = 0; i < handler.getSlots(); i++) {
                 Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), handler.getStackInSlot(i));
             }
@@ -681,6 +824,8 @@ public class FarmBlockEntity extends BlockEntity {
         tag.put("Outputs", outputs.serializeNBT(provider));
         tag.put("Upgrades", upgrades.serializeNBT(provider));
         tag.put("Press", press.serializeNBT(provider));
+        tag.put("Catalysts", catalysts.serializeNBT(provider));
+        tag.putIntArray("CatalystOwners", catalystOwner);
         tag.putDouble("ToolWear", toolWear);
         tag.putLong("Timer", timer);
         tag.putLong("OperatingTicks", operatingTicks);
@@ -712,6 +857,16 @@ public class FarmBlockEntity extends BlockEntity {
             for (int i = 0; i < kept.size(); i++) upgrades.setStackInSlot(i, kept.get(i));
         }
         press.deserializeNBT(provider, tag.getCompound("Press"));
+        catalysts.deserializeNBT(provider, tag.getCompound("Catalysts"));
+        if (catalysts.getSlots() < UPGRADE_SLOTS) catalysts.setSize(UPGRADE_SLOTS);
+        int[] savedOwners = tag.getIntArray("CatalystOwners");
+        if (savedOwners.length == UPGRADE_SLOTS) {
+            System.arraycopy(savedOwners, 0, catalystOwner, 0, UPGRADE_SLOTS);
+        } else {
+            java.util.Arrays.fill(catalystOwner, -1);
+            catalystSync = true;
+            catalystDirty = true;
+        }
         toolWear = tag.getDouble("ToolWear");
         timer = tag.getLong("Timer");
         operatingTicks = tag.getLong("OperatingTicks");
@@ -729,7 +884,7 @@ public class FarmBlockEntity extends BlockEntity {
     // ---- Silk Touch pickup: contents travel in the item ----
 
     private List<ItemStackHandler> allHandlers() {
-        return List.of(inputs, toolSlot, outputs, upgrades, press);
+        return List.of(inputs, toolSlot, outputs, upgrades, press, catalysts);
     }
 
     private FarmContents snapshot() {
@@ -751,6 +906,15 @@ public class FarmBlockEntity extends BlockEntity {
         operatingTicks = contents.operatingTicks();
         color = DyeColor.byName(contents.color(), DyeColor.WHITE);
         recipeDirty = true;
+        // The stacks were saved in the canonical layout of the saved cards: adopt it instead of moving them.
+        catalystSync = true;
+        catalystDirty = true;
+    }
+
+    private static int[] newCatalystOwners() {
+        int[] owners = new int[UPGRADE_SLOTS];
+        java.util.Arrays.fill(owners, -1);
+        return owners;
     }
 
     @Override
@@ -769,7 +933,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     @Override
     public void removeComponentsFromTag(CompoundTag tag) {
-        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "OperatingTicks", "Color"}) tag.remove(key);
+        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color"}) tag.remove(key);
     }
 
     @Override

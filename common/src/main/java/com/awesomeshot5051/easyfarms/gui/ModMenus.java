@@ -24,10 +24,32 @@ public class ModMenus {
                 buf -> new UpgradeOpening(buf.readBlockPos(), buf.readEnum(FarmKind.class)));
     }
 
+    /**
+     * What the server sends along when it opens the Catalysts screen: where the farm is, and for each of its catalyst slots
+     * the upgrade slot whose card owns it (or -1), so the client builds the same slots.
+     */
+    public record CatalystOpening(BlockPos pos, int[] owners) {
+        public static final StreamCodec<RegistryFriendlyByteBuf, CatalystOpening> CODEC = StreamCodec.of(
+                (buf, v) -> {
+                    buf.writeBlockPos(v.pos());
+                    buf.writeVarInt(v.owners().length);
+                    for (int owner : v.owners()) buf.writeVarInt(owner + 1);
+                },
+                buf -> {
+                    BlockPos pos = buf.readBlockPos();
+                    int[] owners = new int[buf.readVarInt()];
+                    for (int i = 0; i < owners.length; i++) owners[i] = buf.readVarInt() - 1;
+                    return new CatalystOpening(pos, owners);
+                });
+    }
+
     public static final Supplier<MenuType<FarmMenu>> FARM = Services.PLATFORM.register(Registries.MENU, "farm",
             () -> Services.PLATFORM.createMenuType((id, inv, pos) -> new FarmMenu(id, inv, pos, null), FARM_CODEC));
     public static final Supplier<MenuType<FarmUpgradeMenu>> FARM_UPGRADES = Services.PLATFORM.register(Registries.MENU, "farm_upgrades",
             () -> Services.PLATFORM.createMenuType((id, inv, data) -> new FarmUpgradeMenu(id, inv, data.pos(), null, data.kind()), UpgradeOpening.CODEC));
+
+    public static final Supplier<MenuType<FarmCatalystMenu>> FARM_CATALYSTS = Services.PLATFORM.register(Registries.MENU, "farm_catalysts",
+            () -> Services.PLATFORM.createMenuType((id, inv, data) -> new FarmCatalystMenu(id, inv, data.pos(), null, data.owners()), CatalystOpening.CODEC));
 
     public static void init() {
         // class load registers the menus
