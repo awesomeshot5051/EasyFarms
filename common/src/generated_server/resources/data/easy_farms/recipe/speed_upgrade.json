@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:flint_and_steel",
+    "N": "minecraft:quartz",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "RRR",
+    "RFR",
+    "RNR"
+  ],
+  "result": {
+    "id": "easy_farms:speed_upgrade"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:deepslate_emerald_ore",
+      "ingredient": "minecraft:deepslate_emerald_ore",
       "count": 1
     }
   ],

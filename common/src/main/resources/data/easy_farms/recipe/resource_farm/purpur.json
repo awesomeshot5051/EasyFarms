@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:purpur_block",
+      "ingredient": "minecraft:purpur_block",
       "count": 1
     }
   ],

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glowstone",
+    "N": "minecraft:netherrack",
+    "Q": "minecraft:quartz"
+  },
+  "pattern": [
+    "QQQ",
+    "NNN",
+    "GGG"
+  ],
+  "result": {
+    "id": "easy_farms:nether_upgrade"
+  }
+}

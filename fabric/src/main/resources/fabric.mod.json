@@ -24,31 +24,22 @@
 		"jei_mod_plugin": [
 			"com.awesomeshot5051.easyfarms.compat.jei.EasyFarmsJeiPlugin"
 		],
-		"emi": [
-			"com.awesomeshot5051.easyfarms.compat.emi.EasyFarmsEmiPlugin"
-		],
 		"jade": [
 			"com.awesomeshot5051.easyfarms.compat.jade.EasyFarmsJadePlugin"
+		],
+		"modmenu": [
+			"com.awesomeshot5051.easyfarms.compat.modmenu.EasyFarmsModMenu"
 		]
-	},
-	"custom": {
-		"configured": {
-			"providers": [
-				"com.awesomeshot5051.easyfarms.compat.configured.EasyFarmsConfiguredProvider"
-			]
-		}
 	},
 	"depends": {
 		"fabricloader": ">=0.16.0",
-		"minecraft": "~1.21.1",
-		"java": ">=21",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"configured": "*",
 		"modmenu": "*",
 		"jei": "*",
-		"emi": "*",
 		"jade": "*",
 		"refinedstorage": "*"
 	}

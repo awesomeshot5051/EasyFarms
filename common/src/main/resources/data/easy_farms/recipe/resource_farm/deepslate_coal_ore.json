@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:deepslate_coal_ore",
+      "ingredient": "minecraft:deepslate_coal_ore",
       "count": 1
     }
   ],

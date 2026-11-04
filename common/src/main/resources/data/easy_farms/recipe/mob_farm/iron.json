@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:iron_ingot",
+      "ingredient": "minecraft:iron_ingot",
       "count": 2
     }
   ],

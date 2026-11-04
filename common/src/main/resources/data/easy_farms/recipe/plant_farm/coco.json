@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:jungle_log",
+      "ingredient": "minecraft:jungle_log",
       "count": 1
     },
     {
-      "item": "minecraft:cocoa_beans",
+      "ingredient": "minecraft:cocoa_beans",
       "count": 1
     }
   ],

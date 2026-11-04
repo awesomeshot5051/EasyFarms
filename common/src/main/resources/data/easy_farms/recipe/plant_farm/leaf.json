@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:clay",
+      "ingredient": "minecraft:clay",
       "count": 1
     },
     {
-      "item": "minecraft:big_dripleaf",
+      "ingredient": "minecraft:big_dripleaf",
       "count": 1
     }
   ],

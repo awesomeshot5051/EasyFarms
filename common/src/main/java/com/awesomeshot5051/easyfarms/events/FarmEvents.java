@@ -5,8 +5,10 @@ import com.awesomeshot5051.easyfarms.farm.FarmBlockEntity;
 import com.awesomeshot5051.easyfarms.tier.FarmUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
@@ -27,13 +29,14 @@ public final class FarmEvents {
      */
     public static boolean allowsSneakUse(Level level, BlockPos pos, ItemStack held) {
         if (!(level.getBlockState(pos).getBlock() instanceof FarmBlock)) return false;
-        return held.getItem() instanceof DyeItem || FarmUpgrade.isCard(level.registryAccess(), held);
+        return held.has(DataComponents.DYE) || FarmUpgrade.isCard(level.registryAccess(), held);
     }
 
+    /** Call after registries are frozen: every dye item (including other mods') gets the behaviour. */
     public static void registerDispenserBehaviors() {
-        for (DyeColor color : DyeColor.values()) {
-            DispenserBlock.registerBehavior(DyeItem.byColor(color), new DyeDispenseBehavior());
-        }
+        BuiltInRegistries.ITEM.stream()
+                .filter(item -> item instanceof DyeItem)
+                .forEach(item -> DispenserBlock.registerBehavior(item, new DyeDispenseBehavior()));
     }
 
     /** A dispenser facing a farm with dye in it recolours the farm. Otherwise it dispenses the dye as usual. */
@@ -42,8 +45,9 @@ public final class FarmEvents {
         protected ItemStack execute(BlockSource source, ItemStack stack) {
             Direction facing = source.state().getValue(DispenserBlock.FACING);
             BlockPos target = source.pos().relative(facing);
-            if (stack.getItem() instanceof DyeItem dye && source.level().getBlockEntity(target) instanceof FarmBlockEntity farm && farm.canDye()) {
-                farm.setColor(dye.getDyeColor());
+            DyeColor dye = stack.get(DataComponents.DYE);
+            if (dye != null && source.level().getBlockEntity(target) instanceof FarmBlockEntity farm && farm.canDye()) {
+                farm.setColor(dye);
                 stack.shrink(1);
                 return stack;
             }

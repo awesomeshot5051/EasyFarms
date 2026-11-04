@@ -11,7 +11,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -58,15 +58,15 @@ final class AutoResourceRecipes {
     }
 
     static int generate(RecipeOutput out, Path existingRecipes) {
-        Set<ResourceLocation> pickaxe = blockTag("mineable/pickaxe"), shovel = blockTag("mineable/shovel"), hoe = blockTag("mineable/hoe");
-        Set<ResourceLocation> leaves = blockTag("leaves");
-        Set<ResourceLocation> needsStone = blockTag("needs_stone_tool"), needsIron = blockTag("needs_iron_tool"), needsDiamond = blockTag("needs_diamond_tool");
+        Set<Identifier> pickaxe = blockTag("mineable/pickaxe"), shovel = blockTag("mineable/shovel"), hoe = blockTag("mineable/hoe");
+        Set<Identifier> leaves = blockTag("leaves");
+        Set<Identifier> needsStone = blockTag("needs_stone_tool"), needsIron = blockTag("needs_iron_tool"), needsDiamond = blockTag("needs_diamond_tool");
         Set<String> alreadyCovered = existingVisualTargets(existingRecipes);
 
         int count = 0;
         List<String> skipped = new ArrayList<>();
         for (Block block : BuiltInRegistries.BLOCK) {
-            ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
+            Identifier id = BuiltInRegistries.BLOCK.getKey(block);
             if (!id.getNamespace().equals("minecraft")) continue;
             String path = id.getPath();
             if (NEVER.contains(path) || path.startsWith("waxed_") || path.startsWith("infested_") || path.endsWith("_command_block")
@@ -87,7 +87,7 @@ final class AutoResourceRecipes {
                 continue;
             }
             int rank = needsDiamond.contains(id) ? 4 : needsIron.contains(id) ? 2 : needsStone.contains(id) ? 1 : 0;
-            ResourceLocation dropId = drop.item;
+            Identifier dropId = drop.item;
             List<DropEntry> drops = new ArrayList<>();
             if (drop.silkOnly) {
                 drops.add(new DropEntry(id, 1, 1, 1F, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
@@ -98,7 +98,7 @@ final class AutoResourceRecipes {
                 drops.add(new DropEntry(dropId, drop.min, drop.max, 1F, Optional.empty(), drop.fortuneMax >= 0 ? Optional.of(drop.fortuneMax) : Optional.empty(),
                         Optional.empty(), Optional.empty(),
                         dropId.equals(id) ? Optional.empty() : Optional.of(id),
-                        smeltable ? Optional.of(ResourceLocation.withDefaultNamespace(smelted)) : Optional.empty(),
+                        smeltable ? Optional.of(Identifier.withDefaultNamespace(smelted)) : Optional.empty(),
                         Optional.empty(), false));
             }
             if (path.equals("budding_amethyst")) {
@@ -109,7 +109,7 @@ final class AutoResourceRecipes {
             boolean smeltable = drops.get(0).smeltItem().isPresent();
             FarmRecipe recipe = new FarmRecipe(FarmKind.RESOURCE, List.of(SizedIngredient.of(item, 1)), Optional.of(tool), rank,
                     new FarmRecipe.Visual("block", id), 600, 80, smeltable, false, Optional.empty(), false, false, Optional.empty(), drops);
-            out.accept(ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "resource_farm/auto/" + path), recipe, null);
+            out.accept(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, Identifier.fromNamespaceAndPath(EasyFarms.MODID, "resource_farm/auto/" + path)), recipe, null);
             count++;
         }
         System.out.println("Auto resource recipes: " + count + (skipped.isEmpty() ? "" : "; skipped (no drops): " + skipped));
@@ -117,7 +117,7 @@ final class AutoResourceRecipes {
     }
 
     private static DropEntry bud(String item, float chance) {
-        return new DropEntry(ResourceLocation.withDefaultNamespace(item), 1, 1, chance, Optional.empty(), Optional.empty(), Optional.empty(),
+        return new DropEntry(Identifier.withDefaultNamespace(item), 1, 1, chance, Optional.empty(), Optional.empty(), Optional.empty(),
                 Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false);
     }
 
@@ -141,12 +141,12 @@ final class AutoResourceRecipes {
     // ---- drops from the vanilla loot table ----
 
     private static final class Drop {
-        ResourceLocation item;
+        Identifier item;
         boolean silkOnly;
         int min = 1, max = 3, fortuneMax = 5;
     }
 
-    private static Drop analyze(ResourceLocation block) {
+    private static Drop analyze(Identifier block) {
         JsonObject table = json("data/minecraft/loot_table/blocks/" + block.getPath() + ".json");
         if (table == null || !table.has("pools")) return fallback(block);
         List<Leaf> leaves = new ArrayList<>();
@@ -183,14 +183,14 @@ final class AutoResourceRecipes {
     }
 
     /** Used when a loot table cannot be read: the block drops itself, as the old farms did. */
-    private static Drop fallback(ResourceLocation block) {
+    private static Drop fallback(Identifier block) {
         Drop d = new Drop();
         d.item = block;
         return d;
     }
 
     private static final class Leaf {
-        ResourceLocation item;
+        Identifier item;
         boolean silk, bonus, countSet;
         int min = 1, max = 1;
     }
@@ -204,7 +204,7 @@ final class AutoResourceRecipes {
         }
         if (!type.equals("minecraft:item") || !entry.has("name")) return;
         Leaf leaf = new Leaf();
-        leaf.item = ResourceLocation.parse(entry.get("name").getAsString());
+        leaf.item = Identifier.parse(entry.get("name").getAsString());
         leaf.silk = silk;
         if (entry.has("functions")) {
             for (JsonElement f : entry.getAsJsonArray("functions")) {
@@ -245,13 +245,13 @@ final class AutoResourceRecipes {
     }
 
     /** All blocks in a vanilla block tag, following references to other tags. */
-    private static Set<ResourceLocation> blockTag(String name) {
-        Set<ResourceLocation> out = new HashSet<>();
+    private static Set<Identifier> blockTag(String name) {
+        Set<Identifier> out = new HashSet<>();
         readTag(name, out, new HashSet<>());
         return out;
     }
 
-    private static void readTag(String name, Set<ResourceLocation> out, Set<String> seen) {
+    private static void readTag(String name, Set<Identifier> out, Set<String> seen) {
         if (!seen.add(name)) return;
         JsonObject tag = json("data/minecraft/tags/block/" + name + ".json");
         if (tag == null || !tag.has("values")) return;
@@ -259,9 +259,9 @@ final class AutoResourceRecipes {
         for (JsonElement v : values) {
             String s = v.isJsonObject() ? v.getAsJsonObject().get("id").getAsString() : v.getAsString();
             if (s.startsWith("#")) {
-                ResourceLocation ref = ResourceLocation.parse(s.substring(1));
+                Identifier ref = Identifier.parse(s.substring(1));
                 if (ref.getNamespace().equals("minecraft")) readTag(ref.getPath(), out, seen);
-            } else out.add(ResourceLocation.parse(s));
+            } else out.add(Identifier.parse(s));
         }
     }
 

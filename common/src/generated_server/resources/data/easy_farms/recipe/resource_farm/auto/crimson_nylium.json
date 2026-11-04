@@ -1,0 +1,23 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:netherrack",
+      "silk_item": "minecraft:crimson_nylium",
+      "smelt_item": "minecraft:nether_brick"
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:crimson_nylium"
+    }
+  ],
+  "smeltable": true,
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:crimson_nylium"
+  }
+}

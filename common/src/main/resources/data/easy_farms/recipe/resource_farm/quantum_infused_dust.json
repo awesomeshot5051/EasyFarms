@@ -20,7 +20,7 @@
   ],
   "inputs": [
     {
-      "item": "advanced_ae:quantum_infusion_bucket",
+      "ingredient": "advanced_ae:quantum_infusion_bucket",
       "count": 1
     }
   ],

@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:ghast_tear",
+      "ingredient": "minecraft:ghast_tear",
       "count": 2
     }
   ],

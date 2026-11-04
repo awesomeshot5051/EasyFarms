@@ -1,0 +1,22 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:magma_block",
+      "max": 3
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:magma_block"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:magma_block"
+  }
+}

@@ -20,7 +20,7 @@
   ],
   "inputs": [
     {
-      "item": "extendedae:entro_crystal",
+      "ingredient": "extendedae:entro_crystal",
       "count": 1
     }
   ],

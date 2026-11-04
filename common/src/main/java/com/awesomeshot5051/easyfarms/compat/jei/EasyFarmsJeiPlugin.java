@@ -12,7 +12,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -28,13 +28,13 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
 
     static {
         for (FarmKind kind : FarmKind.values()) {
-            TYPES.put(kind, new RecipeType<>(ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, kind.id()),
+            TYPES.put(kind, new RecipeType<>(Identifier.fromNamespaceAndPath(EasyFarms.MODID, kind.id()),
                     (Class<RecipeHolder<FarmRecipe>>) (Class) RecipeHolder.class));
         }
     }
 
     /** Recipes the plugin derived from a card: the derived holder's id -> the card that causes it. */
-    static final Map<ResourceLocation, com.awesomeshot5051.easyfarms.tier.FarmUpgrade> CARD_RECIPES = new java.util.HashMap<>();
+    static final Map<net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>, com.awesomeshot5051.easyfarms.tier.FarmUpgrade> CARD_RECIPES = new java.util.HashMap<>();
 
     private static IJeiRuntime runtime;
     /** Secret recipes (the Wither farm) are registered but hidden until the player discovers them. */
@@ -57,7 +57,7 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
         var player = Minecraft.getInstance().player;
         for (var entry : SECRETS.entrySet()) {
             List<RecipeHolder<FarmRecipe>> hide = entry.getValue().stream()
-                    .filter(h -> !com.awesomeshot5051.easyfarms.trigger.SecretRecipes.isDiscovered(player, h.id())).toList();
+                    .filter(h -> !com.awesomeshot5051.easyfarms.trigger.SecretRecipes.isDiscovered(player, h.id().identifier())).toList();
             List<RecipeHolder<FarmRecipe>> show = entry.getValue().stream().filter(h -> !hide.contains(h)).toList();
             runtime.getRecipeManager().hideRecipes(TYPES.get(entry.getKey()), hide);
             runtime.getRecipeManager().unhideRecipes(TYPES.get(entry.getKey()), show);
@@ -65,8 +65,8 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
     }
 
     @Override
-    public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "jei_plugin");
+    public Identifier getPluginUid() {
+        return Identifier.fromNamespaceAndPath(EasyFarms.MODID, "jei_plugin");
     }
 
     @Override
@@ -81,7 +81,7 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
         for (FarmKind kind : FarmKind.values()) {
-            List<RecipeHolder<FarmRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(ModRecipes.TYPES_BY_KIND.get(kind).get());
+            List<RecipeHolder<FarmRecipe>> recipes = new java.util.ArrayList<>(com.awesomeshot5051.easyfarms.client.ClientRecipes.of(ModRecipes.TYPES_BY_KIND.get(kind).get()));
             SECRETS.put(kind, recipes.stream().filter(r -> r.value().secret()).toList());
             registration.addRecipes(TYPES.get(kind), recipes);
         }
@@ -95,10 +95,10 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
      */
     private static void registerCardRecipes(IRecipeRegistration registration, net.minecraft.client.multiplayer.ClientLevel level) {
         CARD_RECIPES.clear();
-        var upgrades = level.registryAccess().registryOrThrow(com.awesomeshot5051.easyfarms.tier.FarmUpgrade.REGISTRY_KEY);
+        var upgrades = level.registryAccess().lookupOrThrow(com.awesomeshot5051.easyfarms.tier.FarmUpgrade.REGISTRY_KEY);
         for (FarmKind kind : FarmKind.values()) {
             List<RecipeHolder<FarmRecipe>> derived = new java.util.ArrayList<>();
-            for (RecipeHolder<FarmRecipe> holder : level.getRecipeManager().getAllRecipesFor(ModRecipes.TYPES_BY_KIND.get(kind).get())) {
+            for (RecipeHolder<FarmRecipe> holder : com.awesomeshot5051.easyfarms.client.ClientRecipes.of(ModRecipes.TYPES_BY_KIND.get(kind).get())) {
                 if (holder.value().secret()) continue;
                 for (var entry : upgrades.entrySet()) {
                     var upgrade = entry.getValue();
@@ -106,8 +106,9 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
                     List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops = holder.value().drops();
                     for (var effect : upgrade.effects()) drops = effect.previewDrops(drops);
                     if (drops.equals(holder.value().drops())) continue;
-                    ResourceLocation id = ResourceLocation.fromNamespaceAndPath(holder.id().getNamespace(),
-                            holder.id().getPath() + "/with/" + entry.getKey().location().getNamespace() + "/" + entry.getKey().location().getPath());
+                    var id = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
+                            Identifier.fromNamespaceAndPath(holder.id().identifier().getNamespace(),
+                                    holder.id().identifier().getPath() + "/with/" + entry.getKey().identifier().getNamespace() + "/" + entry.getKey().identifier().getPath()));
                     derived.add(new RecipeHolder<>(id, holder.value().withDrops(drops)));
                     CARD_RECIPES.put(id, upgrade);
                 }
@@ -122,7 +123,7 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
         List<ItemStack> cards = new java.util.ArrayList<>();
-        for (var upgrade : level.registryAccess().registryOrThrow(com.awesomeshot5051.easyfarms.tier.FarmUpgrade.REGISTRY_KEY)) {
+        for (var upgrade : level.registryAccess().lookupOrThrow(com.awesomeshot5051.easyfarms.tier.FarmUpgrade.REGISTRY_KEY)) {
             if (upgrade.card().isPresent()) cards.add(upgrade.stack());
         }
         registration.addExtraItemStacks(cards);

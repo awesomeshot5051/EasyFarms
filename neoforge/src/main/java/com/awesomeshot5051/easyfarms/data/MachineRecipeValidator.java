@@ -12,7 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import com.awesomeshot5051.easyfarms.recipe.SizedIngredient;
 
@@ -32,13 +32,18 @@ import java.util.stream.Stream;
  */
 public class MachineRecipeValidator implements DataProvider {
     private final PackOutput output;
+    private final CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookup;
+    private com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> ops;
 
-    public MachineRecipeValidator(PackOutput output) {
+    public MachineRecipeValidator(PackOutput output, CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookup) {
         this.output = output;
+        this.lookup = lookup;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
+        // Ingredients are tag / item sets, which need the registries to decode.
+        ops = net.minecraft.resources.RegistryOps.create(JsonOps.INSTANCE, lookup.join());
         Path root = output.getOutputFolder().resolve("../../main/resources/data/easy_farms/recipe").normalize();
         List<String> errors = new ArrayList<>();
         int checked = 0;
@@ -62,7 +67,7 @@ public class MachineRecipeValidator implements DataProvider {
                 for (Path file : files.filter(f -> f.toString().endsWith(".json")).sorted().toList()) {
                     upgradeCount++;
                     try {
-                        var parsed = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(Files.readString(file)));
+                        var parsed = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.CODEC.parse(ops, JsonParser.parseString(Files.readString(file)));
                         if (parsed.error().isPresent()) errors.add("farm_upgrade/" + file.getFileName() + ": " + parsed.error().get().message());
                     } catch (Exception e) {
                         errors.add("farm_upgrade/" + file.getFileName() + ": " + e);
@@ -88,15 +93,18 @@ public class MachineRecipeValidator implements DataProvider {
             // Recipes for other mods are only checked when those mods are loaded (they are, in the dev environment).
             if (modded && !conditionsMet(json)) return;
             var codec = ModRecipes.SERIALIZERS_BY_KIND.get(kind).get().codec().codec();
-            var parsed = codec.parse(JsonOps.INSTANCE, json);
+            var parsed = codec.parse(ops, json);
             if (parsed.error().isPresent()) {
                 errors.add(name + ": " + parsed.error().get().message());
                 return;
             }
             FarmRecipe recipe = parsed.result().orElseThrow();
             for (SizedIngredient in : recipe.inputs()) {
-                for (var stack : in.getItems()) if (stack.is(Items.AIR)) errors.add(name + ": empty input ingredient");
-                if (in.getItems().length == 0) errors.add(name + ": input matches no item");
+                try {
+                    if (in.ingredient().items().findAny().isEmpty()) errors.add(name + ": input matches no item");
+                } catch (UnsupportedOperationException tagNotBound) {
+                    // A tag ingredient: tags are not bound while generating data, so it cannot be listed here.
+                }
             }
             for (DropEntry d : recipe.drops()) {
                 checkItem(name, d.item(), errors);
@@ -112,7 +120,7 @@ public class MachineRecipeValidator implements DataProvider {
                     if (net.neoforged.fml.ModList.get().isLoaded(d.item().getNamespace())) checkItem(name, d.item(), errors);
                 }
             });
-            ResourceLocation target = recipe.visual().target();
+            Identifier target = recipe.visual().target();
             boolean ok = switch (recipe.visual().type()) {
                 case "mob" -> BuiltInRegistries.ENTITY_TYPE.containsKey(target);
                 default -> BuiltInRegistries.BLOCK.containsKey(target);
@@ -133,7 +141,7 @@ public class MachineRecipeValidator implements DataProvider {
         return true;
     }
 
-    private static void checkItem(String name, ResourceLocation id, List<String> errors) {
+    private static void checkItem(String name, Identifier id, List<String> errors) {
         if (!BuiltInRegistries.ITEM.containsKey(id)) errors.add(name + ": unknown item " + id);
     }
 

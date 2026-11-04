@@ -12,7 +12,10 @@ import com.awesomeshot5051.easyfarms.tier.FarmTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -93,7 +96,7 @@ public class FarmBlockEntity extends BlockEntity {
         }
     };
     public static final net.minecraft.tags.TagKey<Item> PRESS_TAG = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
-            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(com.awesomeshot5051.easyfarms.EasyFarms.MODID, "inscriber_presses"));
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(com.awesomeshot5051.easyfarms.EasyFarms.MODID, "inscriber_presses"));
 
     private final ItemStackHandler upgrades = new ItemStackHandler(UPGRADE_SLOTS) {
         @Override
@@ -112,22 +115,22 @@ public class FarmBlockEntity extends BlockEntity {
         }
     };
 
-    /** Outside view for hoppers and pipes: inputs accept, outputs only give. Each loader exposes it through its own item-transfer API. */
+    /** Outside view for hoppers and pipes: inputs accept, outputs only give. */
     private final WorldlyContainer automation = new WorldlyContainer() {
-        private final int[] slots = {0, 1, 2, 3, 4, 5, 6};
+        private final int[] all = java.util.stream.IntStream.range(0, INPUTS + OUTPUTS).toArray();
 
         @Override
-        public int[] getSlotsForFace(Direction side) {
-            return slots;
+        public int[] getSlotsForFace(Direction direction) {
+            return all;
         }
 
         @Override
-        public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+        public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction direction) {
             return slot < INPUTS && inputs.isItemValid(slot, stack);
         }
 
         @Override
-        public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction direction) {
             return slot >= INPUTS;
         }
 
@@ -138,7 +141,8 @@ public class FarmBlockEntity extends BlockEntity {
 
         @Override
         public boolean isEmpty() {
-            return inputs.isEmpty() && outputs.isEmpty();
+            for (int i = 0; i < INPUTS + OUTPUTS; i++) if (!getItem(i).isEmpty()) return false;
+            return true;
         }
 
         @Override
@@ -147,13 +151,15 @@ public class FarmBlockEntity extends BlockEntity {
         }
 
         @Override
-        public ItemStack removeItem(int slot, int amount) {
-            return slot < INPUTS ? ItemStack.EMPTY : outputs.extractItem(slot - INPUTS, amount, false);
+        public ItemStack removeItem(int slot, int count) {
+            return slot < INPUTS ? inputs.extractItem(slot, count, false) : outputs.extractItem(slot - INPUTS, count, false);
         }
 
         @Override
         public ItemStack removeItemNoUpdate(int slot) {
-            return slot < INPUTS ? ItemStack.EMPTY : outputs.removeItemNoUpdate(slot - INPUTS);
+            ItemStack stack = getItem(slot).copy();
+            setItem(slot, ItemStack.EMPTY);
+            return stack;
         }
 
         @Override
@@ -163,8 +169,13 @@ public class FarmBlockEntity extends BlockEntity {
         }
 
         @Override
+        public int getMaxStackSize() {
+            return 64;
+        }
+
+        @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
-            return slot < INPUTS && inputs.isItemValid(slot, stack);
+            return canPlaceItemThroughFace(slot, stack, null);
         }
 
         @Override
@@ -237,7 +248,7 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     /** True if the named press is installed. */
-    public boolean hasPress(net.minecraft.resources.ResourceLocation id) {
+    public boolean hasPress(net.minecraft.resources.Identifier id) {
         ItemStack stack = press.getStackInSlot(0);
         return !stack.isEmpty() && net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(id);
     }
@@ -274,12 +285,12 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     public boolean isRunning() {
-        return level != null && level.isClientSide ? clientVisual != null : recipe != null;
+        return level != null && level.isClientSide() ? clientVisual != null : recipe != null;
     }
 
     @Nullable
     public FarmRecipe.Visual getVisual() {
-        return level != null && level.isClientSide ? clientVisual : (recipe == null ? null : resolvedVisual(recipe.value()));
+        return level != null && level.isClientSide() ? clientVisual : (recipe == null ? null : resolvedVisual(recipe.value()));
     }
 
     private FarmRecipe.Visual resolvedVisual(FarmRecipe r) {
@@ -329,11 +340,11 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     public double visualStart() {
-        return (level != null && level.isClientSide ? clientCycleTicks : cycleTicks()) - clientVisualTicksOr();
+        return (level != null && level.isClientSide() ? clientCycleTicks : cycleTicks()) - clientVisualTicksOr();
     }
 
     private double clientVisualTicksOr() {
-        return level != null && level.isClientSide ? clientVisualTicks : visualWindow();
+        return level != null && level.isClientSide() ? clientVisualTicks : visualWindow();
     }
 
     // ---- upgrades ----
@@ -374,7 +385,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     private int enchantLevel(ResourceKey<Enchantment> key) {
         if (level == null) return 0;
-        Holder<Enchantment> holder = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getHolderOrThrow(key);
+        Holder<Enchantment> holder = level.registryAccess().getOrThrow(key);
         return EnchantmentHelper.getItemEnchantmentLevel(holder, getTool());
     }
 
@@ -389,7 +400,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     /** Plant farms show the soil in the first input slot: farmland (+ water), soul sand, or grass by default. */
     private void updateFloor() {
-        if (kind != FarmKind.PLANT || level == null || level.isClientSide) return;
+        if (kind != FarmKind.PLANT || level == null || level.isClientSide()) return;
         ItemStack soil = inputs.getStackInSlot(0);
         FarmFloor wanted = soil.is(Items.FARMLAND) ? FarmFloor.FARMLAND
                 : soil.is(Items.SOUL_SAND) ? FarmFloor.SOUL_SAND : FarmFloor.GRASS;
@@ -407,9 +418,9 @@ public class FarmBlockEntity extends BlockEntity {
         recipeDirty = false;
         if (!(level instanceof ServerLevel server)) return;
         FarmRecipeInput input = new FarmRecipeInput(inputSlots(), getTool());
-        Optional<RecipeHolder<FarmRecipe>> found = server.getRecipeManager().getRecipeFor(ModRecipes.TYPES_BY_KIND.get(kind).get(), input, server);
+        Optional<RecipeHolder<FarmRecipe>> found = server.recipeAccess().getRecipeFor(ModRecipes.TYPES_BY_KIND.get(kind).get(), input, server);
         RecipeHolder<FarmRecipe> next = found.orElse(null);
-        boolean changed = (recipe == null) != (next == null) || (recipe != null && !recipe.id().equals(next.id()));
+        boolean changed = (recipe == null) != (next == null) || (recipe != null && next != null && !recipe.id().equals(next.id()));
         recipe = next;
         discoverSecrets(server);
         if (changed) {
@@ -425,9 +436,9 @@ public class FarmBlockEntity extends BlockEntity {
         var player = server.getServer().getPlayerList().getPlayer(lastUser);
         if (player == null) return;
         List<ItemStack> slots = inputSlots();
-        for (RecipeHolder<FarmRecipe> holder : server.getRecipeManager().getAllRecipesFor(ModRecipes.TYPES_BY_KIND.get(kind).get())) {
+        for (RecipeHolder<FarmRecipe> holder : ModRecipes.of(server.recipeAccess(), kind)) {
             if (holder.value().secret() && holder.value().matchesInputs(slots)) {
-                com.awesomeshot5051.easyfarms.trigger.SecretRecipes.discover(player, holder.id());
+                com.awesomeshot5051.easyfarms.trigger.SecretRecipes.discover(player, holder.id().identifier());
             }
         }
     }
@@ -489,7 +500,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     public void tick() {
         if (level == null) return;
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             clientTick();
             return;
         }
@@ -542,7 +553,7 @@ public class FarmBlockEntity extends BlockEntity {
         List<ItemStack> out = new ArrayList<>();
         for (ItemStack stack : drops) {
             var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
-            Item recolored = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(DyeColors.recolor(id, color));
+            Item recolored = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(DyeColors.recolor(id, color)).orElse(Items.AIR);
             out.add(recolored == Items.AIR ? stack : new ItemStack(recolored, stack.getCount()));
         }
         return out;
@@ -583,7 +594,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     private void breakTool() {
         toolSlot.setStackInSlot(0, ItemStack.EMPTY);
-        level.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.ITEM_BREAK, net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 0.8F + level.random.nextFloat() * 0.4F);
+        level.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.ITEM_BREAK.value(), net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 0.8F + level.getRandom().nextFloat() * 0.4F);
     }
 
     /** True if this farm's recipe wears out the tool (as opposed to a toolless recipe, which uses up its inputs). */
@@ -615,7 +626,7 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
@@ -639,13 +650,13 @@ public class FarmBlockEntity extends BlockEntity {
     // ---- persistence & client sync ----
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        tag.put("Inputs", inputs.serializeNBT(provider));
-        tag.put("Tool", toolSlot.serializeNBT(provider));
-        tag.put("Outputs", outputs.serializeNBT(provider));
-        tag.put("Upgrades", upgrades.serializeNBT(provider));
-        tag.put("Press", press.serializeNBT(provider));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+        inputs.serialize(tag.child("Inputs"));
+        toolSlot.serialize(tag.child("Tool"));
+        outputs.serialize(tag.child("Outputs"));
+        upgrades.serialize(tag.child("Upgrades"));
+        press.serialize(tag.child("Press"));
         tag.putDouble("ToolWear", toolWear);
         tag.putLong("Timer", timer);
         tag.putLong("OperatingTicks", operatingTicks);
@@ -662,13 +673,13 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
         effectCache = null;
-        inputs.deserializeNBT(provider, tag.getCompound("Inputs"));
-        toolSlot.deserializeNBT(provider, tag.getCompound("Tool"));
-        outputs.deserializeNBT(provider, tag.getCompound("Outputs"));
-        upgrades.deserializeNBT(provider, tag.getCompound("Upgrades"));
+        inputs.deserialize(tag.childOrEmpty("Inputs"));
+        toolSlot.deserialize(tag.childOrEmpty("Tool"));
+        outputs.deserialize(tag.childOrEmpty("Outputs"));
+        upgrades.deserialize(tag.childOrEmpty("Upgrades"));
         if (upgrades.getSlots() < UPGRADE_SLOTS) {
             // A farm saved with fewer upgrade slots: keep its cards and add empty slots.
             List<ItemStack> kept = new ArrayList<>();
@@ -676,15 +687,16 @@ public class FarmBlockEntity extends BlockEntity {
             upgrades.setSize(UPGRADE_SLOTS);
             for (int i = 0; i < kept.size(); i++) upgrades.setStackInSlot(i, kept.get(i));
         }
-        press.deserializeNBT(provider, tag.getCompound("Press"));
-        toolWear = tag.getDouble("ToolWear");
-        timer = tag.getLong("Timer");
-        operatingTicks = tag.getLong("OperatingTicks");
-        color = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
-        if (tag.contains("VisualType")) {
-            clientVisual = new FarmRecipe.Visual(tag.getString("VisualType"), net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualTarget")));
-            clientCycleTicks = Math.max(1, tag.getDouble("CycleTicks"));
-            clientVisualTicks = tag.getInt("VisualTicks");
+        press.deserialize(tag.childOrEmpty("Press"));
+        toolWear = tag.getDoubleOr("ToolWear", 0);
+        timer = tag.getLongOr("Timer", 0);
+        operatingTicks = tag.getLongOr("OperatingTicks", 0);
+        color = DyeColor.byName(tag.getStringOr("Color", "white"), DyeColor.WHITE);
+        var visualType = tag.getString("VisualType");
+        if (visualType.isPresent()) {
+            clientVisual = new FarmRecipe.Visual(visualType.get(), net.minecraft.resources.Identifier.parse(tag.getStringOr("VisualTarget", "minecraft:air")));
+            clientCycleTicks = Math.max(1, tag.getDoubleOr("CycleTicks", 1));
+            clientVisualTicks = tag.getIntOr("VisualTicks", 0);
         } else {
             clientVisual = null;
         }
@@ -726,15 +738,21 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput input) {
+    protected void applyImplicitComponents(DataComponentGetter input) {
         super.applyImplicitComponents(input);
         FarmContents contents = input.get(ModDataComponents.FARM_CONTENTS.get());
         if (contents != null) restore(contents);
     }
 
     @Override
-    public void removeComponentsFromTag(CompoundTag tag) {
-        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "OperatingTicks", "Color"}) tag.remove(key);
+    public void removeComponentsFromTag(ValueOutput tag) {
+        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "OperatingTicks", "Color"}) tag.discard(key);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        dropContents();
+        super.preRemoveSideEffects(pos, state);
     }
 
     @Override

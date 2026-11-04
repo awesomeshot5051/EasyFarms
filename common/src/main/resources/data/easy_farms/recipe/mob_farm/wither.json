@@ -1,22 +1,18 @@
 {
   "inputs": [
     {
-      "ingredients": [
-        {
-          "item": "minecraft:soul_sand"
-        },
-        {
-          "item": "minecraft:soul_soil"
-        }
+      "ingredient": [
+        "minecraft:soul_sand",
+        "minecraft:soul_soil"
       ],
       "count": 4
     },
     {
-      "item": "minecraft:nether_star",
+      "ingredient": "minecraft:nether_star",
       "count": 2
     },
     {
-      "item": "minecraft:wither_skeleton_skull",
+      "ingredient": "minecraft:wither_skeleton_skull",
       "count": 3
     }
   ],

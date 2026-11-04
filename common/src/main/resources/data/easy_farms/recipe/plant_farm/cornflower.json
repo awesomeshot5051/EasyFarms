@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:grass_block",
+      "ingredient": "minecraft:grass_block",
       "count": 1
     },
     {
-      "item": "minecraft:cornflower",
+      "ingredient": "minecraft:cornflower",
       "count": 1
     }
   ],

@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:cod",
+      "ingredient": "minecraft:cod",
       "count": 1
     }
   ],

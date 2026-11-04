@@ -1,0 +1,22 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:packed_mud",
+      "max": 3
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:packed_mud"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:packed_mud"
+  }
+}

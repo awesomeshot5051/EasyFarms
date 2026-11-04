@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:piglin_head",
+      "ingredient": "minecraft:piglin_head",
       "count": 2
     }
   ],

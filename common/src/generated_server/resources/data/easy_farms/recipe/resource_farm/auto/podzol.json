@@ -1,0 +1,21 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:dirt",
+      "silk_item": "minecraft:podzol"
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:podzol"
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:podzol"
+  }
+}

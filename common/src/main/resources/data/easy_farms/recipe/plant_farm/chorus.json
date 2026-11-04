@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:grass_block",
+      "ingredient": "minecraft:grass_block",
       "count": 1
     },
     {
-      "item": "minecraft:chorus_plant",
+      "ingredient": "minecraft:chorus_plant",
       "count": 1
     }
   ],

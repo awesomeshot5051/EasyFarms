@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:slime_block",
+      "ingredient": "minecraft:slime_block",
       "count": 1
     },
     {
-      "item": "minecraft:slime_ball",
+      "ingredient": "minecraft:slime_ball",
       "count": 1
     }
   ],

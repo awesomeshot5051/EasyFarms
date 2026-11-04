@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:totem_of_undying",
+      "ingredient": "minecraft:totem_of_undying",
       "count": 1
     }
   ],

@@ -20,11 +20,11 @@
   ],
   "inputs": [
     {
-      "item": "ae2:singularity",
+      "ingredient": "ae2:singularity",
       "count": 1
     },
     {
-      "item": "ae2:ender_dust",
+      "ingredient": "ae2:ender_dust",
       "count": 2
     }
   ],

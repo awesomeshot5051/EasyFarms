@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:turtle_scute",
+      "ingredient": "minecraft:turtle_scute",
       "count": 1
     },
     {
-      "item": "minecraft:seagrass",
+      "ingredient": "minecraft:seagrass",
       "count": 1
     }
   ],

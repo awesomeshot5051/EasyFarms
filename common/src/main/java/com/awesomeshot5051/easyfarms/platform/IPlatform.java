@@ -6,7 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -47,10 +47,23 @@ public interface IPlatform {
      */
     <T> Supplier<T> register(ResourceKey<? extends Registry<? super T>> registry, String name, Supplier<? extends T> factory);
 
-    /** A block entity type for the given blocks (the vanilla builder is not accessible to common code). */
+    /** Registers a block. The properties already carry the block's registry id (required since 26.1). */
+    <B extends net.minecraft.world.level.block.Block> Supplier<B> registerBlock(String name, java.util.function.Function<net.minecraft.world.level.block.state.BlockBehaviour.Properties, B> factory);
+
+    /** Registers an item. The properties already carry the item's registry id (required since 26.1). */
+    <I extends net.minecraft.world.item.Item> Supplier<I> registerItem(String name, java.util.function.Function<net.minecraft.world.item.Item.Properties, I> factory);
+
+    /**
+     * Registers a creative tab. {@code contents} fills it; the loader supplies the item output (its type is not
+     * accessible to common code).
+     */
+    Supplier<net.minecraft.world.item.CreativeModeTab> registerCreativeTab(String name, Component title, Supplier<net.minecraft.world.item.ItemStack> icon,
+                                                                          java.util.function.BiConsumer<net.minecraft.core.HolderLookup.Provider, java.util.function.Consumer<net.minecraft.world.item.ItemStack>> contents);
+
+    /** A block entity type for the given blocks (the vanilla constructor is not accessible to common code). */
     <T extends net.minecraft.world.level.block.entity.BlockEntity> net.minecraft.world.level.block.entity.BlockEntityType<T> createBlockEntityType(
             java.util.function.BiFunction<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, T> factory,
-            net.minecraft.world.level.block.Block... blocks);
+            Set<net.minecraft.world.level.block.Block> blocks);
 
     /** Creates an easy_farms registry that is synced to clients. Call before registering entries into it. */
     <T> Registry<T> createSyncedRegistry(ResourceKey<Registry<T>> key);
@@ -65,7 +78,7 @@ public interface IPlatform {
     <D> void openMenu(ServerPlayer player, Component title, D data, StreamCodec<RegistryFriendlyByteBuf, D> codec, ServerMenuFactory factory);
 
     /** The secret recipes this player has discovered (saved, kept on death, synced to the player's own client). */
-    Set<ResourceLocation> discoveredSecrets(Player player);
+    Set<Identifier> discoveredSecrets(Player player);
 
-    void setDiscoveredSecrets(Player player, Set<ResourceLocation> secrets);
+    void setDiscoveredSecrets(Player player, Set<Identifier> secrets);
 }

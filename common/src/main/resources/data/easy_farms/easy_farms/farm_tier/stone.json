@@ -1,20 +1,10 @@
 {
   "tool": [
-    {
-      "item": "minecraft:stone_pickaxe"
-    },
-    {
-      "item": "minecraft:stone_shovel"
-    },
-    {
-      "item": "minecraft:stone_axe"
-    },
-    {
-      "item": "minecraft:stone_hoe"
-    },
-    {
-      "item": "minecraft:stone_sword"
-    }
+    "minecraft:stone_pickaxe",
+    "minecraft:stone_shovel",
+    "minecraft:stone_axe",
+    "minecraft:stone_hoe",
+    "minecraft:stone_sword"
   ],
   "rank": 1,
   "speed_divisor": 10,

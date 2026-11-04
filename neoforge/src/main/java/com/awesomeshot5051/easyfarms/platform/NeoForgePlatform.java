@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -34,14 +34,14 @@ import java.util.function.Supplier;
 
 /** NeoForge implementation of {@link IPlatform}. Registrations are collected, then attached to the mod bus by {@link #bind}. */
 public class NeoForgePlatform implements IPlatform {
-    private static final Map<ResourceLocation, DeferredRegister<?>> REGISTERS = new LinkedHashMap<>();
+    private static final Map<Identifier, DeferredRegister<?>> REGISTERS = new LinkedHashMap<>();
     private static final List<Runnable> DATAPACK_REGISTRIES = new ArrayList<>();
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, EasyFarms.MODID);
 
-    private static final Supplier<AttachmentType<Set<ResourceLocation>>> DISCOVERED_SECRETS = ATTACHMENTS.register("discovered_secrets",
-            () -> AttachmentType.<Set<ResourceLocation>>builder(() -> Set.of())
-                    .serialize(ResourceLocation.CODEC.listOf().xmap(l -> (Set<ResourceLocation>) new HashSet<>(l), s -> List.copyOf(s)))
-                    .sync(ByteBufCodecs.<io.netty.buffer.ByteBuf, ResourceLocation, Set<ResourceLocation>>collection(HashSet::new, ResourceLocation.STREAM_CODEC))
+    private static final Supplier<AttachmentType<Set<Identifier>>> DISCOVERED_SECRETS = ATTACHMENTS.register("discovered_secrets",
+            () -> AttachmentType.<Set<Identifier>>builder(() -> Set.of())
+                    .serialize(Identifier.CODEC.listOf().xmap(l -> (Set<Identifier>) new HashSet<>(l), s -> List.copyOf(s)).fieldOf("ids"))
+                    .sync(ByteBufCodecs.<io.netty.buffer.ByteBuf, Identifier, Set<Identifier>>collection(HashSet::new, Identifier.STREAM_CODEC))
                     .copyOnDeath()
                     .build());
 
@@ -49,6 +49,8 @@ public class NeoForgePlatform implements IPlatform {
     public static void bind(IEventBus modBus) {
         REGISTERS.values().forEach(r -> r.register(modBus));
         ATTACHMENTS.register(modBus);
+        BLOCKS.register(modBus);
+        ITEMS.register(modBus);
         modBus.addListener(NeoForgePlatform::onNewDatapackRegistry);
     }
 
@@ -64,7 +66,7 @@ public class NeoForgePlatform implements IPlatform {
 
     @SuppressWarnings("unchecked")
     private static <T> DeferredRegister<T> registerFor(ResourceKey<? extends Registry<? super T>> key) {
-        return (DeferredRegister<T>) REGISTERS.computeIfAbsent(key.location(),
+        return (DeferredRegister<T>) REGISTERS.computeIfAbsent(key.identifier(),
                 id -> DeferredRegister.create((ResourceKey<? extends Registry<Object>>) key, EasyFarms.MODID));
     }
 
@@ -83,6 +85,19 @@ public class NeoForgePlatform implements IPlatform {
         return FMLPaths.CONFIGDIR.get();
     }
 
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(EasyFarms.MODID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(EasyFarms.MODID);
+
+    @Override
+    public <B extends net.minecraft.world.level.block.Block> Supplier<B> registerBlock(String name, java.util.function.Function<net.minecraft.world.level.block.state.BlockBehaviour.Properties, B> factory) {
+        return BLOCKS.registerBlock(name, factory);
+    }
+
+    @Override
+    public <I extends net.minecraft.world.item.Item> Supplier<I> registerItem(String name, java.util.function.Function<net.minecraft.world.item.Item.Properties, I> factory) {
+        return ITEMS.registerItem(name, factory);
+    }
+
     @Override
     public <T> Supplier<T> register(ResourceKey<? extends Registry<? super T>> registry, String name, Supplier<? extends T> factory) {
         DeferredRegister<T> register = registerFor(registry);
@@ -92,8 +107,18 @@ public class NeoForgePlatform implements IPlatform {
     @Override
     public <T extends net.minecraft.world.level.block.entity.BlockEntity> net.minecraft.world.level.block.entity.BlockEntityType<T> createBlockEntityType(
             java.util.function.BiFunction<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, T> factory,
-            net.minecraft.world.level.block.Block... blocks) {
-        return net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(factory::apply, blocks).build(null);
+            Set<net.minecraft.world.level.block.Block> blocks) {
+        return new net.minecraft.world.level.block.entity.BlockEntityType<>(factory::apply, blocks);
+    }
+
+    @Override
+    public Supplier<net.minecraft.world.item.CreativeModeTab> registerCreativeTab(String name, Component title, Supplier<net.minecraft.world.item.ItemStack> icon,
+                                                                                 java.util.function.BiConsumer<net.minecraft.core.HolderLookup.Provider, java.util.function.Consumer<net.minecraft.world.item.ItemStack>> contents) {
+        return register(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, name, () -> net.minecraft.world.item.CreativeModeTab.builder()
+                .title(title)
+                .icon(icon)
+                .displayItems((params, out) -> contents.accept(params.holders(), out::accept))
+                .build());
     }
 
     @Override
@@ -119,12 +144,12 @@ public class NeoForgePlatform implements IPlatform {
     }
 
     @Override
-    public Set<ResourceLocation> discoveredSecrets(Player player) {
+    public Set<Identifier> discoveredSecrets(Player player) {
         return player.getData(DISCOVERED_SECRETS.get());
     }
 
     @Override
-    public void setDiscoveredSecrets(Player player, Set<ResourceLocation> secrets) {
+    public void setDiscoveredSecrets(Player player, Set<Identifier> secrets) {
         player.setData(DISCOVERED_SECRETS.get(), secrets);
     }
 }

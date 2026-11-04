@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:clay",
+      "ingredient": "minecraft:clay",
       "count": 1
     }
   ],

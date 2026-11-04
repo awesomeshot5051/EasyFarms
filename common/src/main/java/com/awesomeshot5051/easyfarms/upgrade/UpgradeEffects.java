@@ -9,7 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 
@@ -26,7 +26,7 @@ public final class UpgradeEffects {
     }
 
     public static final ResourceKey<Registry<MapCodec<? extends UpgradeEffect>>> KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "upgrade_effect_type"));
+            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(EasyFarms.MODID, "upgrade_effect_type"));
     public static final Registry<MapCodec<? extends UpgradeEffect>> REGISTRY = Services.PLATFORM.createSyncedRegistry(KEY);
 
     /** Divides the "work" part of a cycle (everything except the animation window). Default: only for toolless recipes. */
@@ -141,7 +141,7 @@ public final class UpgradeEffects {
             List<ItemStack> scaled = new ArrayList<>();
             for (ItemStack stack : drops) {
                 double exact = stack.getCount() * multiplier;
-                int count = (int) exact + (level.random.nextDouble() < exact - (int) exact ? 1 : 0);
+                int count = (int) exact + (level.getRandom().nextDouble() < exact - (int) exact ? 1 : 0);
                 if (count > 0) scaled.add(stack.copyWithCount(count));
             }
             drops.clear();
@@ -163,13 +163,13 @@ public final class UpgradeEffects {
      */
     public record ConvertDrops(List<Rule> rules) implements UpgradeEffect {
         /** One result of a conversion. {@code count} items are made per conversion, each conversion with this {@code chance}. */
-        public record Output(ResourceLocation item, int count, float chance) {
+        public record Output(Identifier item, int count, float chance) {
             private static final Codec<Output> FULL = RecordCodecBuilder.create(i -> i.group(
-                    ResourceLocation.CODEC.fieldOf("item").forGetter(Output::item),
+                    Identifier.CODEC.fieldOf("item").forGetter(Output::item),
                     Codec.INT.optionalFieldOf("count", 1).forGetter(Output::count),
                     Codec.FLOAT.optionalFieldOf("chance", 1F).forGetter(Output::chance)
             ).apply(i, Output::new));
-            public static final Codec<Output> CODEC = Codec.withAlternative(FULL, ResourceLocation.CODEC.xmap(id -> new Output(id, 1, 1F), Output::item));
+            public static final Codec<Output> CODEC = Codec.withAlternative(FULL, Identifier.CODEC.xmap(id -> new Output(id, 1, 1F), Output::item));
         }
 
         /** {@code from} is an item id, or {@code #namespace:tag} for an item tag. */
@@ -184,10 +184,10 @@ public final class UpgradeEffects {
 
             boolean matches(ItemStack stack) {
                 if (from.startsWith("#")) {
-                    ResourceLocation tag = ResourceLocation.tryParse(from.substring(1));
+                    Identifier tag = Identifier.tryParse(from.substring(1));
                     return tag != null && stack.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, tag));
                 }
-                ResourceLocation id = ResourceLocation.tryParse(from);
+                Identifier id = Identifier.tryParse(from);
                 return id != null && net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(id);
             }
 

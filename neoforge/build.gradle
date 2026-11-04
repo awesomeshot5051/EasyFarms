@@ -17,15 +17,13 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    compileOnly "dev.emi:emi-neoforge:${emi_version}"
-    if (project.findProperty('with_emi')?.toString() == 'true') localRuntime "dev.emi:emi-neoforge:${emi_version}"
 
-    compileOnly "curse.maven:jade-324717:${jade_neoforge_id}"
-    localRuntime "curse.maven:jade-324717:${jade_neoforge_id}"
-    compileOnly "curse.maven:theoneprobe-245211:${top_id}"
-    localRuntime "curse.maven:theoneprobe-245211:${top_id}"
+    compileOnly "maven.modrinth:jade:${jade_neoforge_version}"
+    localRuntime "maven.modrinth:jade:${jade_neoforge_version}"
+    compileOnly "maven.modrinth:the-one-probe:${top_version}"
+    localRuntime "maven.modrinth:the-one-probe:${top_version}"
 
-    boolean datagen = gradle.startParameter.taskNames.any { it.toLowerCase().contains('rundata') }
+    boolean datagen = gradle.startParameter.taskNames.any { it.toLowerCase().contains('data') }
     if (project.findProperty('with_content_mods')?.toString() == 'true' && !datagen) {
         localRuntime "maven.modrinth:ae2:${ae2_version}"
         localRuntime "maven.modrinth:extended-ae:${extendedae_version}"
@@ -46,10 +44,6 @@ dependencies {
 
 neoForge {
     version = project.neo_version
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     runs {
         configureEach {
@@ -62,10 +56,15 @@ neoForge {
             server()
             programArgument '--nogui'
         }
-        data {
-            data()
-            programArguments.addAll '--mod', project.mod_id, '--all',
-                    '--output', rootProject.file('common/src/generated/resources/').getAbsolutePath(),
+        // Client and server data go to separate folders: they share one cache per folder and would delete each other's files.
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', project.mod_id, '--output', rootProject.file('common/src/generated/resources/').getAbsolutePath(),
+                    '--existing', rootProject.file('common/src/main/resources/').getAbsolutePath()
+        }
+        serverData {
+            serverData()
+            programArguments.addAll '--mod', project.mod_id, '--output', rootProject.file('common/src/generated_server/resources/').getAbsolutePath(),
                     '--existing', rootProject.file('common/src/main/resources/').getAbsolutePath()
         }
     }

@@ -5,7 +5,7 @@
 //   ./gradlew cleanAll   removes build output and dist/
 
 // Task paths, resolved lazily because the root script is evaluated before the subprojects.
-def releaseTasks = [':neoforge:jar', ':fabric:remapJar']
+def releaseTasks = [':neoforge:jar', ':fabric:jar']
 
 tasks.register('buildAll') {
     group = 'build'

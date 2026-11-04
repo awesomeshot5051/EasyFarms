@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:beef",
+      "ingredient": "minecraft:beef",
       "count": 1
     },
     {
-      "item": "minecraft:red_mushroom",
+      "ingredient": "minecraft:red_mushroom",
       "count": 1
     }
   ],

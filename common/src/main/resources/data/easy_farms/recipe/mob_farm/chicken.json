@@ -1,18 +1,14 @@
 {
   "inputs": [
     {
-      "ingredients": [
-        {
-          "item": "minecraft:chicken"
-        },
-        {
-          "item": "minecraft:cooked_chicken"
-        }
+      "ingredient": [
+        "minecraft:chicken",
+        "minecraft:cooked_chicken"
       ],
       "count": 1
     },
     {
-      "item": "minecraft:feather",
+      "ingredient": "minecraft:feather",
       "count": 1
     }
   ],

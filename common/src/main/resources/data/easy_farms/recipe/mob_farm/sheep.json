@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:mutton",
+      "ingredient": "minecraft:mutton",
       "count": 1
     },
     {
-      "tag": "minecraft:wool",
+      "ingredient": "#minecraft:wool",
       "count": 1
     }
   ],

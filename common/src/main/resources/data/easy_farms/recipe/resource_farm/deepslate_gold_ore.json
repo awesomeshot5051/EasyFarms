@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:deepslate_gold_ore",
+      "ingredient": "minecraft:deepslate_gold_ore",
       "count": 1
     }
   ],

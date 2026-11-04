@@ -22,13 +22,13 @@ public class ModItems {
      * A blank card for datapacks: give it the {@code easy_farms:card} component and a farm_upgrade with the same
      * {@code card} id, and it is a new upgrade, with no Java and no item registration.
      */
-    public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.register(Registries.ITEM, "upgrade_card", () -> new UpgradeCardItem(new Item.Properties().stacksTo(1)));
+    public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.registerItem("upgrade_card", p -> new UpgradeCardItem(p.stacksTo(1)));
 
     public static final List<Supplier<Item>> UPGRADES = List.of(
             REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE);
 
     private static Supplier<Item> card(String name) {
-        return Services.PLATFORM.register(Registries.ITEM, name, () -> new Item(new Item.Properties().stacksTo(1)));
+        return Services.PLATFORM.registerItem(name, p -> new Item(p.stacksTo(1)));
     }
 
     public static void init() {

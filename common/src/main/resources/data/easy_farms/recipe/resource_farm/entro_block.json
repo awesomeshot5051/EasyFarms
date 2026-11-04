@@ -20,7 +20,7 @@
   ],
   "inputs": [
     {
-      "item": "extendedae:entro_block",
+      "ingredient": "extendedae:entro_block",
       "count": 1
     }
   ],

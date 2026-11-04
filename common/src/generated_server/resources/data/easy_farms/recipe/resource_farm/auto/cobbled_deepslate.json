@@ -1,0 +1,24 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:cobbled_deepslate",
+      "max": 3,
+      "smelt_item": "minecraft:deepslate"
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:cobbled_deepslate"
+    }
+  ],
+  "smeltable": true,
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:cobbled_deepslate"
+  }
+}

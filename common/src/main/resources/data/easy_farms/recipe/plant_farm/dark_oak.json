@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:grass_block",
+      "ingredient": "minecraft:grass_block",
       "count": 1
     },
     {
-      "item": "minecraft:dark_oak_sapling",
+      "ingredient": "minecraft:dark_oak_sapling",
       "count": 1
     }
   ],

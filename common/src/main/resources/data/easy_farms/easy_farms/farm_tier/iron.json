@@ -1,20 +1,10 @@
 {
   "tool": [
-    {
-      "item": "minecraft:iron_pickaxe"
-    },
-    {
-      "item": "minecraft:iron_shovel"
-    },
-    {
-      "item": "minecraft:iron_axe"
-    },
-    {
-      "item": "minecraft:iron_hoe"
-    },
-    {
-      "item": "minecraft:iron_sword"
-    }
+    "minecraft:iron_pickaxe",
+    "minecraft:iron_shovel",
+    "minecraft:iron_axe",
+    "minecraft:iron_hoe",
+    "minecraft:iron_sword"
   ],
   "rank": 2,
   "speed_divisor": 15,

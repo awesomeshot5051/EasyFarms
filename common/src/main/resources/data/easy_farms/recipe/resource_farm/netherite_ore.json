@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:ancient_debris",
+      "ingredient": "minecraft:ancient_debris",
       "count": 1
     },
     {
-      "item": "minecraft:netherite_ingot",
+      "ingredient": "minecraft:netherite_ingot",
       "count": 1
     }
   ],

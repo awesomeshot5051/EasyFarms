@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:string",
+      "ingredient": "minecraft:string",
       "count": 1
     },
     {
-      "item": "minecraft:spider_eye",
+      "ingredient": "minecraft:spider_eye",
       "count": 1
     }
   ],

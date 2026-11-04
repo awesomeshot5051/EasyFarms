@@ -14,10 +14,10 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -68,8 +68,8 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
     }
 
     @Override
-    public ResourceLocation getRegistryName(RecipeHolder<FarmRecipe> recipe) {
-        return recipe.id();
+    public Identifier getRegistryName(RecipeHolder<FarmRecipe> recipe) {
+        return recipe.id().identifier();
     }
 
     @Override
@@ -78,26 +78,26 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         int x = 4;
         for (SizedIngredient input : recipe.inputs()) {
             List<ItemStack> stacks = new ArrayList<>();
-            for (ItemStack s : input.getItems()) stacks.add(s);
+            input.ingredient().items().forEach(h -> stacks.add(new ItemStack(h, input.count())));
             builder.addSlot(RecipeIngredientRole.INPUT, x, INPUT_Y).addItemStacks(stacks);
             x += SLOT;
         }
         // The tool slot (empty for recipes that need none).
         if (recipe.tool().isPresent()) {
-            builder.addSlot(RecipeIngredientRole.CATALYST, 4 + 3 * SLOT + 6, INPUT_Y)
-                    .addIngredients(Ingredient.of(recipe.tool().get()))
+            builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 4 + 3 * SLOT + 6, INPUT_Y)
+                    .addItemStacks(toolStacks(recipe.tool().get()))
                     .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.tool")));
         }
         // A recipe derived from a card shows the card it needs.
         var card = EasyFarmsJeiPlugin.CARD_RECIPES.get(holder.id());
         if (card != null) {
-            builder.addSlot(RecipeIngredientRole.CATALYST, 4, HEIGHT - SLOT - 4).addItemStack(card.stack())
+            builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 4, HEIGHT - SLOT - 4).addItemStack(card.stack())
                     .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.card_needed")));
         }
         int i = 0;
         for (DropEntry drop : recipe.drops()) {
             int col = i % 7, row = i / 7;
-            ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(drop.item()), Math.max(1, drop.max()));
+            ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(drop.item()), Math.max(1, drop.max()));
             builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT)
                     .addItemStack(stack)
                     .addRichTooltipCallback((slot, tooltip) -> describe(drop, tooltip));
@@ -107,7 +107,7 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         if (recipe.inscriber().isPresent()) {
             var ins = recipe.inscriber().get();
             for (DropEntry drop : ins.drops()) {
-                Item item = BuiltInRegistries.ITEM.get(drop.item());
+                Item item = BuiltInRegistries.ITEM.getValue(drop.item());
                 if (item == net.minecraft.world.item.Items.AIR) continue;
                 int col = i % 7, row = i / 7;
                 builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT)
@@ -135,21 +135,27 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
 
     private static String blockName(String entry) {
         if (entry.startsWith("#")) return entry.substring(1);
-        return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(entry)).getName().getString();
+        return BuiltInRegistries.BLOCK.getValue(Identifier.parse(entry)).getName().getString();
     }
 
-    private static Component name(ResourceLocation id) {
-        Item item = BuiltInRegistries.ITEM.get(id);
-        return item.getDescription();
+    private static Component name(Identifier id) {
+        Item item = BuiltInRegistries.ITEM.getValue(id);
+        return new ItemStack(item).getHoverName();
+    }
+
+    private static List<ItemStack> toolStacks(net.minecraft.tags.TagKey<Item> tag) {
+        List<ItemStack> out = new ArrayList<>();
+        BuiltInRegistries.ITEM.get(tag).ifPresent(set -> set.forEach(holder -> out.add(new ItemStack(holder))));
+        return out;
     }
 
     /** Info text sits right of the slots, starts further left than before, and wraps instead of running off the page. */
     @Override
-    public void draw(RecipeHolder<FarmRecipe> holder, IRecipeSlotsView slots, GuiGraphics g, double mouseX, double mouseY) {
+    public void draw(RecipeHolder<FarmRecipe> holder, IRecipeSlotsView slots, GuiGraphicsExtractor g, double mouseX, double mouseY) {
         FarmRecipe r = holder.value();
         var font = Minecraft.getInstance().font;
-        g.drawString(font, Component.translatable("gui.easy_farms.jei.inputs"), 4, 3, 0xFF404040, false);
-        g.drawString(font, Component.translatable("gui.easy_farms.jei.outputs"), 4, OUTPUT_Y - 12, 0xFF404040, false);
+        g.text(font, Component.translatable("gui.easy_farms.jei.inputs"), 4, 3, 0xFF404040, false);
+        g.text(font, Component.translatable("gui.easy_farms.jei.outputs"), 4, OUTPUT_Y - 12, 0xFF404040, false);
         final int x = 86, maxW = WIDTH - x - 2;
         List<Component> lines = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
@@ -168,13 +174,13 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         if (r.minTierRank() > 0) gray.accept(Component.translatable("gui.easy_farms.jei.min_tier", r.minTierRank()));
         var card = EasyFarmsJeiPlugin.CARD_RECIPES.get(holder.id());
         if (card != null) {
-            g.drawString(font, Component.translatable("gui.easy_farms.jei.with_card", card.stack().getHoverName()), 26, HEIGHT - SLOT, 0xFF404040, false);
+            g.text(font, Component.translatable("gui.easy_farms.jei.with_card", card.stack().getHoverName()), 26, HEIGHT - SLOT, 0xFF404040, false);
         }
         int y = 14;
         for (int i = 0; i < lines.size(); i++) {
             for (var part : font.split(lines.get(i), maxW)) {
                 if (y + 9 > HEIGHT) return;
-                g.drawString(font, part, x, y, colors.get(i), false);
+                g.text(font, part, x, y, colors.get(i), false);
                 y += 10;
             }
         }

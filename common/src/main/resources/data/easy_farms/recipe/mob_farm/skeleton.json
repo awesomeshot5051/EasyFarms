@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:skeleton_skull",
+      "ingredient": "minecraft:skeleton_skull",
       "count": 1
     },
     {
-      "item": "minecraft:bone",
+      "ingredient": "minecraft:bone",
       "count": 1
     }
   ],

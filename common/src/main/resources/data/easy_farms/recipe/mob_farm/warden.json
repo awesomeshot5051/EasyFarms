@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:sculk_catalyst",
+      "ingredient": "minecraft:sculk_catalyst",
       "count": 2
     }
   ],

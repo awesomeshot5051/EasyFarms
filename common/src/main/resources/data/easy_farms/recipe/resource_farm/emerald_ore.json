@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:emerald_ore",
+      "ingredient": "minecraft:emerald_ore",
       "count": 1
     }
   ],

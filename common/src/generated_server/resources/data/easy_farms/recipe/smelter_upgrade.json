@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": [
+      "minecraft:blaze_powder",
+      "minecraft:blaze_rod"
+    ],
+    "F": "minecraft:flint_and_steel",
+    "I": "minecraft:iron_ingot",
+    "N": "minecraft:netherrack"
+  },
+  "pattern": [
+    "IBI",
+    "IFI",
+    "INI"
+  ],
+  "result": {
+    "id": "easy_farms:smelter_upgrade"
+  }
+}

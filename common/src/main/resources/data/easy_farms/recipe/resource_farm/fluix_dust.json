@@ -15,11 +15,11 @@
   ],
   "inputs": [
     {
-      "item": "ae2:fluix_crystal",
+      "ingredient": "ae2:fluix_crystal",
       "count": 1
     },
     {
-      "tag": "minecraft:slabs",
+      "ingredient": "#minecraft:slabs",
       "count": 1
     }
   ],

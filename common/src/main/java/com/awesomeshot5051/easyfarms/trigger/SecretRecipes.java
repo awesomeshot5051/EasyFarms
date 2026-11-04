@@ -1,7 +1,7 @@
 package com.awesomeshot5051.easyfarms.trigger;
 
 import com.awesomeshot5051.easyfarms.platform.Services;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -13,19 +13,19 @@ public final class SecretRecipes {
     private SecretRecipes() {
     }
 
-    public static boolean isDiscovered(Player player, ResourceLocation recipeId) {
+    public static boolean isDiscovered(Player player, Identifier recipeId) {
         return player != null && Services.PLATFORM.discoveredSecrets(player).contains(recipeId);
     }
 
-    public static Set<ResourceLocation> discovered(Player player) {
+    public static Set<Identifier> discovered(Player player) {
         return player == null ? Set.of() : Services.PLATFORM.discoveredSecrets(player);
     }
 
     /** Marks the recipe discovered (once) and fires the advancement trigger. */
-    public static void discover(ServerPlayer player, ResourceLocation recipeId) {
-        Set<ResourceLocation> known = Services.PLATFORM.discoveredSecrets(player);
+    public static void discover(ServerPlayer player, Identifier recipeId) {
+        Set<Identifier> known = Services.PLATFORM.discoveredSecrets(player);
         if (known.contains(recipeId)) return;
-        Set<ResourceLocation> updated = new HashSet<>(known);
+        Set<Identifier> updated = new HashSet<>(known);
         updated.add(recipeId);
         Services.PLATFORM.setDiscoveredSecrets(player, updated);
         ModTriggers.SECRET_RECIPE.get().trigger(player, recipeId);

@@ -1,24 +1,16 @@
 {
   "inputs": [
     {
-      "ingredients": [
-        {
-          "item": "minecraft:iron_shovel"
-        },
-        {
-          "item": "minecraft:iron_axe"
-        }
+      "ingredient": [
+        "minecraft:iron_shovel",
+        "minecraft:iron_axe"
       ],
       "count": 1
     },
     {
-      "ingredients": [
-        {
-          "item": "minecraft:emerald"
-        },
-        {
-          "item": "minecraft:enchanted_book"
-        }
+      "ingredient": [
+        "minecraft:emerald",
+        "minecraft:enchanted_book"
       ],
       "count": 1
     }

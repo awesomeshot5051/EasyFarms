@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:andesite",
+      "ingredient": "minecraft:andesite",
       "count": 1
     }
   ],

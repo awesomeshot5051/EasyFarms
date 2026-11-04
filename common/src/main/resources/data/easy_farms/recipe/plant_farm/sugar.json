@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:sand",
+      "ingredient": "minecraft:sand",
       "count": 1
     },
     {
-      "item": "minecraft:sugar_cane",
+      "ingredient": "minecraft:sugar_cane",
       "count": 1
     }
   ],

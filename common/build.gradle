@@ -6,14 +6,11 @@ plugins {
 neoForge {
     // Vanilla only: no loader API is visible to common code.
     neoFormVersion = project.neoform_version
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 }
 
 sourceSets.main.resources {
     srcDir 'src/generated/resources'
+    srcDir 'src/generated_server/resources'
     exclude '**/.cache'
     exclude '**/*.bbmodel'
 }
@@ -21,8 +18,7 @@ sourceSets.main.resources {
 dependencies {
     // Recipe viewer / tooltip APIs: loader-independent classes only.
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "dev.emi:emi-xplat-mojmap:${emi_version}"
-    compileOnly "curse.maven:jade-324717:${jade_neoforge_id}"
+    compileOnly "maven.modrinth:jade:${jade_neoforge_version}"
 }
 
 // Expose the sources and resources so the loader projects can compile them into their own jars.

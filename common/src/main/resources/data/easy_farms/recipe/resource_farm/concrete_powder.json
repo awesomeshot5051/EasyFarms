@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "tag": "c:concrete_powders",
+      "ingredient": "#c:concrete_powders",
       "count": 1
     }
   ],

@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:nether_gold_ore",
+      "ingredient": "minecraft:nether_gold_ore",
       "count": 1
     }
   ],

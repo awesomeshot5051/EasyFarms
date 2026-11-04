@@ -1,20 +1,10 @@
 {
   "tool": [
-    {
-      "item": "minecraft:golden_pickaxe"
-    },
-    {
-      "item": "minecraft:golden_shovel"
-    },
-    {
-      "item": "minecraft:golden_axe"
-    },
-    {
-      "item": "minecraft:golden_hoe"
-    },
-    {
-      "item": "minecraft:golden_sword"
-    }
+    "minecraft:golden_pickaxe",
+    "minecraft:golden_shovel",
+    "minecraft:golden_axe",
+    "minecraft:golden_hoe",
+    "minecraft:golden_sword"
   ],
   "rank": 3,
   "speed_divisor": 20,

@@ -15,7 +15,7 @@
   ],
   "inputs": [
     {
-      "item": "ae2:quartz_cluster",
+      "ingredient": "ae2:quartz_cluster",
       "count": 1
     }
   ],

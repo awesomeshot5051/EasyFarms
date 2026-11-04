@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "#c:glass_panes",
+    "I": "minecraft:iron_block",
+    "P": "#minecraft:pickaxes"
+  },
+  "pattern": [
+    "###",
+    "#P#",
+    "#I#"
+  ],
+  "result": {
+    "id": "easy_farms:resource_farm"
+  }
+}

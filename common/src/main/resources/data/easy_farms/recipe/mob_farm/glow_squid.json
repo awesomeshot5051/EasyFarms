@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:glow_ink_sac",
+      "ingredient": "minecraft:glow_ink_sac",
       "count": 2
     }
   ],

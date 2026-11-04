@@ -1,0 +1,21 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:dirt",
+      "silk_item": "minecraft:mycelium"
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:mycelium"
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:mycelium"
+  }
+}

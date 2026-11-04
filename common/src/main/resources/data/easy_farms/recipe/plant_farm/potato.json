@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:farmland",
+      "ingredient": "minecraft:farmland",
       "count": 1
     },
     {
-      "item": "minecraft:potato",
+      "ingredient": "minecraft:potato",
       "count": 1
     }
   ],

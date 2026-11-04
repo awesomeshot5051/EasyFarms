@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:wither_skeleton_skull",
+      "ingredient": "minecraft:wither_skeleton_skull",
       "count": 2
     }
   ],

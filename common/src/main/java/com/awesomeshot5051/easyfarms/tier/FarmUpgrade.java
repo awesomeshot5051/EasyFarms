@@ -10,7 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -31,15 +31,15 @@ import java.util.Optional;
  * @param requires translation key suffix explaining what the recipe needs ("any", "smeltable", "toolless", ...)
  * @param effects  what the card does; see {@link com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect}
  */
-public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<Component> name, Optional<Component> description,
+public record FarmUpgrade(Item item, Optional<Identifier> card, Optional<Component> name, Optional<Component> description,
                           List<FarmKind> kinds, String requires,
                           List<com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect> effects) {
     public static final ResourceKey<Registry<FarmUpgrade>> REGISTRY_KEY =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "farm_upgrade"));
+            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(EasyFarms.MODID, "farm_upgrade"));
 
     public static final Codec<FarmUpgrade> CODEC = RecordCodecBuilder.create(i -> i.group(
             BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(FarmUpgrade::item),
-            ResourceLocation.CODEC.optionalFieldOf("card").forGetter(FarmUpgrade::card),
+            Identifier.CODEC.optionalFieldOf("card").forGetter(FarmUpgrade::card),
             ComponentSerialization.CODEC.optionalFieldOf("name").forGetter(FarmUpgrade::name),
             ComponentSerialization.CODEC.optionalFieldOf("description").forGetter(FarmUpgrade::description),
             FarmKind.CODEC.listOf().fieldOf("kinds").forGetter(FarmUpgrade::kinds),
@@ -49,10 +49,10 @@ public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<C
 
     /** The upgrades shown for a kind, in a stable order (by id) so slot positions don't move between sessions. */
     public static List<FarmUpgrade> forKind(RegistryAccess access, FarmKind kind) {
-        Registry<FarmUpgrade> registry = access.registryOrThrow(REGISTRY_KEY);
+        Registry<FarmUpgrade> registry = access.lookupOrThrow(REGISTRY_KEY);
         List<FarmUpgrade> list = new ArrayList<>();
         registry.entrySet().stream()
-                .sorted(Comparator.comparing(e -> e.getKey().location().toString()))
+                .sorted(Comparator.comparing(e -> e.getKey().identifier().toString()))
                 .forEach(e -> {
                     if (e.getValue().kinds().contains(kind)) list.add(e.getValue());
                 });
@@ -75,7 +75,7 @@ public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<C
     /** The upgrade definition for a card stack, or null if the stack is not a registered card. */
     public static FarmUpgrade find(RegistryAccess access, ItemStack stack) {
         if (stack.isEmpty()) return null;
-        for (FarmUpgrade upgrade : access.registryOrThrow(REGISTRY_KEY)) if (upgrade.matches(stack)) return upgrade;
+        for (FarmUpgrade upgrade : access.lookupOrThrow(REGISTRY_KEY)) if (upgrade.matches(stack)) return upgrade;
         return null;
     }
 

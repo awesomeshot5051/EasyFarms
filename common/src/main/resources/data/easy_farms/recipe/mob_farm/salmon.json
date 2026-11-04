@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:salmon",
+      "ingredient": "minecraft:salmon",
       "count": 1
     },
     {
-      "item": "minecraft:bone_meal",
+      "ingredient": "minecraft:bone_meal",
       "count": 1
     }
   ],

@@ -1,10 +1,9 @@
 package com.awesomeshot5051.easyfarms.util;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.world.ItemStackWithSlot;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -112,29 +111,19 @@ public class ItemStackHandler implements Container {
 
     // ---- persistence (same layout as NeoForge: {Size, Items:[{Slot, ...stack}]}) ----
 
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        ListTag list = new ListTag();
+    public void serialize(ValueOutput output) {
+        ValueOutput.TypedOutputList<ItemStackWithSlot> list = output.list("Items", ItemStackWithSlot.CODEC);
         for (int i = 0; i < stacks.size(); i++) {
-            if (stacks.get(i).isEmpty()) continue;
-            CompoundTag item = (CompoundTag) stacks.get(i).save(provider);
-            item.putInt("Slot", i);
-            list.add(item);
+            if (!stacks.get(i).isEmpty()) list.add(new ItemStackWithSlot(i, stacks.get(i)));
         }
-        CompoundTag tag = new CompoundTag();
-        tag.put("Items", list);
-        tag.putInt("Size", stacks.size());
-        return tag;
+        output.putInt("Size", stacks.size());
     }
 
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
-        int size = tag.contains("Size", Tag.TAG_INT) ? tag.getInt("Size") : stacks.size();
-        stacks = NonNullList.withSize(size, ItemStack.EMPTY);
-        ListTag list = tag.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag item = list.getCompound(i);
-            int slot = item.getInt("Slot");
-            if (slot >= 0 && slot < stacks.size()) ItemStack.parse(provider, item).ifPresent(s -> stacks.set(slot, s));
-        }
+    public void deserialize(ValueInput input) {
+        stacks = NonNullList.withSize(input.getIntOr("Size", stacks.size()), ItemStack.EMPTY);
+        input.listOrEmpty("Items", ItemStackWithSlot.CODEC).forEach(entry -> {
+            if (entry.isValidInContainer(stacks.size())) stacks.set(entry.slot(), entry.stack());
+        });
     }
 
     // ---- vanilla Container view ----

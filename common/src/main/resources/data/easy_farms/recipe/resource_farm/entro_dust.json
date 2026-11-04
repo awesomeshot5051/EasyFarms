@@ -20,7 +20,7 @@
   ],
   "inputs": [
     {
-      "item": "extendedae:entro_dust",
+      "ingredient": "extendedae:entro_dust",
       "count": 1
     }
   ],

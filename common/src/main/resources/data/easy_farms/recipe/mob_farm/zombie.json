@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:rotten_flesh",
+      "ingredient": "minecraft:rotten_flesh",
       "count": 1
     },
     {
-      "item": "minecraft:zombie_head",
+      "ingredient": "minecraft:zombie_head",
       "count": 1
     }
   ],

@@ -2,7 +2,7 @@ package com.awesomeshot5051.easyfarms.client;
 
 import com.awesomeshot5051.easyfarms.Config;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -51,16 +51,16 @@ public class ConfigScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        graphics.drawCenteredString(font, title, width / 2, 15, 0xFFFFFF);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        graphics.centeredText(font, title, width / 2, 15, 0xFFFFFFFF);
         for (Row row : rows) {
-            graphics.drawString(font, row.value().name(), width / 2 - 150, row.box().getY() + 6, 0xFFFFFF);
+            graphics.text(font, row.value().name(), width / 2 - 150, row.box().getY() + 6, 0xFFFFFFFF);
             if (row.box().isHovered()) {
-                List<Component> tip = new ArrayList<>();
-                for (String line : row.value().comment()) tip.add(Component.literal(line));
-                tip.add(Component.literal("Range: " + row.value().min() + " ~ " + row.value().max()).withStyle(ChatFormatting.GRAY));
-                graphics.renderComponentTooltip(font, tip, mouseX, mouseY);
+                var tip = new ArrayList<net.minecraft.util.FormattedCharSequence>();
+                for (String line : row.value().comment()) tip.addAll(font.split(Component.literal(line), 200));
+                tip.addAll(font.split(Component.literal("Range: " + row.value().min() + " ~ " + row.value().max()).withStyle(ChatFormatting.GRAY), 200));
+                graphics.setTooltipForNextFrame(tip, mouseX, mouseY);
             }
         }
     }

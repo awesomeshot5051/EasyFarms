@@ -20,7 +20,7 @@
   ],
   "inputs": [
     {
-      "item": "integratedterminals:menril_glass",
+      "ingredient": "integratedterminals:menril_glass",
       "count": 1
     }
   ],

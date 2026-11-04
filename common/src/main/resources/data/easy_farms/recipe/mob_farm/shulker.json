@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:shulker_box",
+      "ingredient": "minecraft:shulker_box",
       "count": 1
     },
     {
-      "item": "minecraft:shulker_shell",
+      "ingredient": "minecraft:shulker_shell",
       "count": 1
     }
   ],

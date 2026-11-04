@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:porkchop",
+      "ingredient": "minecraft:porkchop",
       "count": 1
     },
     {
-      "item": "minecraft:cooked_porkchop",
+      "ingredient": "minecraft:cooked_porkchop",
       "count": 1
     }
   ],

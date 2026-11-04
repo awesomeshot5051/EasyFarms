@@ -16,9 +16,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "easy_farms:inscriber_upgrade"
-    }
+    "easy_farms:inscriber_upgrade"
   ],
   "result": {
     "id": "ae2:inscriber",

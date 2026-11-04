@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:grass_block",
+      "ingredient": "minecraft:grass_block",
       "count": 1
     },
     {
-      "item": "minecraft:oxeye_daisy",
+      "ingredient": "minecraft:oxeye_daisy",
       "count": 1
     }
   ],

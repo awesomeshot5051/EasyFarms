@@ -15,7 +15,7 @@
   ],
   "inputs": [
     {
-      "item": "integrateddynamics:crystalized_chorus_block",
+      "ingredient": "integrateddynamics:crystalized_chorus_block",
       "count": 1
     }
   ],

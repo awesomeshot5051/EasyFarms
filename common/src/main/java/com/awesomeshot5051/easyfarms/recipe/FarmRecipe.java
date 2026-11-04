@@ -11,11 +11,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -51,9 +54,9 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
      *
      * @param press an item that must sit in the farm's press slot, or empty when the recipe needs none
      */
-    public record Inscriber(Optional<ResourceLocation> press, List<DropEntry> drops) {
+    public record Inscriber(Optional<Identifier> press, List<DropEntry> drops) {
         public static final Codec<Inscriber> CODEC = RecordCodecBuilder.create(i -> i.group(
-                ResourceLocation.CODEC.optionalFieldOf("press").forGetter(Inscriber::press),
+                Identifier.CODEC.optionalFieldOf("press").forGetter(Inscriber::press),
                 DropEntry.CODEC.listOf().fieldOf("drops").forGetter(Inscriber::drops)
         ).apply(i, Inscriber::new));
     }
@@ -64,36 +67,36 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
      * @param dimension  required dimension, e.g. minecraft:the_nether (absent = any)
      * @param blockBelow the block directly under the farm must be one of these: ids, or "#namespace:tag" (empty = anything)
      */
-    public record Environment(Optional<ResourceLocation> dimension, List<String> blockBelow) {
+    public record Environment(Optional<Identifier> dimension, List<String> blockBelow) {
         public static final Codec<Environment> CODEC = RecordCodecBuilder.create(i -> i.group(
-                ResourceLocation.CODEC.optionalFieldOf("dimension").forGetter(Environment::dimension),
+                Identifier.CODEC.optionalFieldOf("dimension").forGetter(Environment::dimension),
                 Codec.STRING.listOf().optionalFieldOf("block_below", List.of()).forGetter(Environment::blockBelow)
         ).apply(i, Environment::new));
 
         /** True if the farm at pos in this level meets the requirement. */
         public boolean satisfiedAt(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
-            if (dimension.isPresent() && !level.dimension().location().equals(dimension.get())) return false;
+            if (dimension.isPresent() && !level.dimension().identifier().equals(dimension.get())) return false;
             if (blockBelow.isEmpty()) return true;
             var below = level.getBlockState(pos.below());
             for (String entry : blockBelow) {
                 if (entry.startsWith("#")) {
-                    var tag = net.minecraft.tags.TagKey.create(Registries.BLOCK, ResourceLocation.parse(entry.substring(1)));
+                    var tag = net.minecraft.tags.TagKey.create(Registries.BLOCK, Identifier.parse(entry.substring(1)));
                     if (below.is(tag)) return true;
-                } else if (net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(below.getBlock()).equals(ResourceLocation.parse(entry))) return true;
+                } else if (net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(below.getBlock()).equals(Identifier.parse(entry))) return true;
             }
             return false;
         }
     }
 
     /** What the block shows: "block" (ore/soil with a swinging tool), "plant" (growing), or "mob". */
-    public record Visual(String type, ResourceLocation target) {
+    public record Visual(String type, Identifier target) {
         public static final Codec<Visual> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("type").forGetter(Visual::type),
-                ResourceLocation.CODEC.fieldOf("target").forGetter(Visual::target)
+                Identifier.CODEC.fieldOf("target").forGetter(Visual::target)
         ).apply(i, Visual::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Visual> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8, Visual::type,
-                ResourceLocation.STREAM_CODEC, Visual::target,
+                Identifier.STREAM_CODEC, Visual::target,
                 Visual::new);
     }
 
@@ -161,17 +164,7 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
     }
 
     @Override
-    public ItemStack assemble(FarmRecipeInput input, HolderLookup.Provider registries) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
-    }
-
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack assemble(FarmRecipeInput input) {
         return ItemStack.EMPTY;
     }
 
@@ -182,48 +175,54 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public boolean showNotification() {
+        return false;
+    }
+
+    @Override
+    public String group() {
+        return "";
+    }
+
+    @Override
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
+    }
+
+    @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+    public RecipeSerializer<FarmRecipe> getSerializer() {
         return ModRecipes.SERIALIZERS_BY_KIND.get(kind).get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<FarmRecipe> getType() {
         return ModRecipes.TYPES_BY_KIND.get(kind).get();
     }
 
-    public static class Serializer implements RecipeSerializer<FarmRecipe> {
-        private final MapCodec<FarmRecipe> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, FarmRecipe> streamCodec;
-
-        public Serializer(FarmKind kind) {
-            this.codec = RecordCodecBuilder.mapCodec(i -> i.group(
-                    SizedIngredient.FLAT_CODEC.listOf(1, 3).fieldOf("inputs").forGetter(FarmRecipe::inputs),
-                    TagKey.codec(Registries.ITEM).optionalFieldOf("tool").forGetter(FarmRecipe::tool),
-                    Codec.INT.optionalFieldOf("min_tier_rank", 0).forGetter(FarmRecipe::minTierRank),
-                    Visual.CODEC.fieldOf("visual").forGetter(FarmRecipe::visual),
-                    Codec.INT.fieldOf("base_ticks").forGetter(FarmRecipe::baseTicks),
-                    Codec.INT.optionalFieldOf("visual_ticks", 80).forGetter(FarmRecipe::visualTicks),
-                    Codec.BOOL.optionalFieldOf("smeltable", false).forGetter(FarmRecipe::smeltable),
-                    Codec.BOOL.optionalFieldOf("nether", false).forGetter(FarmRecipe::nether),
-                    Inscriber.CODEC.optionalFieldOf("inscriber").forGetter(FarmRecipe::inscriber),
-                    Codec.BOOL.optionalFieldOf("dyeable", false).forGetter(FarmRecipe::dyeable),
-                    Codec.BOOL.optionalFieldOf("secret", false).forGetter(FarmRecipe::secret),
-                    Environment.CODEC.optionalFieldOf("environment").forGetter(FarmRecipe::environment),
-                    DropEntry.CODEC.listOf().fieldOf("drops").forGetter(FarmRecipe::drops)
-            ).apply(i, (inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops) ->
-                    new FarmRecipe(kind, inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops)));
-            // The network format is just the JSON codec: recipes are small and sync once per join/reload.
-            this.streamCodec = ByteBufCodecs.fromCodecWithRegistries(codec.codec());
-        }
-
-        @Override
-        public MapCodec<FarmRecipe> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, FarmRecipe> streamCodec() {
-            return streamCodec;
-        }
+    /** Builds the serializer for one farm kind. */
+    public static RecipeSerializer<FarmRecipe> serializer(FarmKind kind) {
+        MapCodec<FarmRecipe> codec = RecordCodecBuilder.mapCodec(i -> i.group(
+                SizedIngredient.NESTED_CODEC.listOf(1, 3).fieldOf("inputs").forGetter(FarmRecipe::inputs),
+                TagKey.codec(Registries.ITEM).optionalFieldOf("tool").forGetter(FarmRecipe::tool),
+                Codec.INT.optionalFieldOf("min_tier_rank", 0).forGetter(FarmRecipe::minTierRank),
+                Visual.CODEC.fieldOf("visual").forGetter(FarmRecipe::visual),
+                Codec.INT.fieldOf("base_ticks").forGetter(FarmRecipe::baseTicks),
+                Codec.INT.optionalFieldOf("visual_ticks", 80).forGetter(FarmRecipe::visualTicks),
+                Codec.BOOL.optionalFieldOf("smeltable", false).forGetter(FarmRecipe::smeltable),
+                Codec.BOOL.optionalFieldOf("nether", false).forGetter(FarmRecipe::nether),
+                Inscriber.CODEC.optionalFieldOf("inscriber").forGetter(FarmRecipe::inscriber),
+                Codec.BOOL.optionalFieldOf("dyeable", false).forGetter(FarmRecipe::dyeable),
+                Codec.BOOL.optionalFieldOf("secret", false).forGetter(FarmRecipe::secret),
+                Environment.CODEC.optionalFieldOf("environment").forGetter(FarmRecipe::environment),
+                DropEntry.CODEC.listOf().fieldOf("drops").forGetter(FarmRecipe::drops)
+        ).apply(i, (inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops) ->
+                new FarmRecipe(kind, inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops)));
+        // The network format is just the JSON codec: recipes are small and sync once per join/reload.
+        return new RecipeSerializer<>(codec, ByteBufCodecs.fromCodecWithRegistries(codec.codec()));
     }
 }

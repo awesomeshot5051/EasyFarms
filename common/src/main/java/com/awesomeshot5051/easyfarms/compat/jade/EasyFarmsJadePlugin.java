@@ -12,11 +12,11 @@ import snownee.jade.api.WailaPlugin;
 public class EasyFarmsJadePlugin implements IWailaPlugin {
     @Override
     public void register(IWailaCommonRegistration registration) {
-        registration.registerBlockDataProvider(FarmJadeProvider.INSTANCE, FarmBlockEntity.class);
+        registration.registerBlockDataProvider(FarmJadeProvider.Server.INSTANCE, FarmBlockEntity.class);
     }
 
     @Override
     public void registerClient(IWailaClientRegistration registration) {
-        registration.registerBlockComponent(FarmJadeProvider.INSTANCE, FarmBlock.class);
+        registration.registerBlockComponent(FarmJadeProvider.Client.INSTANCE, FarmBlock.class);
     }
 }

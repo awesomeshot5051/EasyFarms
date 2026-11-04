@@ -1,0 +1,21 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:blue_ice",
+      "silk_only": true
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:blue_ice"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:blue_ice"
+  }
+}

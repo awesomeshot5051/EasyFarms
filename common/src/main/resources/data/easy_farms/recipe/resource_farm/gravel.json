@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:gravel",
+      "ingredient": "minecraft:gravel",
       "count": 1
     }
   ],

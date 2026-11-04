@@ -1,17 +1,13 @@
 {
   "inputs": [
     {
-      "item": "minecraft:rabbit",
+      "ingredient": "minecraft:rabbit",
       "count": 1
     },
     {
-      "ingredients": [
-        {
-          "item": "minecraft:rabbit_foot"
-        },
-        {
-          "item": "minecraft:rabbit_hide"
-        }
+      "ingredient": [
+        "minecraft:rabbit_foot",
+        "minecraft:rabbit_hide"
       ],
       "count": 1
     }

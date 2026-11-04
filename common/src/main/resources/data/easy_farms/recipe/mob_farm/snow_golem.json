@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:snowball",
+      "ingredient": "minecraft:snowball",
       "count": 1
     },
     {
-      "item": "minecraft:carved_pumpkin",
+      "ingredient": "minecraft:carved_pumpkin",
       "count": 1
     }
   ],

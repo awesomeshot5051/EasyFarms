@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:glass_bottle",
+      "ingredient": "minecraft:glass_bottle",
       "count": 1
     },
     {
-      "item": "minecraft:redstone",
+      "ingredient": "minecraft:redstone",
       "count": 1
     }
   ],

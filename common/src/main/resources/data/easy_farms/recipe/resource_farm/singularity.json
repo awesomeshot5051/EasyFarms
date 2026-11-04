@@ -15,11 +15,11 @@
   ],
   "inputs": [
     {
-      "item": "ae2:matter_ball",
+      "ingredient": "ae2:matter_ball",
       "count": 64
     },
     {
-      "item": "minecraft:lava_bucket",
+      "ingredient": "minecraft:lava_bucket",
       "count": 1
     }
   ],

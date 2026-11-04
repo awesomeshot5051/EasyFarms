@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:magma_cream",
+      "ingredient": "minecraft:magma_cream",
       "count": 1
     }
   ],

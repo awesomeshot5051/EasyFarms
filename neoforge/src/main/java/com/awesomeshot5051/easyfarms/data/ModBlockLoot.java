@@ -29,7 +29,7 @@ public class ModBlockLoot extends BlockLootSubProvider {
         for (Block block : getKnownBlocks()) {
             // Silk Touch: the farm item with everything inside it (copied from the block entity).
             LootPoolEntryContainer.Builder<?> keepContents = LootItem.lootTableItem(block).when(hasSilkTouch())
-                    .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
+                    .apply(CopyComponentsFunction.copyComponentsFromBlockEntity(net.minecraft.world.level.storage.loot.parameters.LootContextParams.BLOCK_ENTITY)
                             .include(ModDataComponents.FARM_CONTENTS.get()));
             // Anything else: just the farm; the block entity spills its contents separately.
             LootPoolEntryContainer.Builder<?> plain = LootItem.lootTableItem(block);

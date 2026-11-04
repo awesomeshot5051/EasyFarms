@@ -6,19 +6,25 @@ import com.awesomeshot5051.easyfarms.recipe.FarmRecipe;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import com.awesomeshot5051.easyfarms.platform.Services;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +35,7 @@ import java.util.Map;
  * "plant"  - the plant growing during the last visual_ticks of the cycle (plant farms)
  * "mob"    - the mob shown at 0.3 scale during the last visual_ticks of the cycle (mob farms)
  */
-public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
+public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRenderState> {
     private final BlockEntityRendererProvider.Context context;
     private final Map<EntityType<?>, Entity> entityCache = new HashMap<>();
 
@@ -38,79 +44,126 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
     }
 
     @Override
-    public void render(FarmBlockEntity farm, float partialTick, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+    public FarmRenderState createRenderState() {
+        return new FarmRenderState();
+    }
+
+    @Override
+    public void extractRenderState(FarmBlockEntity farm, FarmRenderState state, float partialTick, Vec3 cameraPos,
+                                   ModelFeatureRenderer.@Nullable CrumblingOverlay crumbling) {
+        BlockEntityRenderer.super.extractRenderState(farm, state, partialTick, cameraPos, crumbling);
+        state.type = null;
+        state.block = null;
+        state.mob = null;
+        state.tool.clear();
         FarmRecipe.Visual visual = farm.getVisual();
-        if (visual == null) return; // no matching recipe: just the empty glass case
+        if (visual == null || !(farm.getLevel() instanceof ClientLevel level)) return; // no matching recipe: just the empty glass case
         BlockState farmState = farm.getBlockState();
-        Direction facing = farmState.hasProperty(FarmBlock.FACING) ? farmState.getValue(FarmBlock.FACING) : Direction.NORTH;
-        long timer = farm.getTimer();
+        state.facing = farmState.hasProperty(FarmBlock.FACING) ? farmState.getValue(FarmBlock.FACING) : Direction.NORTH;
+        state.timer = farm.getTimer();
+        boolean visible = state.timer >= farm.visualStart();
         switch (visual.type()) {
-            case "block" -> renderMined(farm, visual, facing, timer, pose, buffer, light, overlay);
+            case "block" -> {
+                state.type = "block";
+                state.block = movingBlock(level, farm, BuiltInRegistries.BLOCK.getValue(visual.target()).defaultBlockState());
+                // The tool in the tool slot is the one that swings.
+                if (!farm.isPaused() && !farm.getTool().isEmpty()) {
+                    state.shovel = farm.getTool().is(net.minecraft.tags.ItemTags.SHOVELS);
+                    Minecraft.getInstance().getItemModelResolver().updateForTopItem(state.tool, farm.getTool(),
+                            ItemDisplayContext.GROUND, level, null, 0);
+                    ToolSwing.tickSound(level, farm.getBlockPos(), state.facing, state.timer, state.shovel);
+                }
+            }
             case "plant" -> {
-                if (timer >= farm.visualStart()) renderPlant(visual, facing, pose, buffer, light, overlay);
+                if (!visible) return;
+                BlockState plant = BuiltInRegistries.BLOCK.getValue(visual.target()).defaultBlockState();
+                // Fully grown crop for anything with an "age" property (wheat, carrots, ...).
+                for (var property : plant.getProperties()) {
+                    if (property instanceof IntegerProperty age && age.getName().equals("age")) {
+                        plant = plant.setValue(age, age.getPossibleValues().stream().max(Integer::compare).orElse(0));
+                    }
+                }
+                state.type = "plant";
+                state.block = movingBlock(level, farm, plant);
             }
             case "mob" -> {
-                if (timer >= farm.visualStart()) renderMob(farm, visual, pose, buffer, light);
+                if (!visible) return;
+                EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(visual.target());
+                Entity entity = entityCache.computeIfAbsent(type, t -> t.create(level, EntitySpawnReason.LOAD));
+                if (entity == null) return;
+                if (entity instanceof net.minecraft.world.entity.animal.sheep.Sheep sheep) sheep.setColor(farm.getColor());
+                EntityRenderState mob = context.entityRenderer().extractEntity(entity, partialTick);
+                mob.lightCoords = state.lightCoords;
+                mob.shadowRadius = 0;
+                mob.shadowPieces.clear();
+                mob.nameTag = null;
+                mob.displayFireAnimation = false;
+                state.type = "mob";
+                state.mob = mob;
             }
             default -> {
             }
         }
     }
 
-    private void renderMined(FarmBlockEntity farm, FarmRecipe.Visual visual, Direction facing, long timer,
-                             PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
-        Block target = BuiltInRegistries.BLOCK.get(visual.target());
-        pose.pushPose();
-        pose.scale(0.5f, 0.5f, 0.5f);
-        pose.translate(0.5, 0, 0.5);
-        Services.client().renderSingleBlock(context.getBlockRenderDispatcher(), target.defaultBlockState(), pose, buffer, light, overlay, RenderType.solid());
-        pose.popPose();
-
-        // The tool in the tool slot is the one that swings.
-        if (!farm.isPaused() && !farm.getTool().isEmpty()) {
-            ToolSwing.render(farm.getLevel(), farm.getBlockPos(), pose, buffer, light, overlay, farm.getTool(), facing, timer);
-        }
+    private static MovingBlockRenderState movingBlock(ClientLevel level, FarmBlockEntity farm, BlockState blockState) {
+        MovingBlockRenderState block = new MovingBlockRenderState();
+        block.randomSeedPos = farm.getBlockPos();
+        block.blockPos = farm.getBlockPos();
+        block.blockState = blockState;
+        block.biome = level.getBiome(farm.getBlockPos());
+        block.cardinalLighting = level.cardinalLighting();
+        block.lightEngine = level.getLightEngine();
+        return block;
     }
 
-    private void renderPlant(FarmRecipe.Visual visual, Direction facing, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
-        Block plant = BuiltInRegistries.BLOCK.get(visual.target());
-        BlockState state = plant.defaultBlockState();
-        // Fully grown crop for anything with an "age" property (wheat, carrots, ...).
-        for (var property : state.getProperties()) {
-            if (property instanceof IntegerProperty age && age.getName().equals("age")) {
-                state = state.setValue(age, age.getPossibleValues().stream().max(Integer::compare).orElse(0));
+    @Override
+    public void submit(FarmRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
+        if (state.type == null) return;
+        switch (state.type) {
+            case "block" -> {
+                if (state.block != null) {
+                    pose.pushPose();
+                    pose.scale(0.5f, 0.5f, 0.5f);
+                    pose.translate(0.5, 0, 0.5);
+                    collector.submitMovingBlock(pose, state.block);
+                    pose.popPose();
+                }
+                if (!state.tool.isEmpty()) {
+                    pose.pushPose();
+                    ToolSwing.transform(pose, state.facing, state.timer, state.shovel);
+                    state.tool.submit(pose, collector, state.lightCoords, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0);
+                    pose.popPose();
+                }
             }
-        }
-        pose.pushPose();
-        // Same placement as the old SaplingRendererUtil.
-        switch (facing) {
-            case NORTH -> pose.translate(1D, 0D, 1D);
-            case WEST -> pose.translate(1D, 0D, 0D);
-            case EAST -> pose.translate(0D, 0D, 1.1D);
+            case "plant" -> {
+                if (state.block == null) return;
+                pose.pushPose();
+                // Same placement as the old SaplingRendererUtil.
+                switch (state.facing) {
+                    case NORTH -> pose.translate(1D, 0D, 1D);
+                    case WEST -> pose.translate(1D, 0D, 0D);
+                    case EAST -> pose.translate(0D, 0D, 1.1D);
+                    default -> {
+                    }
+                }
+                pose.mulPose(Axis.YP.rotationDegrees(-state.facing.toYRot()));
+                pose.scale(0.7F, 0.7F, 0.7F);
+                collector.submitMovingBlock(pose, state.block);
+                pose.popPose();
+            }
+            case "mob" -> {
+                if (state.mob == null) return;
+                pose.pushPose();
+                pose.translate(0.5D, 1D / 16D, 0.5D);
+                pose.mulPose(Axis.YP.rotationDegrees(-Direction.SOUTH.toYRot()));
+                pose.translate(0D, 0D, 3D / 16D);
+                pose.scale(0.3F, 0.3F, 0.3F);
+                context.entityRenderer().submit(state.mob, camera, 0, 0, 0, pose, collector);
+                pose.popPose();
+            }
             default -> {
             }
         }
-        pose.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
-        pose.scale(0.7F, 0.7F, 0.7F);
-        Services.client().renderSingleBlock(context.getBlockRenderDispatcher(), state, pose, buffer, light, overlay, null);
-        pose.popPose();
-    }
-
-    private void renderMob(FarmBlockEntity farm, FarmRecipe.Visual visual, PoseStack pose, MultiBufferSource buffer, int light) {
-        if (Minecraft.getInstance().level == null) return;
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(visual.target());
-        Entity entity = entityCache.computeIfAbsent(type, t -> t.create(Minecraft.getInstance().level));
-        if (entity == null) return;
-        if (entity instanceof net.minecraft.world.entity.animal.Sheep sheep) sheep.setColor(farm.getColor());
-        EntityRenderDispatcher dispatcher = context.getEntityRenderer();
-        pose.pushPose();
-        pose.translate(0.5D, 1D / 16D, 0.5D);
-        pose.mulPose(Axis.YP.rotationDegrees(-Direction.SOUTH.toYRot()));
-        pose.translate(0D, 0D, 3D / 16D);
-        pose.scale(0.3F, 0.3F, 0.3F);
-        dispatcher.setRenderShadow(false);
-        dispatcher.render(entity, 0, 0, 0, 0F, 0F, pose, buffer, light);
-        dispatcher.setRenderShadow(true);
-        pose.popPose();
     }
 }

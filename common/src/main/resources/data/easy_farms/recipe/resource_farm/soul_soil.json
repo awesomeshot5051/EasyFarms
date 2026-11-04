@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:soul_soil",
+      "ingredient": "minecraft:soul_soil",
       "count": 1
     }
   ],

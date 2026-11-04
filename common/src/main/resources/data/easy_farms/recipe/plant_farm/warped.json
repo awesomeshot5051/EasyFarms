@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:warped_nylium",
+      "ingredient": "minecraft:warped_nylium",
       "count": 1
     },
     {
-      "item": "minecraft:warped_fungus",
+      "ingredient": "minecraft:warped_fungus",
       "count": 1
     }
   ],

@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "item": "minecraft:diamond_ore",
+      "ingredient": "minecraft:diamond_ore",
       "count": 1
     }
   ],

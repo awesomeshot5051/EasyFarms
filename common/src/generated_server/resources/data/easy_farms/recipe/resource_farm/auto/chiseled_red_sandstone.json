@@ -1,0 +1,22 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:chiseled_red_sandstone",
+      "max": 3
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:chiseled_red_sandstone"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:chiseled_red_sandstone"
+  }
+}

@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:emerald",
+      "ingredient": "minecraft:emerald",
       "count": 1
     },
     {
-      "item": "minecraft:ominous_bottle",
+      "ingredient": "minecraft:ominous_bottle",
       "count": 1
     }
   ],

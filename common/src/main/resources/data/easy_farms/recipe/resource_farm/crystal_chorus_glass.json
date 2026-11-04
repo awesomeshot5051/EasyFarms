@@ -20,7 +20,7 @@
   ],
   "inputs": [
     {
-      "item": "integratedterminals:chorus_glass",
+      "ingredient": "integratedterminals:chorus_glass",
       "count": 1
     }
   ],

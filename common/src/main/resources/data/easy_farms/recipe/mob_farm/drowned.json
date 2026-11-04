@@ -1,17 +1,13 @@
 {
   "inputs": [
     {
-      "item": "minecraft:rotten_flesh",
+      "ingredient": "minecraft:rotten_flesh",
       "count": 1
     },
     {
-      "ingredients": [
-        {
-          "item": "minecraft:nautilus_shell"
-        },
-        {
-          "item": "minecraft:trident"
-        }
+      "ingredient": [
+        "minecraft:nautilus_shell",
+        "minecraft:trident"
       ],
       "count": 1
     }

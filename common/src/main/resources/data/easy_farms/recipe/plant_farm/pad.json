@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:dirt",
+      "ingredient": "minecraft:dirt",
       "count": 1
     },
     {
-      "item": "minecraft:lily_pad",
+      "ingredient": "minecraft:lily_pad",
       "count": 1
     }
   ],

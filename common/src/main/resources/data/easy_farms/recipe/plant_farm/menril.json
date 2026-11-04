@@ -15,11 +15,11 @@
   ],
   "inputs": [
     {
-      "item": "minecraft:grass_block",
+      "ingredient": "minecraft:grass_block",
       "count": 1
     },
     {
-      "item": "integrateddynamics:menril_sapling",
+      "ingredient": "integrateddynamics:menril_sapling",
       "count": 1
     }
   ],

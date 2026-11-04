@@ -1,11 +1,11 @@
 {
   "inputs": [
     {
-      "item": "minecraft:soul_sand",
+      "ingredient": "minecraft:soul_sand",
       "count": 1
     },
     {
-      "item": "minecraft:nether_wart",
+      "ingredient": "minecraft:nether_wart",
       "count": 1
     }
   ],

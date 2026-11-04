@@ -15,7 +15,7 @@
   ],
   "inputs": [
     {
-      "item": "integrateddynamics:crystalized_menril_block",
+      "ingredient": "integrateddynamics:crystalized_menril_block",
       "count": 1
     }
   ],

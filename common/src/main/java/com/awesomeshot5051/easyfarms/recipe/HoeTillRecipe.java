@@ -1,11 +1,9 @@
 package com.awesomeshot5051.easyfarms.recipe;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -13,10 +11,6 @@ import net.minecraft.world.level.Level;
 
 /** A hoe and a grass block make farmland, the soil crop farms need. The hoe survives but loses 1 durability. */
 public class HoeTillRecipe extends CustomRecipe {
-    public HoeTillRecipe(CraftingBookCategory category) {
-        super(category);
-    }
-
     @Override
     public boolean matches(CraftingInput input, Level level) {
         int hoes = 0, grass = 0, other = 0;
@@ -30,7 +24,7 @@ public class HoeTillRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         return new ItemStack(Items.FARMLAND);
     }
 
@@ -46,11 +40,6 @@ public class HoeTillRecipe extends CustomRecipe {
             }
         }
         return remaining;
-    }
-
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= 2;
     }
 
     @Override
