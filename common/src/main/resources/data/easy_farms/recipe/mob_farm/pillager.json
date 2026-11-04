@@ -1,0 +1,32 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:emerald",
+      "count": 1
+    },
+    {
+      "item": "minecraft:ominous_bottle",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:pillager"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:emerald",
+      "min": 0,
+      "max": 0,
+      "looting_max": 5
+    },
+    {
+      "item": "minecraft:crossbow",
+      "chance": 0.12
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

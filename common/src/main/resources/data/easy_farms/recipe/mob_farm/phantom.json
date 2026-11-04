@@ -1,0 +1,24 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:phantom_membrane",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:phantom"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:phantom_membrane",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

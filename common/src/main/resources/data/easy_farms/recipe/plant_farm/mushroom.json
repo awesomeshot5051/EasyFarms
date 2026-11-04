@@ -1,0 +1,35 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:brown_mushroom",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:brown_mushroom"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:brown_mushroom",
+      "max": 4
+    },
+    {
+      "item": "minecraft:mushroom_stem",
+      "max": 4,
+      "chance": 0.05
+    },
+    {
+      "item": "minecraft:mushroom_stem",
+      "max": 4,
+      "chance": 0.005
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

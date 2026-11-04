@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:deepslate_redstone_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 2,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:deepslate_redstone_ore"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:redstone",
+      "min": 3,
+      "max": 5,
+      "fortune_min": 5,
+      "fortune_max": 9,
+      "silk_item": "minecraft:deepslate_redstone_ore"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

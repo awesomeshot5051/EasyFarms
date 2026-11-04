@@ -1,0 +1,49 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:prismarine_crystals",
+      "count": 1
+    },
+    {
+      "item": "minecraft:prismarine_shard",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:elder_guardian"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:prismarine_shard",
+      "min": 0,
+      "max": 2
+    },
+    {
+      "item": "minecraft:wet_sponge"
+    },
+    {
+      "item": "minecraft:tide_armor_trim_smithing_template",
+      "chance": 0.8
+    },
+    {
+      "item": "minecraft:cod",
+      "max": 3,
+      "chance": 0.5,
+      "looting_min": 4,
+      "looting_max": 8,
+      "fire_item": "minecraft:cooked_cod"
+    },
+    {
+      "item": "minecraft:prismarine_crystals",
+      "max": 3,
+      "chance": 0.6667,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

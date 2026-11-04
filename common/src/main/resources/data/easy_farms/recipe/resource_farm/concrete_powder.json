@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "tag": "c:concrete_powders",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:white_concrete_powder"
+  },
+  "base_ticks": 600,
+  "dyeable": true,
+  "drops": [
+    {
+      "item": "minecraft:white_concrete_powder",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

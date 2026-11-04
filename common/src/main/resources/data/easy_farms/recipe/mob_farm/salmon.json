@@ -1,0 +1,33 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:salmon",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bone_meal",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:salmon"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:bone_meal",
+      "chance": 0.95
+    },
+    {
+      "item": "minecraft:salmon",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8,
+      "fire_item": "minecraft:cooked_salmon"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

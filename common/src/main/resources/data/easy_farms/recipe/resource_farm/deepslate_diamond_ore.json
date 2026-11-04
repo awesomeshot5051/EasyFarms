@@ -1,0 +1,34 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:deepslate_diamond_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 2,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:deepslate_diamond_ore"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:diamond",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:deepslate_diamond_ore"
+    }
+  ],
+  "type": "easy_farms:resource_farm",
+  "inscriber": {
+    "press": "ae2:engineering_processor_press",
+    "drops": [
+      {
+        "item": "ae2:engineering_processor_print",
+        "max": 3,
+        "fortune_max": 5
+      }
+    ]
+  }
+}

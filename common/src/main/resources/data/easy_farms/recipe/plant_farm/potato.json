@@ -1,0 +1,34 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:farmland",
+      "count": 1
+    },
+    {
+      "item": "minecraft:potato",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:hoes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:potatoes"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:poisonous_potato",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:baked_potato",
+      "chance": 0.005
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

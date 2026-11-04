@@ -1,0 +1,7 @@
+{
+  "parent": "easy_farms:block/farm",
+  "textures": {
+    "back": "minecraft:block/soul_sand",
+    "front": "minecraft:block/soul_sand"
+  }
+}

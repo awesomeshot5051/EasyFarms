@@ -1,0 +1,41 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "integrateddynamics"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "integratedterminals"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "integrateddynamics",
+        "integratedterminals"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "item": "integratedterminals:chorus_glass",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "integratedterminals:chorus_glass"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "integratedterminals:chorus_glass",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

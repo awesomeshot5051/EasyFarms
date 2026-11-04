@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:rose_bush",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:rose_bush"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:rose_bush",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

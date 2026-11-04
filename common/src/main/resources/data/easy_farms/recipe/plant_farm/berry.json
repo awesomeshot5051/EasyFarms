@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:sweet_berries",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:hoes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:sweet_berry_bush"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:sweet_berries",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

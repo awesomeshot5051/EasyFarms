@@ -1,0 +1,27 @@
+{
+  "tool": [
+    {
+      "item": "minecraft:golden_pickaxe"
+    },
+    {
+      "item": "minecraft:golden_shovel"
+    },
+    {
+      "item": "minecraft:golden_axe"
+    },
+    {
+      "item": "minecraft:golden_hoe"
+    },
+    {
+      "item": "minecraft:golden_sword"
+    }
+  ],
+  "rank": 3,
+  "speed_divisor": 20,
+  "break_multiplier": 2,
+  "input_lifetime_multiplier": 8,
+  "weapon_break_multiplier": 0.32,
+  "mining_tier": "minecraft:incorrect_for_gold_tool",
+  "mining_speed": 12.0,
+  "tool_durability": 32
+}

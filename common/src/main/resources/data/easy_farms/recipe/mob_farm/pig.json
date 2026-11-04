@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:porkchop",
+      "count": 1
+    },
+    {
+      "item": "minecraft:cooked_porkchop",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:pig"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:porkchop",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8,
+      "fire_item": "minecraft:cooked_porkchop"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

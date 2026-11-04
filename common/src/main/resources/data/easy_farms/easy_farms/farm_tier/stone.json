@@ -1,0 +1,27 @@
+{
+  "tool": [
+    {
+      "item": "minecraft:stone_pickaxe"
+    },
+    {
+      "item": "minecraft:stone_shovel"
+    },
+    {
+      "item": "minecraft:stone_axe"
+    },
+    {
+      "item": "minecraft:stone_hoe"
+    },
+    {
+      "item": "minecraft:stone_sword"
+    }
+  ],
+  "rank": 1,
+  "speed_divisor": 10,
+  "break_multiplier": 2,
+  "input_lifetime_multiplier": 2,
+  "weapon_break_multiplier": 6.4,
+  "mining_tier": "minecraft:incorrect_for_stone_tool",
+  "mining_speed": 4.0,
+  "tool_durability": 131
+}

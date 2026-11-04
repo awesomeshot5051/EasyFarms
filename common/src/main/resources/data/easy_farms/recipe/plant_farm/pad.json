@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:dirt",
+      "count": 1
+    },
+    {
+      "item": "minecraft:lily_pad",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:lily_pad"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:lily_pad",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

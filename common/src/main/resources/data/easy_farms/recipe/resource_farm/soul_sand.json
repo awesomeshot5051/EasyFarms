@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:soul_sand",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:soul_sand"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:soul_sand",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

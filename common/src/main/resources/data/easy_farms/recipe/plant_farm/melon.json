@@ -1,0 +1,37 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:melon",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:hoes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:melon"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:melon_slice",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:melon"
+    },
+    {
+      "item": "minecraft:melon_seeds"
+    },
+    {
+      "item": "minecraft:glistering_melon_slice",
+      "chance": 0.003
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

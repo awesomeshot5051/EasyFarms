@@ -1,0 +1,22 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:mossy_cobblestone",
+      "max": 3
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "item": "minecraft:mossy_cobblestone"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:mossy_cobblestone"
+  }
+}

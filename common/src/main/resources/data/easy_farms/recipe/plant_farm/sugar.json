@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:sand",
+      "count": 1
+    },
+    {
+      "item": "minecraft:sugar_cane",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:sugar_cane"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:sugar_cane",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

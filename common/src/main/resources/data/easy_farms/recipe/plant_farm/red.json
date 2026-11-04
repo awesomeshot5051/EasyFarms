@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:red_tulip",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:red_tulip"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:red_tulip",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

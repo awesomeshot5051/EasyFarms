@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:deepslate_coal_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:deepslate_coal_ore"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:coal",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:deepslate_coal_ore"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

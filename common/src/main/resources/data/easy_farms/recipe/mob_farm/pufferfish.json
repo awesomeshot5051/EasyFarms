@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:pufferfish",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:pufferfish"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:bone_meal",
+      "chance": 0.95
+    },
+    {
+      "item": "minecraft:bone",
+      "max": 3,
+      "chance": 0.75,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

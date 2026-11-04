@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:jungle_log",
+      "count": 1
+    },
+    {
+      "item": "minecraft:cocoa_beans",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:cocoa"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:cocoa_beans",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

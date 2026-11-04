@@ -1,0 +1,38 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+}
+
+base {
+    // EasyFarms-<loader>-<minecraft>-<version>.jar, e.g. EasyFarms-neoforge-1.21.1-1.2.0.jar
+    archivesName = "${mod_name.replace(' ', '')}-${project.name}-${minecraft_version}"
+}
+
+version = mod_version
+group = mod_group_id
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = Integer.parseInt(java_version)
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+    maven { name = 'Jared (JEI)'; url = 'https://maven.blamejared.com/' }
+    maven { name = 'TerraformersMC (EMI, Mod Menu)'; url = 'https://maven.terraformersmc.com/' }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://www.cursemaven.com'
+        content { includeGroup 'curse.maven' }
+    }
+}

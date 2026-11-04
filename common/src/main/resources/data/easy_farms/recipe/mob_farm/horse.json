@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:leather",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:horse"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:leather",
+      "min": 0,
+      "max": 2,
+      "looting_min": 3,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

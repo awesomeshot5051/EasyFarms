@@ -1,0 +1,28 @@
+// Root project: one entry point for building everything.
+//
+//   ./gradlew buildAll   builds the NeoForge and Fabric jars and copies them to dist/
+//   ./gradlew build      same builds, without the copy (also runs checks)
+//   ./gradlew cleanAll   removes build output and dist/
+
+// Task paths, resolved lazily because the root script is evaluated before the subprojects.
+def releaseTasks = [':neoforge:jar', ':fabric:remapJar']
+
+tasks.register('buildAll') {
+    group = 'build'
+    description = 'Builds the NeoForge and Fabric jars and copies them to dist/.'
+    dependsOn releaseTasks
+    doLast {
+        copy {
+            from releaseTasks.collect { tasks.getByPath(it).archiveFile }
+            into layout.projectDirectory.dir('dist')
+        }
+        logger.lifecycle("Jars copied to ${file('dist')}")
+    }
+}
+
+tasks.register('cleanAll') {
+    group = 'build'
+    description = 'Cleans every module and deletes dist/.'
+    dependsOn subprojects.collect { it.tasks.named('clean') }
+    doLast { delete layout.projectDirectory.dir('dist') }
+}

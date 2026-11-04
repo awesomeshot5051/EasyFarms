@@ -1,0 +1,27 @@
+{
+  "tool": [
+    {
+      "item": "minecraft:netherite_pickaxe"
+    },
+    {
+      "item": "minecraft:netherite_shovel"
+    },
+    {
+      "item": "minecraft:netherite_axe"
+    },
+    {
+      "item": "minecraft:netherite_hoe"
+    },
+    {
+      "item": "minecraft:netherite_sword"
+    }
+  ],
+  "rank": 5,
+  "speed_divisor": 30,
+  "break_multiplier": 8,
+  "input_lifetime_multiplier": 32,
+  "weapon_break_multiplier": 3.2,
+  "mining_tier": "minecraft:incorrect_for_netherite_tool",
+  "mining_speed": 9.0,
+  "tool_durability": 2031
+}

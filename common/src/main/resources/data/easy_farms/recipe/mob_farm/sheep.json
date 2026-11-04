@@ -1,0 +1,36 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:mutton",
+      "count": 1
+    },
+    {
+      "tag": "minecraft:wool",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:sheep"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "dyeable": true,
+  "drops": [
+    {
+      "item": "minecraft:white_wool",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:mutton",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8,
+      "fire_item": "minecraft:cooked_mutton"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

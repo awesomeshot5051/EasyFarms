@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:deepslate_iron_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 1,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:deepslate_iron_ore"
+  },
+  "base_ticks": 600,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:raw_iron",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:deepslate_iron_ore",
+      "smelt_item": "minecraft:iron_ingot"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

@@ -1,0 +1,24 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:deepslate_lapis_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 1,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:deepslate_lapis_ore"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:lapis_lazuli",
+      "max": 3,
+      "fortune_max": 9,
+      "silk_item": "minecraft:deepslate_lapis_ore"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

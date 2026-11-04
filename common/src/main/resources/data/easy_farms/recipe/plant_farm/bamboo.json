@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:bamboo",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:axes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:bamboo"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:bamboo",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

@@ -1,0 +1,30 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:farmland",
+      "count": 1
+    },
+    {
+      "item": "minecraft:wheat_seeds",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:hoes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:wheat"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:wheat_seeds",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:wheat"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

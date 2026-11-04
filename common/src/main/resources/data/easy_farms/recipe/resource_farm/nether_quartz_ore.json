@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:nether_quartz_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:nether_quartz_ore"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:quartz",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:nether_quartz_ore"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

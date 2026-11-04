@@ -1,0 +1,45 @@
+plugins {
+    id 'multiloader-base'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+neoForge {
+    // Vanilla only: no loader API is visible to common code.
+    neoFormVersion = project.neoform_version
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+    exclude '**/.cache'
+    exclude '**/*.bbmodel'
+}
+
+dependencies {
+    // Recipe viewer / tooltip APIs: loader-independent classes only.
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "dev.emi:emi-xplat-mojmap:${emi_version}"
+    compileOnly "curse.maven:jade-324717:${jade_neoforge_id}"
+}
+
+// Expose the sources and resources so the loader projects can compile them into their own jars.
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    sourceSets.main.resources.srcDirs.each { dir ->
+        commonResources(dir)
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:mud",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:mud"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:mud",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

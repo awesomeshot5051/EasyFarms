@@ -1,0 +1,30 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:ancient_debris",
+      "count": 1
+    },
+    {
+      "item": "minecraft:netherite_ingot",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 4,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:ancient_debris"
+  },
+  "base_ticks": 600,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:ancient_debris",
+      "min": 0,
+      "fortune_min": 1,
+      "fortune_max": 5,
+      "smelt_item": "minecraft:netherite_scrap"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

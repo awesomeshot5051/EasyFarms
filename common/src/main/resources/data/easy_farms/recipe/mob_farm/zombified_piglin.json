@@ -1,0 +1,44 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 1
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:zombified_piglin"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:rotten_flesh",
+      "min": 0,
+      "max": 2,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "min": 0,
+      "max": 2,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "min": 0,
+      "max": 2,
+      "chance": 0.975,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

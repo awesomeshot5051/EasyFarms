@@ -1,0 +1,14 @@
+{
+  "item": "easy_farms:redstone_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob"
+  ],
+  "requires": "any",
+  "effects": [
+    {
+      "type": "easy_farms:redstone_control"
+    }
+  ]
+}

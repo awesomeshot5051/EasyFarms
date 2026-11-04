@@ -1,0 +1,15 @@
+{
+  "item": "easy_farms:speed_upgrade",
+  "kinds": [
+    "plant",
+    "mob"
+  ],
+  "requires": "toolless",
+  "effects": [
+    {
+      "type": "easy_farms:cycle_time",
+      "divisor": 8.0,
+      "toolless_only": true
+    }
+  ]
+}

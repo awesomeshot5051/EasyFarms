@@ -1,0 +1,27 @@
+{
+  "tool": [
+    {
+      "item": "minecraft:iron_pickaxe"
+    },
+    {
+      "item": "minecraft:iron_shovel"
+    },
+    {
+      "item": "minecraft:iron_axe"
+    },
+    {
+      "item": "minecraft:iron_hoe"
+    },
+    {
+      "item": "minecraft:iron_sword"
+    }
+  ],
+  "rank": 2,
+  "speed_divisor": 15,
+  "break_multiplier": 2,
+  "input_lifetime_multiplier": 4,
+  "weapon_break_multiplier": 4.8,
+  "mining_tier": "minecraft:incorrect_for_iron_tool",
+  "mining_speed": 6.0,
+  "tool_durability": 250
+}

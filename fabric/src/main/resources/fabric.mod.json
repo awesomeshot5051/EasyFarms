@@ -1,0 +1,55 @@
+{
+	"schemaVersion": 1,
+	"id": "easy_farms",
+	"version": "${version}",
+	"name": "Easy Farms",
+	"description": "Resource, plant and mob farms in a glass case: put the inputs and a tool in, and collect the drops. Tools set the speed, upgrade cards add extras, and every recipe, tool tier and upgrade is data.",
+	"authors": [
+		"awesomeshot5051"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/"
+	},
+	"license": "MIT",
+	"icon": "assets/easy_farms/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.awesomeshot5051.easyfarms.EasyFarmsFabric"
+		],
+		"client": [
+			"com.awesomeshot5051.easyfarms.EasyFarmsFabricClient"
+		],
+		"jei_mod_plugin": [
+			"com.awesomeshot5051.easyfarms.compat.jei.EasyFarmsJeiPlugin"
+		],
+		"emi": [
+			"com.awesomeshot5051.easyfarms.compat.emi.EasyFarmsEmiPlugin"
+		],
+		"jade": [
+			"com.awesomeshot5051.easyfarms.compat.jade.EasyFarmsJadePlugin"
+		]
+	},
+	"custom": {
+		"configured": {
+			"providers": [
+				"com.awesomeshot5051.easyfarms.compat.configured.EasyFarmsConfiguredProvider"
+			]
+		}
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"configured": "*",
+		"modmenu": "*",
+		"jei": "*",
+		"emi": "*",
+		"jade": "*",
+		"refinedstorage": "*"
+	}
+}

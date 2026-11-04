@@ -1,0 +1,42 @@
+{
+  "inputs": [
+    {
+      "ingredients": [
+        {
+          "item": "minecraft:soul_sand"
+        },
+        {
+          "item": "minecraft:soul_soil"
+        }
+      ],
+      "count": 4
+    },
+    {
+      "item": "minecraft:nether_star",
+      "count": 2
+    },
+    {
+      "item": "minecraft:wither_skeleton_skull",
+      "count": 3
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:wither"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "secret": true,
+  "drops": [
+    {
+      "item": "minecraft:nether_star",
+      "min": 0,
+      "chance": 0.05
+    },
+    {
+      "item": "minecraft:wither_skeleton_skull"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

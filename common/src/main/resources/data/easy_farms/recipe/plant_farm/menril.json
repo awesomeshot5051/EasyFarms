@@ -1,0 +1,62 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "integrateddynamics"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "integrateddynamics"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "integrateddynamics:menril_sapling",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:axes",
+  "visual": {
+    "type": "plant",
+    "target": "integrateddynamics:menril_sapling"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "integrateddynamics:menril_sapling",
+      "min": 1,
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "integrateddynamics:menril_berries",
+      "min": 1,
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "integrateddynamics:menril_log"
+    },
+    {
+      "item": "integrateddynamics:menril_log_filled",
+      "chance": 0.005
+    },
+    {
+      "item": "integrateddynamics:crystalized_menril_chunk",
+      "chance": 0.005
+    },
+    {
+      "item": "integrateddynamics:menril_leaves"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

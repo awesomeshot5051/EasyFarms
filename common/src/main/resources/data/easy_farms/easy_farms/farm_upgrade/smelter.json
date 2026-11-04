@@ -1,0 +1,12 @@
+{
+  "item": "easy_farms:smelter_upgrade",
+  "kinds": [
+    "resource"
+  ],
+  "requires": "smeltable",
+  "effects": [
+    {
+      "type": "easy_farms:smelt"
+    }
+  ]
+}

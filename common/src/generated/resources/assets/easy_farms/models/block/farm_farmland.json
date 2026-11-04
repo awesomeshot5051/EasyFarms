@@ -1,0 +1,7 @@
+{
+  "parent": "easy_farms:block/farm",
+  "textures": {
+    "back": "minecraft:block/farmland",
+    "front": "easy_farms:block/waterstill"
+  }
+}

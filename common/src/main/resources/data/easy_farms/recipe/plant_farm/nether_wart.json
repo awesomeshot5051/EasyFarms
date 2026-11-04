@@ -1,0 +1,31 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:soul_sand",
+      "count": 1
+    },
+    {
+      "item": "minecraft:nether_wart",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:nether_wart"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "nether": true,
+  "environment": {
+    "block_below": [
+      "minecraft:soul_sand",
+      "minecraft:soul_soil"
+    ]
+  },
+  "drops": [
+    {
+      "item": "minecraft:nether_wart"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

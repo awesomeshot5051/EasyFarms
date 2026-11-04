@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:glowstone",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:glowstone"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:glowstone_dust",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:glowstone"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

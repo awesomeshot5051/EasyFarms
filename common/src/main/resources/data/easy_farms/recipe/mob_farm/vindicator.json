@@ -1,0 +1,45 @@
+{
+  "inputs": [
+    {
+      "ingredients": [
+        {
+          "item": "minecraft:iron_shovel"
+        },
+        {
+          "item": "minecraft:iron_axe"
+        }
+      ],
+      "count": 1
+    },
+    {
+      "ingredients": [
+        {
+          "item": "minecraft:emerald"
+        },
+        {
+          "item": "minecraft:enchanted_book"
+        }
+      ],
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:vindicator"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:emerald",
+      "min": 0,
+      "chance": 0.5,
+      "looting_max": 4
+    },
+    {
+      "item": "minecraft:iron_axe"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

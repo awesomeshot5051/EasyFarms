@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:tuff",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:tuff"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:tuff",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

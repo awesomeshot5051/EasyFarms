@@ -1,0 +1,53 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:warped_nylium",
+      "count": 1
+    },
+    {
+      "item": "minecraft:warped_fungus",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:axes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:warped_fungus"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "nether": true,
+  "environment": {
+    "block_below": [
+      "minecraft:warped_nylium"
+    ]
+  },
+  "drops": [
+    {
+      "item": "minecraft:warped_fungus",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:warped_stem"
+    },
+    {
+      "item": "minecraft:stripped_warped_stem",
+      "chance": 0.005
+    },
+    {
+      "item": "minecraft:shroomlight",
+      "max": 4,
+      "chance": 0.7
+    },
+    {
+      "item": "minecraft:twisting_vines",
+      "max": 4,
+      "chance": 0.2
+    },
+    {
+      "item": "minecraft:warped_hyphae"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

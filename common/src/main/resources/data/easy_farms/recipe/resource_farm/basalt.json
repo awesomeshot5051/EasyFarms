@@ -1,0 +1,24 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:basalt",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:basalt"
+  },
+  "base_ticks": 600,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:basalt",
+      "max": 3,
+      "fortune_max": 5,
+      "smelt_item": "minecraft:smooth_basalt"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

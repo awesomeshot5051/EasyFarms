@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:gravel",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:gravel"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:gravel",
+      "max": 3
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

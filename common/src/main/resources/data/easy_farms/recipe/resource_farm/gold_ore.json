@@ -1,0 +1,36 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:gold_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 2,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:gold_ore"
+  },
+  "base_ticks": 600,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:raw_gold",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:gold_ore",
+      "smelt_item": "minecraft:gold_ingot"
+    }
+  ],
+  "type": "easy_farms:resource_farm",
+  "inscriber": {
+    "press": "ae2:logic_processor_press",
+    "drops": [
+      {
+        "item": "ae2:logic_processor_print",
+        "max": 3,
+        "fortune_max": 5
+      }
+    ]
+  }
+}

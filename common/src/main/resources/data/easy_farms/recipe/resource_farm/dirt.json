@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:dirt",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:dirt"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:dirt",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:clay",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:clay"
+  },
+  "base_ticks": 600,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:clay_ball",
+      "max": 4,
+      "fortune_min": 4,
+      "fortune_max": 10,
+      "silk_item": "minecraft:clay",
+      "smelt_item": "minecraft:brick"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

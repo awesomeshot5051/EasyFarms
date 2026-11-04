@@ -1,0 +1,14 @@
+{
+  "item": "easy_farms:infinity_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob"
+  ],
+  "requires": "any",
+  "effects": [
+    {
+      "type": "easy_farms:infinite_inputs"
+    }
+  ]
+}

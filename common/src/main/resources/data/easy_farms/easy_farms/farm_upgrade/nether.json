@@ -1,0 +1,13 @@
+{
+  "item": "easy_farms:nether_upgrade",
+  "kinds": [
+    "plant",
+    "mob"
+  ],
+  "requires": "nether",
+  "effects": [
+    {
+      "type": "easy_farms:nether_environment"
+    }
+  ]
+}

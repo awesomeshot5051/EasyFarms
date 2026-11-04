@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "tag": "minecraft:terracotta",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:white_terracotta"
+  },
+  "base_ticks": 600,
+  "dyeable": true,
+  "drops": [
+    {
+      "item": "minecraft:white_terracotta",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

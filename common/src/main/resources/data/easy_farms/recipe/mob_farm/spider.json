@@ -1,0 +1,33 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:string",
+      "count": 1
+    },
+    {
+      "item": "minecraft:spider_eye",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:spider"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:string",
+      "min": 0,
+      "max": 2,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:spider_eye",
+      "chance": 0.6667
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

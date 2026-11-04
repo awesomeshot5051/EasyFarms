@@ -1,0 +1,7 @@
+{
+  "parent": "easy_farms:block/farm",
+  "textures": {
+    "back": "minecraft:block/stone",
+    "front": "minecraft:block/lava_still"
+  }
+}

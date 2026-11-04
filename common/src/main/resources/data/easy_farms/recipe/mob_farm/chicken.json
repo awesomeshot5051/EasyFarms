@@ -1,0 +1,36 @@
+{
+  "inputs": [
+    {
+      "ingredients": [
+        {
+          "item": "minecraft:chicken"
+        },
+        {
+          "item": "minecraft:cooked_chicken"
+        }
+      ],
+      "count": 1
+    },
+    {
+      "item": "minecraft:feather",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:chicken"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:chicken",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8,
+      "fire_item": "minecraft:cooked_chicken"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

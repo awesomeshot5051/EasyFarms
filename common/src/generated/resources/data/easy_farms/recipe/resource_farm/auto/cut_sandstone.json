@@ -1,0 +1,22 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:cut_sandstone",
+      "max": 3
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "item": "minecraft:cut_sandstone"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:cut_sandstone"
+  }
+}

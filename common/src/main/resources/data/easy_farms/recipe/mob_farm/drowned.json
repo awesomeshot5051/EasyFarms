@@ -1,0 +1,40 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:rotten_flesh",
+      "count": 1
+    },
+    {
+      "ingredients": [
+        {
+          "item": "minecraft:nautilus_shell"
+        },
+        {
+          "item": "minecraft:trident"
+        }
+      ],
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:drowned"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:nautilus_shell",
+      "min": 0,
+      "chance": 0.5,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:trident",
+      "chance": 0.1
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

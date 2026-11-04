@@ -1,0 +1,24 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:polished_blackstone_bricks",
+      "max": 3,
+      "smelt_item": "minecraft:cracked_polished_blackstone_bricks"
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "item": "minecraft:polished_blackstone_bricks"
+    }
+  ],
+  "smeltable": true,
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:polished_blackstone_bricks"
+  }
+}

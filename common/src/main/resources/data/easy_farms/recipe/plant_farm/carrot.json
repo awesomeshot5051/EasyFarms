@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:farmland",
+      "count": 1
+    },
+    {
+      "item": "minecraft:carrot",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:hoes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:carrots"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:carrot"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

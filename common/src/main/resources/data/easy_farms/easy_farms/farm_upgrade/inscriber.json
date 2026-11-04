@@ -1,0 +1,6 @@
+{
+  "item": "easy_farms:inscriber_upgrade",
+  "kinds": ["resource"],
+  "requires": "inscriber",
+  "effects": [{"type": "easy_farms:inscribe"}]
+}

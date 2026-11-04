@@ -1,0 +1,32 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:beef",
+      "count": 1
+    },
+    {
+      "item": "minecraft:leather",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:cow"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:beef",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 6,
+      "fire_item": "minecraft:cooked_beef"
+    },
+    {
+      "item": "minecraft:leather"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

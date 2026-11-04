@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:goat_horn",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:goat"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:goat_horn"
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

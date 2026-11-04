@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:piglin_head",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:piglin"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "nether": true,
+  "environment": {
+    "dimension": "minecraft:the_nether"
+  },
+  "drops": [
+    {
+      "item": "minecraft:golden_sword",
+      "max": 3,
+      "chance": 0.085,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

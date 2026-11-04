@@ -1,0 +1,45 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "advanced_ae"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "advanced_ae",
+        "ae2"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "item": "advanced_ae:shattered_singularity",
+      "count": 4
+    },
+    {
+      "item": "minecraft:copper_ingot",
+      "count": 4
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "ae2:singularity"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "advanced_ae:quantum_alloy",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

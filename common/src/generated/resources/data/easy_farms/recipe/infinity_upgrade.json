@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "DED",
+    "ENE",
+    "DED"
+  ],
+  "result": {
+    "count": 1,
+    "id": "easy_farms:infinity_upgrade"
+  }
+}

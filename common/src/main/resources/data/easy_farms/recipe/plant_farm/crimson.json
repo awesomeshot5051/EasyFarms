@@ -1,0 +1,53 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:crimson_nylium",
+      "count": 1
+    },
+    {
+      "item": "minecraft:crimson_fungus",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:axes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:crimson_fungus"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "nether": true,
+  "environment": {
+    "block_below": [
+      "minecraft:crimson_nylium"
+    ]
+  },
+  "drops": [
+    {
+      "item": "minecraft:crimson_fungus",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:shroomlight",
+      "max": 4,
+      "chance": 0.7
+    },
+    {
+      "item": "minecraft:crimson_stem"
+    },
+    {
+      "item": "minecraft:stripped_crimson_stem",
+      "chance": 0.005
+    },
+    {
+      "item": "minecraft:weeping_vines",
+      "max": 4,
+      "chance": 0.2
+    },
+    {
+      "item": "minecraft:crimson_hyphae"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

@@ -1,0 +1,37 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:acacia_sapling",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:axes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:acacia_sapling"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:acacia_sapling",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:acacia_log"
+    },
+    {
+      "item": "minecraft:stripped_acacia_log",
+      "chance": 0.005
+    },
+    {
+      "item": "minecraft:acacia_leaves"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

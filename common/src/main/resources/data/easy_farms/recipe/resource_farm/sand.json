@@ -1,0 +1,24 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:sand",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:shovels",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:sand"
+  },
+  "base_ticks": 400,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:sand",
+      "max": 3,
+      "fortune_max": 5,
+      "smelt_item": "minecraft:glass"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

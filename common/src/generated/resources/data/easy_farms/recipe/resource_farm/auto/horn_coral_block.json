@@ -1,0 +1,21 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:dead_horn_coral_block",
+      "silk_item": "minecraft:horn_coral_block"
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "item": "minecraft:horn_coral_block"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:horn_coral_block"
+  }
+}

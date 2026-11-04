@@ -1,0 +1,30 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:clay",
+      "count": 1
+    },
+    {
+      "item": "minecraft:big_dripleaf",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:big_dripleaf"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:small_dripleaf",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:big_dripleaf",
+      "chance": 0.05
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

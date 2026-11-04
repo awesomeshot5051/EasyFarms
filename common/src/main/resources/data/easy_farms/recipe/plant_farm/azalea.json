@@ -1,0 +1,38 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:grass_block",
+      "count": 1
+    },
+    {
+      "item": "minecraft:azalea",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:axes",
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:azalea"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:azalea",
+      "max": 4,
+      "chance": 0.5
+    },
+    {
+      "item": "minecraft:stripped_oak_log",
+      "chance": 0.005
+    },
+    {
+      "item": "minecraft:flowering_azalea_leaves",
+      "chance": 0.005
+    },
+    {
+      "item": "minecraft:azalea_leaves"
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

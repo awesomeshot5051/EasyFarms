@@ -1,0 +1,36 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:ghast_tear",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:ghast"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "nether": true,
+  "environment": {
+    "dimension": "minecraft:the_nether"
+  },
+  "drops": [
+    {
+      "item": "minecraft:gunpowder",
+      "min": 0,
+      "max": 2,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:ghast_tear",
+      "min": 0,
+      "max": 2,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

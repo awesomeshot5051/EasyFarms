@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:netherrack",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:netherrack"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:netherrack",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

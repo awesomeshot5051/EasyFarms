@@ -1,0 +1,31 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:totem_of_undying",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:evoker"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:totem_of_undying"
+    },
+    {
+      "item": "minecraft:emerald",
+      "min": 0,
+      "looting_min": 1,
+      "looting_max": 4
+    },
+    {
+      "item": "minecraft:ominous_bottle",
+      "chance": 0.75
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

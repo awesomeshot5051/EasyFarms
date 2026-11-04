@@ -1,0 +1,36 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:wither_skeleton_skull",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:wither_skeleton"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "nether": true,
+  "environment": {
+    "dimension": "minecraft:the_nether"
+  },
+  "drops": [
+    {
+      "item": "minecraft:wither_skeleton_skull",
+      "chance": 0.975
+    },
+    {
+      "item": "minecraft:stone_sword",
+      "chance": 0.915
+    },
+    {
+      "item": "minecraft:bone",
+      "min": 0,
+      "looting_min": 2,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

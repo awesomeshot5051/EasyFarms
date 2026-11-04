@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:nether_gold_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 2,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:nether_gold_ore"
+  },
+  "base_ticks": 600,
+  "smeltable": true,
+  "drops": [
+    {
+      "item": "minecraft:gold_nugget",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:nether_gold_ore",
+      "smelt_item": "minecraft:gold_ingot"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

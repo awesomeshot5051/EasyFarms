@@ -1,0 +1,72 @@
+plugins {
+    id 'multiloader-base'
+    id 'net.fabricmc.fabric-loom-remap' version "${fabric_loom_version}"
+}
+
+configurations {
+    commonJava { canBeResolved = true }
+    commonResources { canBeResolved = true }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    compileOnly project(':common')
+    commonJava project(path: ':common', configuration: 'commonJava')
+    commonResources project(path: ':common', configuration: 'commonResources')
+
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
+    modLocalRuntime "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    modCompileOnly "dev.emi:emi-fabric:${emi_version}"
+    if (project.findProperty('with_emi')?.toString() == 'true') modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
+
+    modCompileOnly "maven.modrinth:jade:${jade_fabric_version}"
+    modLocalRuntime "maven.modrinth:jade:${jade_fabric_version}"
+
+    modCompileOnly "curse.maven:configured-457570:${configured_id}"
+    modLocalRuntime "curse.maven:configured-457570:${configured_id}"
+    modLocalRuntime "com.terraformersmc:modmenu:${modmenu_version}"
+
+    if (project.findProperty('with_content_mods')?.toString() == 'true') {
+        modLocalRuntime "maven.modrinth:refined-storage:${refined_storage_version}"
+        modLocalRuntime "maven.modrinth:cloth-config:${cloth_config_version}"
+        modLocalRuntime "teamreborn:energy:${team_reborn_energy_version}"
+    }
+}
+
+loom {
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+    runs {
+        configureEach { runDir = 'run' }
+    }
+}
+
+tasks.named('compileJava', JavaCompile) {
+    dependsOn configurations.commonJava
+    source configurations.commonJava
+}
+tasks.named('processResources', ProcessResources) {
+    dependsOn configurations.commonResources
+    from configurations.commonResources
+    exclude '**/.cache'
+    exclude '**/*.bbmodel'
+
+    inputs.property 'version', mod_version
+    filesMatching('fabric.mod.json') { expand 'version': mod_version }
+}
+tasks.named('sourcesJar', Jar) {
+    dependsOn configurations.commonJava
+    from configurations.commonJava
+}
+
+tasks.named('jar', Jar) {
+    from('../LICENSE.txt') { rename { "${it}_${mod_id}" } }
+}

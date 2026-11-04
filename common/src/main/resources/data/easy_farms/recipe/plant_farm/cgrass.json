@@ -1,0 +1,25 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:sand",
+      "count": 1
+    },
+    {
+      "item": "minecraft:seagrass",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "plant",
+    "target": "minecraft:seagrass"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 80,
+  "drops": [
+    {
+      "item": "minecraft:seagrass",
+      "max": 4
+    }
+  ],
+  "type": "easy_farms:plant_farm"
+}

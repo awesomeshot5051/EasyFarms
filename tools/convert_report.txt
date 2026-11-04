@@ -1,0 +1,68 @@
+[resource/deepslate_gold_ore] inscriber/AE press output not converted (needs the inscriber upgrade work)
+[resource/gold_ore] inscriber/AE press output not converted (needs the inscriber upgrade work)
+[resource/deepslate_diamond_ore] inscriber/AE press output not converted (needs the inscriber upgrade work)
+[resource/diamond_ore] duplicate drop of minecraft:diamond merged (old code gave it twice); inscriber/AE press output not converted (needs the inscriber upgrade work)
+[resource/concrete] dyeable: one recipe for every colour (use dye on the farm)
+[resource/concrete_powder] dyeable: one recipe for every colour (use dye on the farm)
+[resource/terracotta] dyeable: one recipe for every colour (use dye on the farm)
+[resource/fluix_crystal] hand-written from the old farm; old farm also needed a water bucket and quartz (4 inputs)
+[resource/fluix_dust] hand-written from the old farm
+[resource/certus_quartz_crystal] hand-written from the old farm
+[resource/charged_certus_quartz_crystal] hand-written from the old farm
+[resource/flawed_budding_quartz] hand-written from the old farm
+[resource/flawless_budding_quartz] hand-written from the old farm
+[resource/quartz_glass] hand-written from the old farm
+[resource/sky_stone] hand-written from the old farm
+[resource/mysterious_cube] hand-written from the old farm; silk touch cube drop not represented
+[resource/silicon] hand-written from the old farm
+[resource/singularity] hand-written from the old farm
+[resource/entro_block] hand-written from the old farm
+[resource/entro_crystal] hand-written from the old farm; requirements of the old farm were not readable; the crystal itself is the input
+[resource/entro_dust] hand-written from the old farm
+[resource/silicon_block] hand-written from the old farm
+[resource/quantum_alloy] hand-written from the old farm; old farm also needed 4 singularities and a quantum infusion bucket (4 inputs)
+[resource/quantum_infused_dust] hand-written from the old farm; input chosen to match the drop; old farm needed only the inscriber upgrade
+[resource/shattered_singularity] hand-written from the old farm; old farm also needed 2 sky dust and a lava bucket (4 inputs)
+[resource/crystal_chorus] hand-written from the old farm
+[resource/crystal_chorus_brick] hand-written from the old farm
+[resource/crystal_menril] hand-written from the old farm
+[resource/menril_brick] hand-written from the old farm
+[resource/crystal_chorus_glass] hand-written from the old farm
+[resource/menril_glass] hand-written from the old farm
+[plant/menril] no drops parsed
+
+        if (!(level instanceof ServerLevel serverWorld)) {
+            return Collections.emptyList();
+        }
+        double dropChance = 0.5;
+        List<ItemStack> drops = new ArrayList<>();
+        if (serverWorld.random.nextDouble() < dropChance) {
+            int dropCount = serverWorld.random.nextIntBetweenInclusive(1, 4);
+            drops.add(new ItemStack(IDBlocks.MENRIL_GROWN.getBlock().asItem(), dropCount));
+            drops.add(new ItemStack(IDBlocks.MENRIL_BERRIES.get().asItem(), dropCount));
+        }
+        drops.add(new ItemStack(IDBlocks.MENRIL_LOG.get().asItem()));
+        if (serverWorld.random.nextDouble() < .005) {
+            drops.add(new ItemStack(IDBlocks.MENRIL_LOG_FILLED.get().asItem()));
+            drops.add(new ItemStack(IDBlocks.MENRIL_CHUNKS.get()));
+        }
+        drops.add(new ItemStack(IDBlocks.MENRIL_LEAVES.get()));
+        return drops;
+    
+[plant/menril] hand-written; the integrateddynamics item ids are unverified guesses from IDBlocks field names
+[mob/evoker] no crafting recipe in the old mod: its main drop is used as the input
+
+[mob/guardian] no crafting recipe in the old mod: its main drop is used as the input
+
+[mob/illusioner] no crafting recipe in the old mod: its main drop is used as the input
+
+[mob/ravager] no crafting recipe in the old mod: its main drop is used as the input
+
+[mob/witch] statement not understood: drops.add(PotionContents.createItemStack(Items.POTION, holder))
+
+[mob/zombie] statement not understood: drops.add(new ItemStack(rareDrops.get(serverWorld.random.nextIntBetweenInclusive; statement not understood: drops.add(new ItemStack(uberRareDrops.get(serverWorld.random.nextIntBetweenInclu
+
+[mob/goat] drops written by hand (the old farm built them at runtime)
+
+[mob/sheep] statement not understood: drops.add(WoolColor); drops written by hand (the old farm built them at runtime); dyeable
+

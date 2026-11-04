@@ -1,0 +1,28 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:string",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:strider"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "nether": true,
+  "environment": {
+    "dimension": "minecraft:the_nether"
+  },
+  "drops": [
+    {
+      "item": "minecraft:string",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

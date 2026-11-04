@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:calcite",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:calcite"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:calcite",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

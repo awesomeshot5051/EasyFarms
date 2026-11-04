@@ -1,0 +1,51 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "ae2"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "item": "ae2:mysterious_cube",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "ae2:mysterious_cube"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "ae2:engineering_processor_press",
+      "max": 3,
+      "fortune_max": 5
+    },
+    {
+      "item": "ae2:logic_processor_press",
+      "max": 3,
+      "fortune_max": 5
+    },
+    {
+      "item": "ae2:silicon_press",
+      "max": 3,
+      "fortune_max": 5
+    },
+    {
+      "item": "ae2:calculation_processor_press",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

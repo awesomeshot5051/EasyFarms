@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:obsidian",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 4,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:obsidian"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:obsidian",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

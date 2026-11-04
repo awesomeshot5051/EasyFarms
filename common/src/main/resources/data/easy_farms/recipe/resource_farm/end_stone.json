@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:end_stone",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:end_stone"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:end_stone",
+      "max": 3,
+      "fortune_max": 5
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

@@ -1,0 +1,24 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:emerald_ore",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "min_tier_rank": 2,
+  "visual": {
+    "type": "block",
+    "target": "minecraft:emerald_ore"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "minecraft:emerald",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "minecraft:emerald_ore"
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

@@ -1,0 +1,31 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:blaze_rod",
+      "count": 2
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:blaze"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "nether": true,
+  "environment": {
+    "dimension": "minecraft:the_nether",
+    "block_below": [
+      "minecraft:netherrack"
+    ]
+  },
+  "drops": [
+    {
+      "item": "minecraft:blaze_rod",
+      "max": 4,
+      "looting_min": 3,
+      "looting_max": 6
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}

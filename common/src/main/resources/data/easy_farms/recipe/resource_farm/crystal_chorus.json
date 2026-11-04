@@ -1,0 +1,42 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "integrateddynamics"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "integrateddynamics"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "item": "integrateddynamics:crystalized_chorus_block",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "integrateddynamics:crystalized_chorus_block"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "item": "integrateddynamics:crystalized_chorus_chunk",
+      "max": 3,
+      "fortune_max": 5,
+      "silk_item": "integrateddynamics:crystalized_chorus_block"
+    },
+    {
+      "item": "integrateddynamics:crystalized_chorus_block",
+      "max": 3,
+      "chance": 0.05
+    }
+  ],
+  "type": "easy_farms:resource_farm"
+}

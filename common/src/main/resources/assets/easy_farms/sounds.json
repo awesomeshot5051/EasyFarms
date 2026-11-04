@@ -1,0 +1,8 @@
+{
+  "pickaxe_sound": {
+    "sounds": [{"name": "easy_farms:pickaxe_sound", "stream": false}]
+  },
+  "shovel_sound": {
+    "sounds": [{"name": "easy_farms:shovel_sound", "stream": false}]
+  }
+}

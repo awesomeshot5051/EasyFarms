@@ -1,0 +1,4 @@
+{"id":"wheat","category":"plant","tool":"hoe","base_ticks":600,
+ "drops":[{"item":"minecraft:wheat","min":1,"max":3},{"item":"minecraft:wheat_seeds","min":0,"max":2}],
+ "visual":{"type":"plant","target":"minecraft:wheat"},
+ "recipe":{"core":["minecraft:wheat"]}}

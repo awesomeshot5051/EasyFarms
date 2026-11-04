@@ -1,0 +1,32 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:turtle_scute",
+      "count": 1
+    },
+    {
+      "item": "minecraft:seagrass",
+      "count": 1
+    }
+  ],
+  "tool": "minecraft:swords",
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:turtle"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "item": "minecraft:seagrass",
+      "max": 3,
+      "looting_min": 4,
+      "looting_max": 8
+    },
+    {
+      "item": "minecraft:turtle_scute",
+      "chance": 0.95
+    }
+  ],
+  "type": "easy_farms:mob_farm"
+}
