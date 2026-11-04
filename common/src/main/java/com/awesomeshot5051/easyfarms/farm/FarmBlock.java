@@ -112,7 +112,10 @@ public class FarmBlock extends Block implements EntityBlock {
                     if (!player.getAbilities().instabuild) held.shrink(1);
                     player.displayClientMessage(Component.translatable("message.easy_farms.upgrade_installed", held.getHoverName()), true);
                 } else {
-                    player.displayClientMessage(Component.translatable("message.easy_farms.upgrade_rejected", held.getHoverName()), true);
+                    Component reason = farm.installProblem(held, -1);
+                    player.displayClientMessage(reason != null
+                            ? Component.translatable("message.easy_farms.upgrade_blocked", held.getHoverName(), reason)
+                            : Component.translatable("message.easy_farms.upgrade_rejected", held.getHoverName()), true);
                 }
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);

@@ -302,10 +302,15 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     /**
-     * True if this farm accepts the card in this slot: it is a registered card for this farm kind and the farm does not
-     * hold that card in another slot yet. Slot {@code -1} means "any free slot".
+     * True if this farm accepts the card in this slot: it is a registered card for this farm kind, the farm does not
+     * hold that card in another slot yet, and the card's restrictions (exclusive / required cards, tool enchantments)
+     * allow it next to what is installed. Slot {@code -1} means "any free slot".
      */
     public boolean canInstall(ItemStack card, int slot) {
+        return installProblem(card, slot) == null && isInstallable(card, slot);
+    }
+
+    private boolean isInstallable(ItemStack card, int slot) {
         if (level == null || card.isEmpty()) return false;
         com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), card);
         if (upgrade == null || !upgrade.kinds().contains(kind)) return false;
@@ -313,6 +318,37 @@ public class FarmBlockEntity extends BlockEntity {
             if (i != slot && upgrade.matches(upgrades.getStackInSlot(i))) return false;
         }
         return true;
+    }
+
+    /** Why the card's restrictions forbid it here (shown to the player), or null if they do not. */
+    @Nullable
+    public net.minecraft.network.chat.Component installProblem(ItemStack card, int slot) {
+        if (!isInstallable(card, slot)) return null;
+        com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), card);
+        return com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.installProblem(rulesContext(), upgrade, installedUpgrades(slot));
+    }
+
+    /** The registered upgrades in the slots, skipping {@code exceptSlot}, in slot order. */
+    private List<com.awesomeshot5051.easyfarms.tier.FarmUpgrade> installedUpgrades(int exceptSlot) {
+        List<com.awesomeshot5051.easyfarms.tier.FarmUpgrade> list = new ArrayList<>();
+        for (int i = 0; i < upgrades.getSlots(); i++) {
+            ItemStack stack = upgrades.getStackInSlot(i);
+            if (i == exceptSlot || stack.isEmpty()) continue;
+            com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), stack);
+            if (upgrade != null) list.add(upgrade);
+        }
+        return list;
+    }
+
+    /** What card restrictions look at: the recipe the inputs and tool match right now, and the tool. Works on both sides. */
+    public com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.Context rulesContext() {
+        FarmRecipe current = null;
+        if (level != null) {
+            FarmRecipeInput input = new FarmRecipeInput(inputSlots(), getTool());
+            current = level.getRecipeManager().getRecipeFor(ModRecipes.TYPES_BY_KIND.get(kind).get(), input, level)
+                    .map(RecipeHolder::value).orElse(null);
+        }
+        return new com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.Context(level.registryAccess(), current, getTool());
     }
 
     /** Puts an upgrade card into the first free upgrade slot if this farm accepts it and doesn't have it yet. */
@@ -344,11 +380,10 @@ public class FarmBlockEntity extends BlockEntity {
         if (cached != null) return cached;
         List<UpgradeEffect> list = new ArrayList<>();
         if (level != null) {
-            for (int i = 0; i < upgrades.getSlots(); i++) {
-                ItemStack stack = upgrades.getStackInSlot(i);
-                if (stack.isEmpty()) continue;
-                com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), stack);
-                if (upgrade != null) list.addAll(upgrade.effects());
+            // Cards whose requirements are missing, or that clash with an earlier card or the tool's enchantments, are off.
+            for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade :
+                    com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.working(rulesContext(), installedUpgrades(-1))) {
+                list.addAll(upgrade.effects());
             }
         }
         return effectCache = List.copyOf(list);

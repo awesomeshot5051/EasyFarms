@@ -30,10 +30,12 @@ import java.util.Optional;
  * @param kinds    farm kinds whose Upgrades screen shows a slot for it
  * @param requires translation key suffix explaining what the recipe needs ("any", "smeltable", "toolless", ...)
  * @param effects  what the card does; see {@link com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect}
+ * @param restrictions compatibility rules: other cards or tool enchantments it excludes, and cards it requires
  */
 public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<Component> name, Optional<Component> description,
                           List<FarmKind> kinds, String requires,
-                          List<com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect> effects) {
+                          List<com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect> effects,
+                          List<UpgradeRestriction> restrictions) {
     public static final ResourceKey<Registry<FarmUpgrade>> REGISTRY_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "farm_upgrade"));
 
@@ -44,7 +46,8 @@ public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<C
             ComponentSerialization.CODEC.optionalFieldOf("description").forGetter(FarmUpgrade::description),
             FarmKind.CODEC.listOf().fieldOf("kinds").forGetter(FarmUpgrade::kinds),
             Codec.STRING.optionalFieldOf("requires", "any").forGetter(FarmUpgrade::requires),
-            com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(FarmUpgrade::effects)
+            com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(FarmUpgrade::effects),
+            UpgradeRestriction.CODEC.listOf().optionalFieldOf("restrictions", List.of()).forGetter(FarmUpgrade::restrictions)
     ).apply(i, FarmUpgrade::new));
 
     /** The upgrades shown for a kind, in a stable order (by id) so slot positions don't move between sessions. */
@@ -77,6 +80,21 @@ public record FarmUpgrade(Item item, Optional<ResourceLocation> card, Optional<C
         if (stack.isEmpty()) return null;
         for (FarmUpgrade upgrade : access.registryOrThrow(REGISTRY_KEY)) if (upgrade.matches(stack)) return upgrade;
         return null;
+    }
+
+    /** The registry id of an upgrade (its farm_upgrade file), or null if it is not registered. */
+    public static ResourceLocation id(RegistryAccess access, FarmUpgrade upgrade) {
+        return access.registryOrThrow(REGISTRY_KEY).getKey(upgrade);
+    }
+
+    /** The upgrade registered under this id, or null. */
+    public static FarmUpgrade byId(RegistryAccess access, ResourceLocation id) {
+        return access.registryOrThrow(REGISTRY_KEY).get(id);
+    }
+
+    /** The card's display name (works on a server too, where the blank card has no name of its own). */
+    public Component displayName() {
+        return name.orElseGet(() -> stack().getHoverName());
     }
 
     public static boolean isCard(RegistryAccess access, ItemStack stack) {

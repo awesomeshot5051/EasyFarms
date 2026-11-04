@@ -27,5 +27,34 @@ public final class CardTooltips {
         if (!upgrade.requires().equals("any")) {
             tooltip.add(Component.translatable("gui.easy_farms.requires." + upgrade.requires()).withStyle(ChatFormatting.DARK_GRAY));
         }
+        addRestrictions(upgrade, level.registryAccess(), tooltip);
+    }
+
+    private static void addRestrictions(FarmUpgrade upgrade, net.minecraft.core.RegistryAccess access, List<Component> tooltip) {
+        for (var r : upgrade.restrictions()) {
+            if (r.requires().isEmpty() && r.excludes().isEmpty() && r.excludesEnchantments().isEmpty()) continue;
+            if (!r.whenDrops().isEmpty()) {
+                List<Component> drops = r.whenDrops().stream().map(CardTooltips::dropName).toList();
+                tooltip.add(Component.translatable("tooltip.easy_farms.card_when", ComponentUtils.formatList(drops, Component.literal(", "))).withStyle(ChatFormatting.DARK_GRAY));
+            }
+            for (var id : r.requires()) {
+                FarmUpgrade other = FarmUpgrade.byId(access, id);
+                tooltip.add(Component.translatable("gui.easy_farms.restriction.requires", other != null ? other.displayName() : Component.literal(id.toString())).withStyle(ChatFormatting.YELLOW));
+            }
+            for (var id : r.excludes()) {
+                FarmUpgrade other = FarmUpgrade.byId(access, id);
+                tooltip.add(Component.translatable("gui.easy_farms.restriction.excludes", other != null ? other.displayName() : Component.literal(id.toString())).withStyle(ChatFormatting.RED));
+            }
+            for (var id : r.excludesEnchantments()) {
+                tooltip.add(Component.translatable("gui.easy_farms.restriction.excludes_enchantment",
+                        Component.translatable(net.minecraft.Util.makeDescriptionId("enchantment", id))).withStyle(ChatFormatting.RED));
+            }
+        }
+    }
+
+    private static Component dropName(String scope) {
+        if (scope.startsWith("#")) return Component.literal(scope);
+        var id = net.minecraft.resources.ResourceLocation.tryParse(scope);
+        return id == null ? Component.literal(scope) : new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id)).getHoverName();
     }
 }
