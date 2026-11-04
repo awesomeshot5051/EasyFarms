@@ -23,13 +23,19 @@ dependencies {
     compileOnly "maven.modrinth:the-one-probe:${top_version}"
     localRuntime "maven.modrinth:the-one-probe:${top_version}"
 
+    // Patchouli: the Easy Farms guide book is plain data, so it is only needed at runtime to see it.
+    localRuntime "maven.modrinth:patchouli:${patchouli_neoforge_version}"
+
     boolean datagen = gradle.startParameter.taskNames.any { it.toLowerCase().contains('data') }
     if (project.findProperty('with_content_mods')?.toString() == 'true' && !datagen) {
         localRuntime "maven.modrinth:ae2:${ae2_version}"
-        localRuntime "maven.modrinth:extended-ae:${extendedae_version}"
+        localRuntime "maven.modrinth:refined-storage:${refined_storage_neoforge_version}"
+        // ExtendedAE 26.1-1.0.3 (alpha) crashes the creative inventory ("Small Entro Bud has already been added to the tab").
+        // Re-enable it, and Glodium which only it needs, once it is fixed:
+        // localRuntime "maven.modrinth:extended-ae:${extendedae_version}"
         localRuntime "maven.modrinth:advancedae:${advancedae_version}"
         localRuntime "maven.modrinth:geckolib:${geckolib_version}"
-        localRuntime "maven.modrinth:glodium:${glodium_version}"
+        // localRuntime "maven.modrinth:glodium:${glodium_version}"
         localRuntime "maven.modrinth:guideme:${guideme_version}"
         if (project.findProperty('with_integrated')?.toString() == 'true') {
             localRuntime "maven.modrinth:integrated-dynamics:${id_version}"

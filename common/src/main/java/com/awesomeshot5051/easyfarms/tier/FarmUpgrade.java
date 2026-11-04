@@ -82,7 +82,7 @@ public record FarmUpgrade(Item item, Optional<Identifier> card, Optional<Compone
         return null;
     }
 
-    /** The items (ids or {@code #tags}) this card needs in its catalyst slot; empty if it needs none. */
+    /** The catalyst items (ids or {@code #tags}) this card needs, one per distinct ingredient, so one catalyst slot each; empty if none. */
     public List<String> catalystItems() {
         List<String> items = new ArrayList<>();
         for (var effect : effects) {

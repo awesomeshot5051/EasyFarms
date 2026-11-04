@@ -1,0 +1,19 @@
+{
+  "name": "Mushrooms and Fungi",
+  "category": "easy_farms:plant_recipes",
+  "icon": "minecraft:brown_mushroom",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Crimson Fungus$()$(br)In: Crimson Nylium + Crimson Fungus$(br)Out: Crimson Fungus x1-4 (50%), Shroomlight x1-4 (70%), Crimson Stem, Stripped Crimson Stem (0%), Weeping Vines x1-4 (20%), Crimson Hyphae$(br)$(7)Tool: axe; Nether recipe (Nether Upgrade runs it anywhere); Needs over Crimson Nylium$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Brown Mushroom$()$(br)In: Grass Block + Brown Mushroom$(br)Out: Brown Mushroom x1-4, Mushroom Stem x1-4 (5%), Mushroom Stem x1-4 (0%)$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Warped Fungus$()$(br)In: Warped Nylium + Warped Fungus$(br)Out: Warped Fungus x1-4 (50%), Warped Stem, Stripped Warped Stem (0%), Shroomlight x1-4 (70%), Twisting Vines x1-4 (20%), Warped Hyphae$(br)$(7)Tool: axe; Nether recipe (Nether Upgrade runs it anywhere); Needs over Warped Nylium$()"
+    }
+  ]
+}

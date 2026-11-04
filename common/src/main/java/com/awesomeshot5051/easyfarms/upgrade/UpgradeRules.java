@@ -81,6 +81,11 @@ public final class UpgradeRules {
     /** The reason a card cannot be added next to the {@code installed} ones, or null. */
     @Nullable
     public static Component installProblem(Context ctx, FarmUpgrade candidate, List<FarmUpgrade> installed) {
+        int catalystSlots = candidate.catalystItems().size();
+        for (FarmUpgrade other : installed) catalystSlots += other.catalystItems().size();
+        if (catalystSlots > com.awesomeshot5051.easyfarms.farm.FarmBlockEntity.UPGRADE_SLOTS) {
+            return Component.translatable("gui.easy_farms.restriction.no_catalyst_slots", com.awesomeshot5051.easyfarms.farm.FarmBlockEntity.UPGRADE_SLOTS);
+        }
         return problem(ctx, candidate, installed, installed);
     }
 

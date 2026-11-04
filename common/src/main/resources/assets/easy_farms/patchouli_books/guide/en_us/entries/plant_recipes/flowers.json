@@ -1,0 +1,31 @@
+{
+  "name": "Flowers",
+  "category": "easy_farms:plant_recipes",
+  "icon": "minecraft:poppy",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Allium$()$(br)In: Grass Block + Allium$(br)Out: Allium x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Azure Bluet$()$(br)In: Grass Block + Azure Bluet$(br)Out: Azure Bluet x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Cornflower$()$(br)In: Grass Block + Cornflower$(br)Out: Cornflower x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Oxeye Daisy$()$(br)In: Grass Block + Oxeye Daisy$(br)Out: Oxeye Daisy x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Dandelion$()$(br)In: Grass Block + Dandelion$(br)Out: Dandelion x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Lilac$()$(br)In: Grass Block + Lilac$(br)Out: Lilac x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Lily Of The Valley$()$(br)In: Grass Block + Lily Of The Valley$(br)Out: Lily Of The Valley x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Orange Tulip$()$(br)In: Grass Block + Orange Tulip$(br)Out: Orange Tulip x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Blue Orchid$()$(br)In: Grass Block + Blue Orchid$(br)Out: Blue Orchid x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Peony$()$(br)In: Grass Block + Peony$(br)Out: Peony x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Pink Tulip$()$(br)In: Grass Block + Pink Tulip$(br)Out: Pink Tulip x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Poppy$()$(br)In: Grass Block + Poppy$(br)Out: Poppy x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Red Tulip$()$(br)In: Grass Block + Red Tulip$(br)Out: Red Tulip x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Rose Bush$()$(br)In: Grass Block + Rose Bush$(br)Out: Rose Bush x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Sunflower$()$(br)In: Grass Block + Sunflower$(br)Out: Sunflower x1-4$(br)$(7)No tool needed$()$(br2)$(thing)White Tulip$()$(br)In: Grass Block + White Tulip$(br)Out: White Tulip x1-4$(br)$(7)No tool needed$()"
+    }
+  ]
+}

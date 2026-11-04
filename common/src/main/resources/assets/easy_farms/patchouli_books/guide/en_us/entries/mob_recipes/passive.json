@@ -1,0 +1,43 @@
+{
+  "name": "Passive and Neutral Mobs",
+  "category": "easy_farms:mob_recipes",
+  "icon": "minecraft:pig_spawn_egg",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Chicken$()$(br)In: Chicken or Cooked Chicken + Feather$(br)Out: Chicken x1-3$(br)$(7)Tool: sword; Looting: Chicken x4-8; Fire Aspect: Cooked Chicken$()$(br2)$(thing)Cod$()$(br)In: Cod + Cooked Cod$(br)Out: Cod x1-3$(br)$(7)Tool: sword; Looting: Cod x4-8; Fire Aspect: Cooked Cod$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Cow$()$(br)In: Beef + Leather$(br)Out: Beef x1-3, Leather$(br)$(7)Tool: sword; Looting: Beef x4-6; Fire Aspect: Cooked Beef$()$(br2)$(thing)Glow Squid$()$(br)In: 2 Glow Ink Sac$(br)Out: Glow Ink Sac x1-3$(br)$(7)Tool: sword; Looting: Glow Ink Sac x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Goat$()$(br)In: 2 Goat Horn$(br)Out: Goat Horn$(br)$(7)Tool: sword$()$(br2)$(thing)Horse$()$(br)In: 2 Leather$(br)Out: Leather x0-2$(br)$(7)Tool: sword; Looting: Leather x3-8$()$(br2)$(thing)Iron Golem$()$(br)In: 2 Iron Ingot$(br)Out: Iron Ingot x1-3$(br)$(7)Tool: sword; Looting: Iron Ingot x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mooshroom$()$(br)In: Beef + Red Mushroom$(br)Out: Beef x1-3, Leather, Mushroom Stew$(br)$(7)Tool: sword; Looting: Beef x4-8; Fire Aspect: Cooked Beef$()$(br2)$(thing)Parrot$()$(br)In: 2 Feather$(br)Out: Feather x1-3$(br)$(7)Tool: sword; Looting: Feather x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Pig$()$(br)In: Porkchop + Cooked Porkchop$(br)Out: Porkchop x1-3$(br)$(7)Tool: sword; Looting: Porkchop x4-8; Fire Aspect: Cooked Porkchop$()$(br2)$(thing)Pufferfish$()$(br)In: 2 Pufferfish$(br)Out: Bone Meal (95%), Bone x1-3 (75%)$(br)$(7)Tool: sword; Looting: Bone x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Rabbit$()$(br)In: Rabbit + Rabbit Foot or Rabbit Hide$(br)Out: Rabbit Foot (90%), Cooked Rabbit x1-3$(br)$(7)Tool: sword; Looting: Cooked Rabbit x4-8; Fire Aspect: Rabbit$()$(br2)$(thing)Salmon$()$(br)In: Salmon + Bone Meal$(br)Out: Bone Meal (95%), Salmon x1-3$(br)$(7)Tool: sword; Looting: Salmon x4-8; Fire Aspect: Cooked Salmon$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Sheep$()$(br)In: Mutton + Any Wool$(br)Out: White Wool x1-3, Mutton x1-3$(br)$(7)Tool: sword; Looting: White Wool x4-8; Fire Aspect: Cooked Mutton; Dyeable$()$(br2)$(thing)Slime$()$(br)In: Slime Block + Slime Ball$(br)Out: Slime Ball x1-3$(br)$(7)Tool: sword; Looting: Slime Ball x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Snow Golem$()$(br)In: Snowball + Carved Pumpkin$(br)Out: Carved Pumpkin (95%), Snowball x10-15$(br)$(7)Tool: sword$()$(br2)$(thing)Squid$()$(br)In: 2 Ink Sac$(br)Out: Ink Sac x1-3$(br)$(7)Tool: sword; Looting: Ink Sac x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Tropical Fish$()$(br)In: 2 Tropical Fish$(br)Out: Tropical Fish, Bone Meal x1-3$(br)$(7)Tool: sword; Looting: Bone Meal x4-8$()$(br2)$(thing)Turtle$()$(br)In: Turtle Scute + Seagrass$(br)Out: Seagrass x1-3, Turtle Scute (95%)$(br)$(7)Tool: sword; Looting: Seagrass x4-8$()"
+    }
+  ]
+}

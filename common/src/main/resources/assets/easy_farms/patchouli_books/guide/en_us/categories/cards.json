@@ -1,0 +1,6 @@
+{
+  "name": "Upgrade Cards",
+  "description": "Cards that change what a farm does.",
+  "icon": "easy_farms:smelter_upgrade",
+  "sortnum": 2
+}

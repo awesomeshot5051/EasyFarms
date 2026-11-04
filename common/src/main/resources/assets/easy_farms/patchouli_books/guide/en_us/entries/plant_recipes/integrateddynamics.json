@@ -1,0 +1,12 @@
+{
+  "name": "Integrated Dynamics",
+  "category": "easy_farms:plant_recipes",
+  "icon": "minecraft:oak_sapling",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Menril Sapling$()$(br)In: Grass Block + Menril Sapling$(br)Out: Menril Sapling x1-4 (50%), Menril Berries x1-4 (50%), Menril Log, Menril Log Filled (0%), Crystalized Menril Chunk (0%), Menril Leaves$(br)$(7)Tool: axe$()"
+    }
+  ],
+  "flag": "mod:integrateddynamics"
+}

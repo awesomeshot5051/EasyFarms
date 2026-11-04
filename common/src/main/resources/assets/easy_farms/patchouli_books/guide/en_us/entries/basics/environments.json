@@ -1,0 +1,15 @@
+{
+  "name": "Environments",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:netherrack",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Most recipes run anywhere. $(item)Nether recipes$() need either the $(item)Nether Upgrade$() or their real environment:$(br2)Blaze over netherrack. Nether wart over soul sand or soil. Magma cubes over a magma block or lava. Crimson and warped fungus over their nylium. Other Nether mobs in the Nether dimension. The Shulker needs the End."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "If an environment is missing, Jade and The One Probe tell you what the farm needs."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Hoe and Grass",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:farmland",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Craft a $(item)hoe$() with a $(item)grass block$() to get farmland. The hoe loses 1 durability.$(br2)Farmland is what the Plant Farm shows for crops that need it."
+    }
+  ]
+}

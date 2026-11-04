@@ -109,6 +109,13 @@ Example mod description.
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="patchouli"
+    type="optional"
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="ae2"
     type="optional"
     versionRange="[0,)"

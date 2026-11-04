@@ -1,0 +1,15 @@
+{
+  "name": "Infinity Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:infinity_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)The tool $(item)never wears out$(), the inputs are $(item)never used up$(), and $(item)catalysts$() are never consumed.$(br2)$(thing)Ingredients$(): 4 diamonds, 4 eyes of ender, 1 nether star."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:infinity_upgrade"
+    }
+  ]
+}

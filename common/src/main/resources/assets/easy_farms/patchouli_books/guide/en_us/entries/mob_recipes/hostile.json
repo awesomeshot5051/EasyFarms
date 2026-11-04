@@ -1,0 +1,43 @@
+{
+  "name": "Hostile, Boss and End Mobs",
+  "category": "easy_farms:mob_recipes",
+  "icon": "minecraft:zombie_head",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Creeper$()$(br)In: 2 Gunpowder$(br)Out: Gunpowder x1-3$(br)$(7)Tool: sword; Looting: Gunpowder x4-8$()$(br2)$(thing)Drowned$()$(br)In: Rotten Flesh + Nautilus Shell or Trident$(br)Out: Nautilus Shell x0-1 (50%), Trident (10%)$(br)$(7)Tool: sword; Looting: Nautilus Shell x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Elder Guardian$()$(br)In: Prismarine Crystals + Prismarine Shard$(br)Out: Prismarine Shard x0-2, Wet Sponge, Tide Armor Trim Template (80%), Cod x1-3 (50%), Prismarine Crystals x1-3 (67%)$(br)$(7)Tool: sword; Looting: Cod x4-8; Fire Aspect: Cooked Cod$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Enderman$()$(br)In: 2 Ender Eye or Ender Pearl$(br)Out: Ender Pearl x1-3$(br)$(7)Tool: sword; Looting: Ender Pearl x4-8$()$(br2)$(thing)Evoker$()$(br)In: Totem Of Undying$(br)Out: Totem Of Undying, Emerald x0-1, Ominous Bottle (75%)$(br)$(7)Tool: sword; Looting: Emerald x1-4$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Guardian$()$(br)In: Cod$(br)Out: Cod x1-3 (60%), Prismarine Crystals x1-3 (60%)$(br)$(7)Tool: sword; Looting: Cod x4-8; Fire Aspect: Cooked Cod$()$(br2)$(thing)Illusioner$()$(br)In: Crossbow$(br)Out: Crossbow (92%), Diamond x1-3$(br)$(7)Tool: sword; Looting: Diamond x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Phantom$()$(br)In: 2 Phantom Membrane$(br)Out: Phantom Membrane x1-3$(br)$(7)Tool: sword; Looting: Phantom Membrane x4-8$()$(br2)$(thing)Pillager$()$(br)In: Emerald + Ominous Bottle$(br)Out: Emerald x0, Crossbow (12%)$(br)$(7)Tool: sword; Looting: Emerald x0-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Ravager$()$(br)In: Saddle$(br)Out: Saddle x1-3$(br)$(7)Tool: sword; Looting: Saddle x4-8$()$(br2)$(thing)Shulker$()$(br)In: Shulker Box + Shulker Shell$(br)Out: Shulker Shell x1-3$(br)$(7)Tool: sword; Looting: Shulker Shell x4-8; Needs in the End$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Skeleton$()$(br)In: Skeleton Skull + Bone$(br)Out: Bone x0-2, Arrow x0-2, Bow (92%)$(br)$(7)Tool: sword; Looting: Bone x4-8$()$(br2)$(thing)Spider$()$(br)In: String + Spider Eye$(br)Out: String x0-2, Spider Eye (67%)$(br)$(7)Tool: sword; Looting: String x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Vindicator$()$(br)In: Iron Shovel or Iron Axe + Emerald or Enchanted Book$(br)Out: Emerald x0-1 (50%), Iron Axe$(br)$(7)Tool: sword; Looting: Emerald x0-4$()$(br2)$(thing)Warden$()$(br)In: 2 Sculk Catalyst$(br)Out: Sculk Catalyst x1-3$(br)$(7)Tool: sword; Looting: Sculk Catalyst x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Witch$()$(br)In: Glass Bottle + Redstone$(br)Out: Redstone x0-3, Stick x0-3, Glowstone Dust x0-3, Spider Eye x0-3, Gunpowder x0-3, Sugar x0-3$(br)$(7)Tool: sword; Looting: Redstone x4-8$()$(br2)$(thing)Zombie$()$(br)In: Rotten Flesh + Zombie Head$(br)Out: Rotten Flesh x1-3$(br)$(7)Tool: sword; Looting: Rotten Flesh x4-8$()"
+    }
+  ]
+}

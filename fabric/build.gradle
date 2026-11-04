@@ -27,8 +27,11 @@ dependencies {
     compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
     localRuntime "com.terraformersmc:modmenu:${modmenu_version}"
 
+    // Patchouli: the Easy Farms guide book is plain data, so it is only needed at runtime to see it.
+    localRuntime "maven.modrinth:patchouli:${patchouli_fabric_version}"
+
     if (project.findProperty('with_content_mods')?.toString() == 'true') {
-        localRuntime "maven.modrinth:refined-storage:${refined_storage_version}"
+        localRuntime "maven.modrinth:refined-storage:${refined_storage_fabric_version}"
         localRuntime "maven.modrinth:cloth-config:${cloth_config_version}"
         localRuntime "teamreborn:energy:${team_reborn_energy_version}"
     }

@@ -1,0 +1,11 @@
+{
+  "name": "Dye and Sheep",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:white_dye",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Some recipes are $(item)dyeable$(): sheep, concrete, concrete powder and terracotta.$(br2)Right-click the farm with a dye (or fire dye at it with a dispenser) and the farm produces that colour. Dye is accepted even while the farm is idle, so you can set it up first."
+    }
+  ]
+}

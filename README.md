@@ -137,6 +137,13 @@ shows for crops that need it.
 
 ---
 
+## Guide book
+
+With **Patchouli** installed, craft the **Easy Farms Guide** with a book and a glass pane. It explains the farms, the default
+upgrade cards, catalysts and restrictions, and lists every farm recipe with its inputs and outputs.
+
+---
+
 ## What can it farm?
 
 * **Resource Farm:** every full block that can be mined with a pickaxe, shovel or hoe is auto-generated from the game's

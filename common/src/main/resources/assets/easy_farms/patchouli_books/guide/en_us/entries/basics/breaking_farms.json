@@ -1,0 +1,11 @@
+{
+  "name": "Breaking a Farm",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:diamond_pickaxe",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With $(item)Silk Touch$(), the farm drops as an item $(item)with everything inside$(): inputs, tool, outputs, upgrades and catalysts.$(br2)Without it, the contents spill on the ground."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Card Restrictions",
+  "category": "easy_farms:cards",
+  "icon": "minecraft:barrier",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Some cards cannot be combined, or need something else first. The game explains this with tooltips.$(br2)$(thing)Exclusive$(): a card can refuse to share a farm with another card or with a tool enchantment (for example Silk Touch)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Required$(): a card can need another card installed too, or a heat source under the farm.$(br2)When you hold a card over a slot that would refuse it, the tooltip says why. A card's own tooltip lists its rules."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Rules are checked all the time: if the recipe, the tool or the other cards change so that a rule is broken, the card stays in its slot but is switched off. Where two cards clash, the one in the earlier slot keeps working."
+    }
+  ]
+}

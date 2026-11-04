@@ -1,0 +1,6 @@
+{
+  "name": "Resource Farm Recipes",
+  "description": "Everything the Resource Farm can mine, with its outputs.",
+  "icon": "minecraft:iron_ore",
+  "sortnum": 3
+}

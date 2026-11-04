@@ -1,0 +1,35 @@
+{
+  "name": "Crops and Water Plants",
+  "category": "easy_farms:plant_recipes",
+  "icon": "minecraft:wheat",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Bamboo$()$(br)In: Grass Block + Bamboo$(br)Out: Bamboo x1-4$(br)$(7)Tool: axe$()$(br2)$(thing)Beetroots$()$(br)In: Farmland + Beetroot Seeds$(br)Out: Beetroot Seeds x1-4 (50%), Beetroot, Beetroot Soup (0%)$(br)$(7)Tool: hoe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Sweet Berry Bush$()$(br)In: Grass Block + Sweet Berries$(br)Out: Sweet Berries x1-4$(br)$(7)Tool: hoe$()$(br2)$(thing)Carrots$()$(br)In: Farmland + Carrot$(br)Out: Carrot$(br)$(7)Tool: hoe$()$(br2)$(thing)Seagrass$()$(br)In: Sand + Seagrass$(br)Out: Seagrass x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Cocoa$()$(br)In: Jungle Log + Cocoa Beans$(br)Out: Cocoa Beans x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Carrots$()$(br)In: Farmland + Golden Carrot$(br)Out: Golden Carrot$(br)$(7)Tool: hoe$()$(br2)$(thing)Kelp$()$(br)In: Grass Block + Kelp$(br)Out: Kelp x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Big Dripleaf$()$(br)In: Clay + Big Dripleaf$(br)Out: Small Dripleaf x1-4 (50%), Big Dripleaf (5%)$(br)$(7)No tool needed$()$(br2)$(thing)Melon$()$(br)In: Grass Block + Melon$(br)Out: Melon Slice x1-4 (50%), Melon, Melon Seeds, Glistering Melon Slice (0%)$(br)$(7)Tool: hoe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Nether Wart$()$(br)In: Soul Sand + Nether Wart$(br)Out: Nether Wart$(br)$(7)No tool needed; Nether recipe (Nether Upgrade runs it anywhere); Needs over Soul Sand or Soul Soil$()$(br2)$(thing)Lily Pad$()$(br)In: Dirt + Lily Pad$(br)Out: Lily Pad x1-4$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Potatoes$()$(br)In: Farmland + Potato$(br)Out: Poisonous Potato x1-4 (50%), Potato, Baked Potato (0%)$(br)$(7)Tool: hoe$()$(br2)$(thing)Carved Pumpkin$()$(br)In: Grass Block + Carved Pumpkin$(br)Out: Carved Pumpkin$(br)$(7)Tool: hoe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Sugar Cane$()$(br)In: Sand + Sugar Cane$(br)Out: Sugar Cane x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Vine$()$(br)In: Grass Block + Vine$(br)Out: Vine x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Wheat$()$(br)In: Farmland + Wheat Seeds$(br)Out: Wheat Seeds x1-4 (50%), Wheat$(br)$(7)Tool: hoe$()"
+    }
+  ]
+}

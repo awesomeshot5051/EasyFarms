@@ -1,0 +1,19 @@
+{
+  "name": "Enchantments",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:enchanted_book",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Enchant the tool and the farm uses it:"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Fortune$(): more drops on recipes that support it.$(br)$(thing)Silk Touch$(): the block itself on recipes with a silk form (ores, glass...).$(br)$(thing)Looting$(): more mob drops (Mob Farm).$(br)$(thing)Fire Aspect$(): the cooked version of mob drops that have one.$(br)$(thing)Efficiency$() / $(thing)Sharpness$(): shorten the work time."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Some upgrade cards cannot work with some enchantments. Hover a card to read its restrictions."
+    }
+  ]
+}

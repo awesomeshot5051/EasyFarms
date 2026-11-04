@@ -1,0 +1,20 @@
+{
+  "name": "Resource Farm",
+  "category": "easy_farms:farms",
+  "icon": "easy_farms:resource_farm",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Resource Farm$() mines blocks: stone, ores, sand, nether blocks and so on. It needs a $(item)pickaxe, shovel or axe$() in the tool slot.$(br2)Its floor is stone.$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 pickaxe (any), 1 iron block."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:resource_farm",
+      "text": "Glass panes around a pickaxe, over an iron block."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Every full block that can be mined is covered, with drops read from vanilla loot tables, plus hand-made recipes for ores, logs, nether blocks and special cases. See $(l:easy_farms:resource_recipes/ores)Resource Farm Recipes$()."
+    }
+  ]
+}

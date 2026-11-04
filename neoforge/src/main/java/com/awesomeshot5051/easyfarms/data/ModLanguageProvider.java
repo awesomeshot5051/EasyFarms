@@ -79,6 +79,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.easy_farms.catalyst_slot", "Catalyst for %s");
         add("gui.easy_farms.catalyst_accepts", "Accepts: %s");
         add("tooltip.easy_farms.card_catalyst", "Needs a catalyst: %s (put it in the farm's Catalysts screen)");
+        add("gui.easy_farms.restriction.no_catalyst_slots", "Not enough catalyst slots (the farm has %s in all)");
         add("gui.easy_farms.restriction.requires_block_below", "Needs one of these under the farm: %s");
         add("gui.easy_farms.restriction.requires", "Requires: %s");
         add("gui.easy_farms.restriction.excludes", "Incompatible with: %s");

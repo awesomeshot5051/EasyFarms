@@ -1,0 +1,24 @@
+{
+  "name": "Integrated Dynamics",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:redstone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Crystalized Chorus Block$()$(br)In: Crystalized Chorus Block$(br)Out: Crystalized Chorus Chunk x1-3, Crystalized Chorus Block x1-3 (5%)$(br)$(7)Tool: pickaxe; Fortune: Crystalized Chorus Chunk x1-5; Silk Touch: Crystalized Chorus Block$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Crystalized Chorus Brick$()$(br)In: Crystalized Chorus Brick$(br)Out: Crystalized Chorus Brick x1-3$(br)$(7)Tool: pickaxe; Fortune: Crystalized Chorus Brick x1-5$()$(br2)$(thing)Chorus Glass$()$(br)In: Chorus Glass$(br)Out: Chorus Glass x1-3$(br)$(7)Tool: pickaxe; Fortune: Chorus Glass x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Crystalized Menril Block$()$(br)In: Crystalized Menril Block$(br)Out: Crystalized Menril Chunk x1-3, Crystalized Menril Block x1-3 (5%)$(br)$(7)Tool: pickaxe; Fortune: Crystalized Menril Chunk x1-5; Silk Touch: Crystalized Menril Block$()$(br2)$(thing)Crystalized Menril Brick$()$(br)In: Crystalized Menril Brick$(br)Out: Crystalized Menril Brick x1-3$(br)$(7)Tool: pickaxe; Fortune: Crystalized Menril Brick x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Menril Glass$()$(br)In: Menril Glass$(br)Out: Menril Glass x1-3$(br)$(7)Tool: pickaxe; Fortune: Menril Glass x1-5$()"
+    }
+  ],
+  "flag": "mod:integrateddynamics"
+}

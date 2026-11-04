@@ -1,0 +1,16 @@
+{
+  "name": "Advanced AE",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:redstone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Quantum Alloy$()$(br)In: 4 Shattered Singularity + 4 Copper Ingot$(br)Out: Quantum Alloy x1-3$(br)$(7)Tool: pickaxe; Fortune: Quantum Alloy x1-5$()$(br2)$(thing)Quantum Infusion Bucket$()$(br)In: Quantum Infusion Bucket$(br)Out: Quantum Infused Dust x1-3$(br)$(7)Tool: pickaxe; Fortune: Quantum Infused Dust x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Shattered Singularity$()$(br)In: Singularity + 2 Ender Dust$(br)Out: Shattered Singularity x1-3$(br)$(7)Tool: pickaxe; Fortune: Shattered Singularity x1-5$()"
+    }
+  ],
+  "flag": "mod:advanced_ae"
+}

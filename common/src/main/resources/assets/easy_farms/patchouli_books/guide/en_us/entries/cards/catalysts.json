@@ -1,0 +1,19 @@
+{
+  "name": "Catalysts",
+  "category": "easy_farms:cards",
+  "icon": "minecraft:hopper",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Some cards mix in extra items next to what the farm produces. Those extra items are $(item)catalysts$().$(br2)When an installed card needs one, a $(item)second arrow$() appears under the Upgrades arrow. It opens the $(item)Catalysts screen$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The farm has $(item)18 catalyst slots$() in all, shared between its cards. A card gets $(item)one slot per catalyst item$() it needs, and each slot accepts only that item. A card that would need more slots than are left is refused.$(br2)Taking the card out removes its slots and drops what was in them."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Automation$(): hoppers and pipes feed the catalyst slots through the $(item)back$() of the farm, the side opposite the way it faces. That side only accepts catalysts; the other sides still use the input and output slots.$(br2)The $(item)Infinity Upgrade$() keeps catalysts: they must be present, but are never used up."
+    }
+  ]
+}

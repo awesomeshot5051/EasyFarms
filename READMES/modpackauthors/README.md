@@ -11,6 +11,7 @@ and their effects. This guide covers all of it.
 * [Upgrade cards and effects](#upgrade-cards-and-effects)
 * [Secret recipes and achievements](#secret-recipes-and-achievements)
 * [Changing or removing existing content](#changing-or-removing-existing-content)
+* [The guide book](#the-guide-book)
 * [Testing](#testing)
 
 ---
@@ -383,9 +384,16 @@ left alone. `"source": "drops"` (the default) is for an ingredient that the same
 next to `minecraft:arrow` on a skeleton farm.
 
 **Catalyst slots.** Any installed card with a `"source": "catalyst"` ingredient makes a second arrow button appear under the Upgrades
-arrow on the farm screen (it disappears again when no installed card needs a catalyst). It opens the separate Catalysts screen, which
-has one slot per such card, in card-slot order, and each slot accepts only that card's catalyst items. Taking the card out of the
-Upgrades screen removes its catalyst slot and drops whatever was in it. Catalysts are kept when the farm is picked up with Silk Touch.
+arrow on the farm screen (it disappears again when no installed card needs a catalyst). It opens the separate Catalysts screen. The
+farm has **18 catalyst slots** to share out between its cards: a card gets **one slot per distinct catalyst ingredient** (the same `from`
+used by several rules is one slot), up to 18 for a single card, and each slot accepts only its ingredient. Slots are shown grouped by
+card, in card-slot order. A card that would need more slots than are left is refused with a tooltip. Taking a card out removes its
+slots and drops their contents; catalysts stay put when other cards come and go, and are kept when the farm is picked up with Silk Touch.
+
+**Feeding catalysts.** Hoppers, pipes and other mods reach the catalyst slots through the **back** of the farm: the side opposite the
+way it faces (a farm facing west is fed from its east side). That side only accepts catalysts, each into the slot that takes it; the
+other sides still use the input and output slots. Catalysts are never taken back out by automation. The **Infinity upgrade** keeps the
+catalysts as well as the tool and inputs: they must still be present, but are not used up.
 
 ### Writing your own effect (Java)
 
@@ -482,6 +490,19 @@ recipe. The discovery is saved on the player, is kept on death, and is also what
 * **The Resource Farm's auto-generated recipes** (one per mineable block) are plain recipe files under
   `data/easy_farms/recipe/resource_farm/auto/`, so you can override or disable them the same way.
 * **Make every farm slower, or the inputs last longer:** use the config (`timeMultiplier`, `baseInputLifetimeDays`) rather than editing recipes.
+
+---
+
+## The guide book
+
+Easy Farms ships a Patchouli book, `easy_farms:guide` (craft it with a book and a glass pane; Patchouli is optional). It covers
+the farms, the default cards, catalysts and restrictions, and lists every Resource, Plant and Mob Farm recipe with inputs and
+outputs. The recipe chapters are generated: run `python3 tools/generate_guide.py` after changing recipes and commit the result.
+
+**Adding your own chapter.** Ship a resource pack (a datapack folder can double as one) with
+`assets/easy_farms/patchouli_books/guide/en_us/categories/<name>.json` and entries under
+`.../entries/<name>/*.json` whose `category` is `easy_farms:<name>`. Use `"flag": "mod:<modid>"` on the category and entries to show
+them only when that mod is installed. See Patchouli's documentation for the page formats.
 
 ---
 

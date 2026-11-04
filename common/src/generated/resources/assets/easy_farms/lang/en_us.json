@@ -55,6 +55,7 @@
   "gui.easy_farms.restriction.cannot_add": "Can't be added here",
   "gui.easy_farms.restriction.excludes": "Incompatible with: %s",
   "gui.easy_farms.restriction.excludes_enchantment": "Incompatible with %s on the tool",
+  "gui.easy_farms.restriction.no_catalyst_slots": "Not enough catalyst slots (the farm has %s in all)",
   "gui.easy_farms.restriction.requires": "Requires: %s",
   "gui.easy_farms.restriction.requires_block_below": "Needs one of these under the farm: %s",
   "gui.easy_farms.tool_days": "Tool lasts %s more day(s)",

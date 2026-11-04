@@ -1,0 +1,20 @@
+{
+  "name": "Mob Farm",
+  "category": "easy_farms:farms",
+  "icon": "easy_farms:mob_farm",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Mob Farm$() \"kills\" mobs for their drops. It needs a $(item)sword$() plus the food or item that mob needs as input.$(br2)Its floor is lava with stone.$(br2)$(thing)Ingredients$(): 5 glass panes (any), 1 lava bucket, 1 sword (any), 2 iron ingots."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:mob_farm",
+      "text": "Glass panes over a lava bucket, with a sword between two iron ingots below."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Inputs follow the original Mob Farms mod: for example porkchops for pigs, raw beef for cows. See $(l:easy_farms:mob_recipes/passive)Mob Farm Recipes$() for every mob."
+    }
+  ]
+}

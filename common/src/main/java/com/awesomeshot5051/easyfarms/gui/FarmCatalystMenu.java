@@ -6,7 +6,6 @@ import com.awesomeshot5051.easyfarms.util.HandlerSlot;
 import com.awesomeshot5051.easyfarms.util.ItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -19,36 +18,40 @@ import java.util.List;
 
 /**
  * The Catalysts screen, opened from the arrow under the Upgrades arrow (which only exists while an installed card needs a
- * catalyst). It has one slot per such card, in the order of the card slots, and each slot takes only the items its card
- * asks for. The slots are fixed when the screen opens ({@code mask}: bit i = the card in upgrade slot i needs one).
+ * catalyst). A card gets one slot per catalyst ingredient it uses, out of 18 slots shared between all cards, and each slot
+ * takes only that ingredient. Slots are shown grouped by card, in card-slot order. The slots are fixed when the screen opens
+ * ({@code owners}: for each of the farm's catalyst slots, the upgrade slot whose card owns it, or -1).
  */
 public class FarmCatalystMenu extends AbstractContainerMenu {
     private final BlockPos pos;
     private final FarmBlockEntity farm;
     private final net.minecraft.world.level.Level level;
-    /** The upgrade-slot index each catalyst slot belongs to. */
-    private final List<Integer> cardSlots = new ArrayList<>();
+    /** For each menu slot: the farm's catalyst slot it shows, the upgrade slot of its card, and which of the card's ingredients it takes. */
+    private final List<int[]> entries = new ArrayList<>();
 
     /** Client side ({@code farm} null): the contents arrive through normal slot syncing. */
-    public FarmCatalystMenu(int id, Inventory inventory, BlockPos pos, FarmBlockEntity farm, int mask) {
+    public FarmCatalystMenu(int id, Inventory inventory, BlockPos pos, FarmBlockEntity farm, int[] owners) {
         super(ModMenus.FARM_CATALYSTS.get(), id);
         this.pos = pos;
         this.farm = farm;
         this.level = inventory.player.level();
         ItemStackHandler handler = farm != null ? farm.catalysts() : new ItemStackHandler(FarmBlockEntity.UPGRADE_SLOTS);
 
-        for (int i = 0; i < FarmBlockEntity.UPGRADE_SLOTS; i++) {
-            if ((mask >> i & 1) == 0) continue;
-            final int cardSlot = i;
-            int k = cardSlots.size();
-            cardSlots.add(i);
-            addSlot(new HandlerSlot(handler, i, 8 + (k % 9) * 18, 18 + (k / 9) * 18) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    FarmBlockEntity entity = farm != null ? farm : level.getBlockEntity(pos) instanceof FarmBlockEntity be ? be : null;
-                    return entity != null && entity.isCatalystValid(cardSlot, stack);
-                }
-            });
+        for (int owner = 0; owner < FarmBlockEntity.UPGRADE_SLOTS; owner++) {
+            int sub = 0;
+            for (int h = 0; h < owners.length; h++) {
+                if (owners[h] != owner) continue;
+                final int catalystSlot = h;
+                int k = entries.size();
+                entries.add(new int[]{h, owner, sub++});
+                addSlot(new HandlerSlot(handler, h, 8 + (k % 9) * 18, 18 + (k / 9) * 18) {
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        FarmBlockEntity entity = farm != null ? farm : level.getBlockEntity(pos) instanceof FarmBlockEntity be ? be : null;
+                        return entity != null && entity.isCatalystValid(catalystSlot, stack);
+                    }
+                });
+            }
         }
         int top = playerInventoryTop();
         for (int row = 0; row < 3; row++) {
@@ -58,11 +61,11 @@ public class FarmCatalystMenu extends AbstractContainerMenu {
     }
 
     public int catalystSlotCount() {
-        return cardSlots.size();
+        return entries.size();
     }
 
     public int rows() {
-        return Math.max(1, (int) Math.ceil(cardSlots.size() / 9.0));
+        return Math.max(1, (int) Math.ceil(entries.size() / 9.0));
     }
 
     /** Y of the first player inventory row, as in a vanilla chest GUI with this many rows. */
@@ -70,15 +73,15 @@ public class FarmCatalystMenu extends AbstractContainerMenu {
         return 31 + rows() * 18;
     }
 
-    /** What the empty catalyst slot {@code k} tells the player: the card it belongs to and what it takes. */
+    /** What the empty catalyst slot {@code k} tells the player: the card it belongs to and the item it takes. */
     public List<Component> hint(int k) {
-        int cardSlot = cardSlots.get(k);
+        int[] entry = entries.get(k);
         if (!(level.getBlockEntity(pos) instanceof FarmBlockEntity entity)) return List.of();
-        FarmUpgrade card = FarmUpgrade.find(level.registryAccess(), entity.upgrades().getStackInSlot(cardSlot));
-        if (card == null) return List.of();
-        List<Component> items = entity.catalystItemsFor(cardSlot).stream().map(com.awesomeshot5051.easyfarms.upgrade.UpgradeRules::itemName).toList();
+        FarmUpgrade card = FarmUpgrade.find(level.registryAccess(), entity.upgrades().getStackInSlot(entry[1]));
+        List<String> items = entity.catalystItemsFor(entry[1]);
+        if (card == null || entry[2] >= items.size()) return List.of();
         return List.of(Component.translatable("gui.easy_farms.catalyst_slot", card.displayName()),
-                Component.translatable("gui.easy_farms.catalyst_accepts", ComponentUtils.formatList(items, Component.literal(", "))));
+                Component.translatable("gui.easy_farms.catalyst_accepts", com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.itemName(items.get(entry[2]))));
     }
 
     /** Button 0: back to the main farm GUI. */

@@ -1,0 +1,15 @@
+{
+  "name": "Nether Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:nether_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): Plant, Mob.$(br2)$(item)Nether recipes$() run anywhere, not only in the Nether or over their special block.$(br2)$(thing)Ingredients$(): 3 nether quartz, 3 netherrack, 3 glowstone."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:nether_upgrade"
+    }
+  ]
+}

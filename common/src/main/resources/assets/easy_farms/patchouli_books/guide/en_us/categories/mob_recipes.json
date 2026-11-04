@@ -1,0 +1,6 @@
+{
+  "name": "Mob Farm Recipes",
+  "description": "Every mob the Mob Farm can farm, with its outputs.",
+  "icon": "minecraft:zombie_head",
+  "sortnum": 5
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Inscriber Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:inscriber_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): Resource. Needs $(item)Applied Energistics 2$().$(br2)Does the AE2 Inscriber's job inside a farm. It is crafted with, and turns back into, an AE2 Inscriber.$(br2)$(thing)Grinding$(): with the card, a Sky Stone farm makes sky dust and a Certus Quartz farm makes certus quartz dust."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Pressing$(): gold ore farms make logic processor prints, diamond ore farms engineering processor prints and the silicon farm silicon prints, but only with the matching $(item)press$() in the farm's $(item)press slot$().$(br2)The press slot is the last slot on the Resource Farm's Upgrades screen. The press is not consumed."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:inscriber_upgrade"
+    }
+  ],
+  "flag": "mod:ae2"
+}
