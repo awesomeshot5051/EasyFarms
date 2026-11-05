@@ -1,0 +1,15 @@
+{
+  "name": "Quick Start",
+  "category": "easy_farms:basics",
+  "icon": "easy_farms:resource_farm",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "1. Craft a $(item)Resource Farm$() (see $(l:easy_farms:farms/resource_farm)The Farms$()).$(br2)2. Put a $(item)Coal Ore$() in an input slot and an $(item)iron pickaxe$() in the tool slot.$(br2)3. Wait. Coal comes out of the output slots. Hoppers and pipes can pull it out."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "4. Swap the pickaxe for a better one for more speed, and enchant it: $(item)Fortune$() gives more drops.$(br2)5. Try the upgrade cards in the $(l:easy_farms:cards/overview)Upgrades screen$()."
+    }
+  ]
+}

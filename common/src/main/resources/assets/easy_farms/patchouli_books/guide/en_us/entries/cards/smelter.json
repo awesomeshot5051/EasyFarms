@@ -1,0 +1,15 @@
+{
+  "name": "Smelter Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:smelter_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): Resource.$(br2)Drops come out $(item)smelted$() when the recipe allows it: ores to ingots, sand to glass and so on. The recipe lists show what each one smelts to (\"Smelter:\").$(br2)Other cards can build on it: some cards need the Smelter card on the same farm.$(br2)$(thing)Ingredients$(): 6 iron ingots, 1 blaze powder or blaze rod, 1 flint and steel, 1 netherrack."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:smelter_upgrade"
+    }
+  ]
+}

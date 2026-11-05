@@ -1,0 +1,19 @@
+{
+  "name": "Tools and Tiers",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:diamond_pickaxe",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The $(thing)tool$() sets the speed and the lifetime. A farm does not use up its inputs: the $(item)tool wears out$() instead, after a number of Minecraft days of operation.$(br2)Base lifetime: $(item)30 days$() (configurable). The tier multiplies it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Wood$(): slowest, x1$(br)$(thing)Stone$(): x10 faster, x2$(br)$(thing)Iron$(): x15 faster, x4$(br)$(thing)Gold$(): x20 faster, x8$(br)$(thing)Diamond$(): x25 faster, x16$(br)$(thing)Netherite$(): x30 faster, x32$(br2)Tools from other mods are placed in a tier by their material, so you never need a recipe to allow a tool."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A tool that was already damaged breaks sooner. A tool without durability is removed when its time is up. A paused or blocked farm does not wear its tool.$(br2)Recipes that need $(item)no tool$() use up their $(item)inputs$() after that time instead. The Infinity Upgrade stops all of this."
+    }
+  ]
+}

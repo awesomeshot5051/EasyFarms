@@ -1,0 +1,40 @@
+{
+  "name": "Applied Energistics 2",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:redstone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Quartz Cluster$()$(br)In: Quartz Cluster$(br)Out: Certus Quartz Crystal x1-3$(br)$(7)Tool: pickaxe; Fortune: Certus Quartz Crystal x1-5; Inscriber card: Certus Quartz Dust$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Quartz Cluster$()$(br)In: Quartz Cluster$(br)Out: Charged Certus Quartz Crystal x1-3$(br)$(7)Tool: pickaxe; Fortune: Charged Certus Quartz Crystal x1-5$()$(br2)$(thing)Entro Block$()$(br)In: Entro Block$(br)Out: Entro Block x1-3$(br)$(7)Tool: pickaxe; Fortune: Entro Block x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Entro Crystal$()$(br)In: Entro Crystal$(br)Out: Entro Crystal x1-3$(br)$(7)Tool: pickaxe; Fortune: Entro Crystal x1-5$()$(br2)$(thing)Entro Dust$()$(br)In: Entro Dust$(br)Out: Entro Dust x1-3$(br)$(7)Tool: pickaxe; Fortune: Entro Dust x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Flawed Budding Quartz$()$(br)In: Flawed Budding Quartz$(br)Out: Certus Quartz Crystal x1-3$(br)$(7)Tool: pickaxe; Fortune: Certus Quartz Crystal x1-5; Silk Touch: Flawed Budding Quartz$()$(br2)$(thing)Flawless Budding Quartz$()$(br)In: Flawless Budding Quartz$(br)Out: Flawless Budding Quartz x1-3$(br)$(7)Tool: pickaxe; Fortune: Flawless Budding Quartz x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Fluix Crystal$()$(br)In: Charged Certus Quartz Crystal + Redstone$(br)Out: Fluix Crystal x1-3$(br)$(7)Tool: pickaxe; Fortune: Fluix Crystal x1-5$()$(br2)$(thing)Fluix Dust$()$(br)In: Fluix Crystal + Any Slabs$(br)Out: Fluix Dust x1-3$(br)$(7)Tool: pickaxe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mysterious Cube$()$(br)In: Mysterious Cube$(br)Out: Engineering Processor Press x1-3, Logic Processor Press x1-3, Silicon Press x1-3, Calculation Processor Press x1-3$(br)$(7)Tool: pickaxe; Fortune: Engineering Processor Press x1-5$()$(br2)$(thing)Quartz Glass$()$(br)In: Quartz Glass$(br)Out: Quartz Glass x1-3$(br)$(7)Tool: pickaxe; Fortune: Quartz Glass x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Silicon$()$(br)In: Silicon$(br)Out: Silicon x1-3$(br)$(7)Tool: pickaxe; Fortune: Silicon x1-5; Inscriber card: Silicon Print (press: Silicon Press)$()$(br2)$(thing)Silicon Block$()$(br)In: Silicon Block$(br)Out: Silicon Block x1-3$(br)$(7)Tool: pickaxe; Fortune: Silicon Block x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Singularity$()$(br)In: 64 Matter Ball + Lava Bucket$(br)Out: Singularity x1-3$(br)$(7)Tool: pickaxe; Fortune: Singularity x1-5$()$(br2)$(thing)Sky Stone Block$()$(br)In: Sky Stone Block$(br)Out: Sky Stone Block x1-3$(br)$(7)Tool: pickaxe; Fortune: Sky Stone Block x1-5; Inscriber card: Sky Dust$()"
+    }
+  ],
+  "flag": "mod:ae2"
+}

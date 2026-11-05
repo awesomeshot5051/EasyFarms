@@ -1,0 +1,51 @@
+{
+  "name": "Ores",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:iron_ore",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Coal Ore$()$(br)In: Coal Ore$(br)Out: Coal x1-3$(br)$(7)Tool: pickaxe; Fortune: Coal x1-5; Silk Touch: Coal Ore$()$(br2)$(thing)Copper Ore$()$(br)In: Copper Ore$(br)Out: Raw Copper x1-3$(br)$(7)Tool: stone+ pickaxe; Fortune: Raw Copper x1-5; Silk Touch: Copper Ore; Smelter: Copper Ingot$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate Coal Ore$()$(br)In: Deepslate Coal Ore$(br)Out: Coal x1-3$(br)$(7)Tool: pickaxe; Fortune: Coal x1-5; Silk Touch: Deepslate Coal Ore$()$(br2)$(thing)Deepslate Copper Ore$()$(br)In: Deepslate Copper Ore$(br)Out: Raw Copper x1-3$(br)$(7)Tool: stone+ pickaxe; Fortune: Raw Copper x1-5; Silk Touch: Deepslate Copper Ore; Smelter: Copper Ingot$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate Diamond Ore$()$(br)In: Deepslate Diamond Ore$(br)Out: Diamond x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Diamond x1-5; Silk Touch: Deepslate Diamond Ore; Inscriber card: Engineering Processor Print (press: Engineering Processor Press)$()$(br2)$(thing)Deepslate Emerald Ore$()$(br)In: Deepslate Emerald Ore$(br)Out: Emerald x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Emerald x1-5; Silk Touch: Deepslate Emerald Ore$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate Gold Ore$()$(br)In: Deepslate Gold Ore$(br)Out: Raw Gold x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Raw Gold x1-5; Silk Touch: Deepslate Gold Ore; Smelter: Gold Ingot; Inscriber card: Logic Processor Print (press: Logic Processor Press)$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate Iron Ore$()$(br)In: Deepslate Iron Ore$(br)Out: Raw Iron x1-3$(br)$(7)Tool: stone+ pickaxe; Fortune: Raw Iron x1-5; Silk Touch: Deepslate Iron Ore; Smelter: Iron Ingot$()$(br2)$(thing)Deepslate Lapis Ore$()$(br)In: Deepslate Lapis Ore$(br)Out: Lapis Lazuli x1-3$(br)$(7)Tool: stone+ pickaxe; Fortune: Lapis Lazuli x1-9; Silk Touch: Deepslate Lapis Ore$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate Redstone Ore$()$(br)In: Deepslate Redstone Ore$(br)Out: Redstone x3-5$(br)$(7)Tool: iron+ pickaxe; Fortune: Redstone x5-9; Silk Touch: Deepslate Redstone Ore$()$(br2)$(thing)Diamond Ore$()$(br)In: Diamond Ore$(br)Out: Diamond x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Diamond x1-5; Inscriber card: Engineering Processor Print (press: Engineering Processor Press)$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Emerald Ore$()$(br)In: Emerald Ore$(br)Out: Emerald x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Emerald x1-5; Silk Touch: Emerald Ore$()$(br2)$(thing)Gold Ore$()$(br)In: Gold Ore$(br)Out: Raw Gold x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Raw Gold x1-5; Silk Touch: Gold Ore; Smelter: Gold Ingot; Inscriber card: Logic Processor Print (press: Logic Processor Press)$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Iron Ore$()$(br)In: Iron Ore$(br)Out: Raw Iron x1-3$(br)$(7)Tool: stone+ pickaxe; Fortune: Raw Iron x1-5; Silk Touch: Iron Ore; Smelter: Iron Ingot$()$(br2)$(thing)Lapis Ore$()$(br)In: Lapis Ore$(br)Out: Lapis Lazuli x1-3$(br)$(7)Tool: stone+ pickaxe; Fortune: Lapis Lazuli x1-9; Silk Touch: Deepslate Lapis Ore$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Nether Gold Ore$()$(br)In: Nether Gold Ore$(br)Out: Gold Nugget x1-3$(br)$(7)Tool: iron+ pickaxe; Fortune: Gold Nugget x1-5; Silk Touch: Nether Gold Ore; Smelter: Gold Ingot$()$(br2)$(thing)Nether Quartz Ore$()$(br)In: Nether Quartz Ore$(br)Out: Quartz x1-3$(br)$(7)Tool: pickaxe; Fortune: Quartz x1-5; Silk Touch: Nether Quartz Ore$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Netherite Block$()$(br)In: Netherite Block$(br)Out: Netherite Block x1-3$(br)$(7)Tool: diamond+ pickaxe; Fortune: Netherite Block x1-5$()$(br2)$(thing)Ancient Debris$()$(br)In: Ancient Debris + Netherite Ingot$(br)Out: Ancient Debris x0-1$(br)$(7)Tool: diamond+ pickaxe; Fortune: Ancient Debris x1-5; Smelter: Netherite Scrap$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Redstone Ore$()$(br)In: Redstone Ore$(br)Out: Redstone x3-5$(br)$(7)Tool: iron+ pickaxe; Fortune: Redstone x5-9; Silk Touch: Redstone Ore$()"
+    }
+  ]
+}

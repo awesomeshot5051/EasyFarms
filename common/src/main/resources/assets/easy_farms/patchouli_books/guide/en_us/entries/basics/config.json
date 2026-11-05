@@ -1,0 +1,15 @@
+{
+  "name": "Configuration",
+  "category": "easy_farms:basics",
+  "icon": "minecraft:comparator",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Config file: $(item)config/easy_farms-common.toml$()$(br2)$(thing)timeMultiplier$() (1.0): multiplies every farm's cycle time. 2.0 is twice as slow.$(br2)$(thing)baseInputLifetimeDays$() (30): Minecraft days before the tool breaks (or, for toolless recipes, the inputs are used up) at the base tier."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Tool tiers, recipes and upgrade cards are datapack data, so a modpack can change them without code."
+    }
+  ]
+}

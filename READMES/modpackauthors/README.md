@@ -11,6 +11,7 @@ and their effects. This guide covers all of it.
 * [Upgrade cards and effects](#upgrade-cards-and-effects)
 * [Secret recipes and achievements](#secret-recipes-and-achievements)
 * [Changing or removing existing content](#changing-or-removing-existing-content)
+* [The guide book](#the-guide-book)
 * [Testing](#testing)
 
 ---
@@ -490,6 +491,20 @@ recipe. The discovery is saved on the player, is kept on death, and is also what
   `data/easy_farms/recipe/resource_farm/auto/`, so you can override or disable them the same way.
 * **Make every farm slower, or the inputs last longer:** use the config (`timeMultiplier`, `baseInputLifetimeDays`) rather than editing recipes.
 
+---
+
+## The guide book
+
+Easy Farms ships a Patchouli book, `easy_farms:guide` (craft it with a book and a glass pane; Patchouli is optional). It covers
+the farms, the default cards, catalysts and restrictions, and lists every Resource, Plant and Mob Farm recipe with inputs and
+outputs. The recipe chapters are generated: run `python3 tools/generate_guide.py` after changing recipes and commit the result.
+
+**Adding your own chapter.** Ship a resource pack (a datapack folder can double as one) with
+`assets/easy_farms/patchouli_books/guide/en_us/categories/<name>.json` and entries under
+`.../entries/<name>/*.json` whose `category` is `easy_farms:<name>`. Use `"flag": "mod:<modid>"` on the category and entries to show
+them only when that mod is installed. See Patchouli's documentation for the page formats.
+
+---
 ---
 
 ## Testing

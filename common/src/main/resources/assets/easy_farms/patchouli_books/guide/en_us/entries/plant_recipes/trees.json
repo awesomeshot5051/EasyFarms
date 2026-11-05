@@ -1,0 +1,31 @@
+{
+  "name": "Trees",
+  "category": "easy_farms:plant_recipes",
+  "icon": "minecraft:oak_sapling",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Acacia Sapling$()$(br)In: Grass Block + Acacia Sapling$(br)Out: Acacia Sapling x1-4 (50%), Acacia Log, Stripped Acacia Log (0%), Acacia Leaves$(br)$(7)Tool: axe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Azalea$()$(br)In: Grass Block + Azalea$(br)Out: Azalea x1-4 (50%), Stripped Oak Log (0%), Flowering Azalea Leaves (0%), Azalea Leaves$(br)$(7)Tool: axe$()$(br2)$(thing)Birch Sapling$()$(br)In: Grass Block + Birch Sapling$(br)Out: Birch Sapling x1-4 (50%), Birch Log, Stripped Birch Log (0%), Birch Leaves$(br)$(7)Tool: axe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Cherry Sapling$()$(br)In: Grass Block + Cherry Sapling$(br)Out: Cherry Sapling x1-4 (50%), Cherry Log, Stripped Cherry Log (0%), Cherry Leaves$(br)$(7)Tool: axe$()$(br2)$(thing)Chorus Plant$()$(br)In: Grass Block + Chorus Plant$(br)Out: Chorus Plant x1-4 (50%), Chorus Flower (50%), Chorus Fruit$(br)$(7)Tool: axe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Dark Oak Sapling$()$(br)In: Grass Block + Dark Oak Sapling$(br)Out: Dark Oak Sapling x1-4 (50%), Apple (50%), Dark Oak Log, Stripped Dark Oak Log (0%), Dark Oak Leaves$(br)$(7)Tool: axe$()$(br2)$(thing)Jungle Sapling$()$(br)In: Grass Block + Jungle Sapling$(br)Out: Jungle Sapling x1-4 (50%), Jungle Log, Stripped Jungle Log (0%), Jungle Leaves$(br)$(7)Tool: axe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mangrove Roots$()$(br)In: Grass Block + Mangrove Roots$(br)Out: Mangrove Roots x1-4 (50%), Mangrove Log, Stripped Mangrove Log (0%), Mangrove Leaves$(br)$(7)Tool: axe$()$(br2)$(thing)Oak Sapling$()$(br)In: Grass Block + Oak Sapling$(br)Out: Oak Sapling x1-4 (50%), Oak Log, Apple$(br)$(7)Tool: axe$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Spruce Sapling$()$(br)In: Grass Block + Spruce Sapling$(br)Out: Spruce Sapling x1-4 (50%), Spruce Log, Spruce Leaves$(br)$(7)Tool: axe$()"
+    }
+  ]
+}

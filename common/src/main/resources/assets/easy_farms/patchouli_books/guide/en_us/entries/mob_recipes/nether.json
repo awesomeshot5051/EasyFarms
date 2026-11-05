@@ -1,0 +1,35 @@
+{
+  "name": "Nether Mobs",
+  "category": "easy_farms:mob_recipes",
+  "icon": "minecraft:blaze_rod",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Blaze$()$(br)In: 2 Blaze Rod$(br)Out: Blaze Rod x1-4$(br)$(7)Tool: sword; Looting: Blaze Rod x3-6; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether over Netherrack$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Ghast$()$(br)In: 2 Ghast Tear$(br)Out: Gunpowder x0-2, Ghast Tear x0-2$(br)$(7)Tool: sword; Looting: Gunpowder x4-8; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Hoglin$()$(br)In: Leather + Porkchop or Cooked Porkchop$(br)Out: Leather x1-3, Porkchop x1-3$(br)$(7)Tool: sword; Looting: Leather x4-8; Fire Aspect: Cooked Porkchop; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Magma Cube$()$(br)In: Magma Cream$(br)Out: Magma Cream x1-3 (50%)$(br)$(7)Tool: sword; Looting: Magma Cream x4-8; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether over Magma Block or Lava$()$(br2)$(thing)Piglin$()$(br)In: 2 Piglin Head$(br)Out: Golden Sword x1-3 (8%)$(br)$(7)Tool: sword; Looting: Golden Sword x4-8; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Strider$()$(br)In: 2 String$(br)Out: String x1-3$(br)$(7)Tool: sword; Looting: String x4-8; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Wither Skeleton$()$(br)In: 2 Wither Skeleton Skull$(br)Out: Wither Skeleton Skull (98%), Stone Sword (92%), Bone x0-1$(br)$(7)Tool: sword; Looting: Bone x2-8; Nether recipe (Nether Upgrade runs it anywhere); Needs in the Nether$()$(br2)$(thing)Zoglin$()$(br)In: 2 Rotten Flesh$(br)Out: Rotten Flesh x1-3$(br)$(7)Tool: sword; Looting: Rotten Flesh x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Zombified Piglin$()$(br)In: Gold Ingot + Gold Nugget$(br)Out: Rotten Flesh x0-2, Gold Nugget x0-2, Gold Ingot x0-2 (98%)$(br)$(7)Tool: sword; Looting: Rotten Flesh x4-8$()"
+    }
+  ]
+}

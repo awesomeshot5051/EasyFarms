@@ -1,0 +1,15 @@
+{
+  "name": "How Cards Work",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:upgrade_card",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upgrade cards go in the $(item)Upgrades screen$(), opened with the arrow button in the top right of a farm. A farm has $(item)18 card slots$(), and holds each card only once.$(br2)You can also $(item)sneak and right-click$() a farm with a card in hand to install it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cards run in $(item)slot order$(). When two cards change the same drops, the first one wins.$(br2)A card can also be $(thing)refused$(): hold it over a slot and the tooltip explains why (see $(l:easy_farms:cards/restrictions)Card Restrictions$()).$(br2)Modpacks and other mods can add more cards: any item can become a card with a bit of data, and the same screens show them."
+    }
+  ]
+}

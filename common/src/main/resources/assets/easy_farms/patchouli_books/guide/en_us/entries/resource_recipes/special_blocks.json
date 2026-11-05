@@ -1,0 +1,47 @@
+{
+  "name": "Special Blocks",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:budding_amethyst",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Brain Coral Block$()$(br)In: Brain Coral Block$(br)Out: Dead Brain Coral Block$(br)$(7)Tool: pickaxe; Silk Touch: Brain Coral Block$()$(br2)$(thing)Bubble Coral Block$()$(br)In: Bubble Coral Block$(br)Out: Dead Bubble Coral Block$(br)$(7)Tool: pickaxe; Silk Touch: Bubble Coral Block$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Budding Amethyst$()$(br)In: Budding Amethyst$(br)Out: Small Amethyst Bud (40%), Medium Amethyst Bud (30%), Large Amethyst Bud (20%), Amethyst Cluster (10%)$(br)$(7)Tool: pickaxe$()$(br2)$(thing)Cobbled Deepslate$()$(br)In: Cobbled Deepslate$(br)Out: Cobbled Deepslate x1-3$(br)$(7)Tool: pickaxe; Fortune: Cobbled Deepslate x1-5; Smelter: Deepslate$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Cobblestone$()$(br)In: Cobblestone$(br)Out: Cobblestone x1-3$(br)$(7)Tool: pickaxe; Fortune: Cobblestone x1-5; Smelter: Stone$()$(br2)$(thing)Crimson Nylium$()$(br)In: Crimson Nylium$(br)Out: Netherrack$(br)$(7)Tool: pickaxe; Silk Touch: Crimson Nylium; Smelter: Nether Brick$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate Bricks$()$(br)In: Deepslate Bricks$(br)Out: Deepslate Bricks x1-3$(br)$(7)Tool: pickaxe; Fortune: Deepslate Bricks x1-5; Smelter: Cracked Deepslate Bricks$()$(br2)$(thing)Deepslate Tiles$()$(br)In: Deepslate Tiles$(br)Out: Deepslate Tiles x1-3$(br)$(7)Tool: pickaxe; Fortune: Deepslate Tiles x1-5; Smelter: Cracked Deepslate Tiles$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Fire Coral Block$()$(br)In: Fire Coral Block$(br)Out: Dead Fire Coral Block$(br)$(7)Tool: pickaxe; Silk Touch: Fire Coral Block$()$(br2)$(thing)Horn Coral Block$()$(br)In: Horn Coral Block$(br)Out: Dead Horn Coral Block$(br)$(7)Tool: pickaxe; Silk Touch: Horn Coral Block$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mycelium$()$(br)In: Mycelium$(br)Out: Dirt$(br)$(7)Tool: shovel; Silk Touch: Mycelium$()$(br2)$(thing)Nether Bricks$()$(br)In: Nether Bricks$(br)Out: Nether Bricks x1-3$(br)$(7)Tool: pickaxe; Fortune: Nether Bricks x1-5; Smelter: Cracked Nether Bricks$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Podzol$()$(br)In: Podzol$(br)Out: Dirt$(br)$(7)Tool: shovel; Silk Touch: Podzol$()$(br2)$(thing)Polished Blackstone Bricks$()$(br)In: Polished Blackstone Bricks$(br)Out: Polished Blackstone Bricks x1-3$(br)$(7)Tool: pickaxe; Fortune: Polished Blackstone Bricks x1-5; Smelter: Cracked Polished Blackstone Bricks$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Quartz Block$()$(br)In: Quartz Block$(br)Out: Quartz Block x1-3$(br)$(7)Tool: pickaxe; Fortune: Quartz Block x1-5; Smelter: Smooth Quartz$()$(br2)$(thing)Red Sandstone$()$(br)In: Red Sandstone$(br)Out: Red Sandstone x1-3$(br)$(7)Tool: pickaxe; Fortune: Red Sandstone x1-5; Smelter: Smooth Red Sandstone$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Stone Bricks$()$(br)In: Stone Bricks$(br)Out: Stone Bricks x1-3$(br)$(7)Tool: pickaxe; Fortune: Stone Bricks x1-5; Smelter: Cracked Stone Bricks$()$(br2)$(thing)Tube Coral Block$()$(br)In: Tube Coral Block$(br)Out: Dead Tube Coral Block$(br)$(7)Tool: pickaxe; Silk Touch: Tube Coral Block$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Warped Nylium$()$(br)In: Warped Nylium$(br)Out: Netherrack$(br)$(7)Tool: pickaxe; Silk Touch: Warped Nylium; Smelter: Nether Brick$()$(br2)$(thing)Wet Sponge$()$(br)In: Wet Sponge$(br)Out: Wet Sponge x1-3$(br)$(7)Tool: hoe; Fortune: Wet Sponge x1-5; Smelter: Sponge$()"
+    }
+  ]
+}

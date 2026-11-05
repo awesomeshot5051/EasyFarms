@@ -1,0 +1,47 @@
+{
+  "name": "Stone, Soil and Sand",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:cobblestone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Andesite$()$(br)In: Andesite$(br)Out: Andesite x1-3$(br)$(7)Tool: pickaxe; Fortune: Andesite x1-5$()$(br2)$(thing)Calcite$()$(br)In: Calcite$(br)Out: Calcite x1-3$(br)$(7)Tool: pickaxe; Fortune: Calcite x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Clay$()$(br)In: Clay$(br)Out: Clay Ball x1-4$(br)$(7)Tool: shovel; Fortune: Clay Ball x4-10; Silk Touch: Clay; Smelter: Brick$()$(br2)$(thing)Stone$()$(br)In: Stone$(br)Out: Cobblestone x1-3$(br)$(7)Tool: pickaxe; Fortune: Cobblestone x1-5; Silk Touch: Stone$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Any Concretes$()$(br)In: Any Concretes$(br)Out: White Concrete x1-3$(br)$(7)Tool: pickaxe; Fortune: White Concrete x1-5; Dyeable$()$(br2)$(thing)Any Concrete Powders$()$(br)In: Any Concrete Powders$(br)Out: White Concrete Powder x1-3$(br)$(7)Tool: shovel; Fortune: White Concrete Powder x1-5; Dyeable$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Deepslate$()$(br)In: Deepslate$(br)Out: Deepslate x1-3$(br)$(7)Tool: pickaxe; Fortune: Deepslate x1-5$()$(br2)$(thing)Diorite$()$(br)In: Diorite$(br)Out: Diorite x1-3$(br)$(7)Tool: pickaxe; Fortune: Diorite x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Dirt$()$(br)In: Dirt$(br)Out: Dirt x1-3$(br)$(7)Tool: shovel; Fortune: Dirt x1-5$()$(br2)$(thing)Granite$()$(br)In: Granite$(br)Out: Granite x1-3$(br)$(7)Tool: pickaxe; Fortune: Granite x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Grass Block$()$(br)In: Grass Block$(br)Out: Dirt x1-3$(br)$(7)Tool: shovel; Fortune: Dirt x1-5; Silk Touch: Grass Block$()$(br2)$(thing)Gravel$()$(br)In: Gravel$(br)Out: Gravel x1-3$(br)$(7)Tool: shovel$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Mud$()$(br)In: Mud$(br)Out: Mud x1-3$(br)$(7)Tool: shovel; Fortune: Mud x1-5$()$(br2)$(thing)Red Sand$()$(br)In: Red Sand$(br)Out: Red Sand x1-3$(br)$(7)Tool: shovel; Fortune: Red Sand x1-5; Smelter: Glass$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Sand$()$(br)In: Sand$(br)Out: Sand x1-3$(br)$(7)Tool: shovel; Fortune: Sand x1-5; Smelter: Glass$()$(br2)$(thing)Sandstone$()$(br)In: Sandstone$(br)Out: Sandstone x1-3$(br)$(7)Tool: pickaxe; Fortune: Sandstone x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Snow Block$()$(br)In: Snow Block$(br)Out: Snowball x1-3$(br)$(7)Tool: shovel; Fortune: Snowball x1-5; Silk Touch: Snow Block$()$(br2)$(thing)Stone$()$(br)In: Stone$(br)Out: Stone x1-3$(br)$(7)Tool: pickaxe; Fortune: Stone x1-5; Smelter: Smooth Stone$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Any Terracotta$()$(br)In: Any Terracotta$(br)Out: White Terracotta x1-3$(br)$(7)Tool: pickaxe; Fortune: White Terracotta x1-5; Dyeable$()$(br2)$(thing)Tuff$()$(br)In: Tuff$(br)Out: Tuff x1-3$(br)$(7)Tool: pickaxe; Fortune: Tuff x1-5$()"
+    }
+  ]
+}

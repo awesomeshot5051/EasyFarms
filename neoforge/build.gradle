@@ -25,6 +25,9 @@ dependencies {
     compileOnly "curse.maven:theoneprobe-245211:${top_id}"
     localRuntime "curse.maven:theoneprobe-245211:${top_id}"
 
+    // Patchouli: the Easy Farms guide book is plain data, so it is only needed at runtime to see it.
+    localRuntime "maven.modrinth:patchouli:${patchouli_neoforge_version}"
+
     boolean datagen = gradle.startParameter.taskNames.any { it.toLowerCase().contains('rundata') }
     if (project.findProperty('with_content_mods')?.toString() == 'true' && !datagen) {
         localRuntime "maven.modrinth:ae2:${ae2_version}"

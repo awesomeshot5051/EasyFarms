@@ -1,0 +1,19 @@
+{
+  "name": "Using a Farm",
+  "category": "easy_farms:basics",
+  "icon": "easy_farms:plant_farm",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Right-click a farm to open its screen.$(br2)$(thing)3 input slots$(): the items the recipe is made of. 2 porkchops make a pig farm; wheat seeds plus a hoe make wheat.$(br2)$(thing)1 tool slot$(): decides the speed and how long the farm lasts. Any pickaxe, shovel, axe, hoe or sword works, including other mods' tools."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)4 output slots$(): take-only. Hoppers and pipes can pull from them, and push into the inputs.$(br2)$(thing)Arrow buttons$(), top right: the first opens the Upgrades screen. A second appears under it when an installed card needs a catalyst."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A farm only runs while its inputs and tool match a recipe $(item)exactly$(). Extra items in the input slots mean no match. Plant Farm recipes are slot-ordered: $(item)soil in slot 1$(), then the plant."
+    }
+  ]
+}

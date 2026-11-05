@@ -1,0 +1,17 @@
+{
+  "name": "Welcome",
+  "category": "easy_farms:basics",
+  "icon": "easy_farms:resource_farm",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Easy Farms$() adds three machines that farm almost everything in Minecraft: a $(item)Resource Farm$(), a $(item)Plant Farm$() and a $(item)Mob Farm$().$(br2)What a farm makes is not built into the block. You put items into it and it matches them against $(thing)recipes$(). Swap the items, get a different result."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Each farm is a glass case that shows what it is doing: a block being mined by a swinging tool, a plant growing, or a mob standing inside.$(br2)This book explains the farms, the upgrade cards, and lists every recipe the farms know."
+    }
+  ],
+  "read_by_default": true,
+  "priority": true
+}

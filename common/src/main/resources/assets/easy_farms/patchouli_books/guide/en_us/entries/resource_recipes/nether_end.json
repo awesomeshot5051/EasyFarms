@@ -1,0 +1,27 @@
+{
+  "name": "Nether and End",
+  "category": "easy_farms:resource_recipes",
+  "icon": "minecraft:netherrack",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Basalt$()$(br)In: Basalt$(br)Out: Basalt x1-3$(br)$(7)Tool: pickaxe; Fortune: Basalt x1-5; Smelter: Smooth Basalt$()$(br2)$(thing)Blackstone$()$(br)In: Blackstone$(br)Out: Blackstone x1-3$(br)$(7)Tool: pickaxe; Fortune: Blackstone x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)End Stone$()$(br)In: End Stone$(br)Out: End Stone x1-3$(br)$(7)Tool: pickaxe; Fortune: End Stone x1-5$()$(br2)$(thing)Glowstone$()$(br)In: Glowstone$(br)Out: Glowstone Dust x1-3$(br)$(7)Tool: pickaxe; Fortune: Glowstone Dust x1-5; Silk Touch: Glowstone$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Netherrack$()$(br)In: Netherrack$(br)Out: Netherrack x1-3$(br)$(7)Tool: pickaxe; Fortune: Netherrack x1-5$()$(br2)$(thing)Obsidian$()$(br)In: Obsidian$(br)Out: Obsidian x1-3$(br)$(7)Tool: diamond+ pickaxe; Fortune: Obsidian x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Purpur Block$()$(br)In: Purpur Block$(br)Out: Purpur Block x1-3$(br)$(7)Tool: pickaxe; Fortune: Purpur Block x1-5$()$(br2)$(thing)Soul Sand$()$(br)In: Soul Sand$(br)Out: Soul Sand x1-3$(br)$(7)Tool: shovel; Fortune: Soul Sand x1-5$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Soul Soil$()$(br)In: Soul Soil$(br)Out: Soul Soil x1-3$(br)$(7)Tool: shovel; Fortune: Soul Soil x1-5$()"
+    }
+  ]
+}
