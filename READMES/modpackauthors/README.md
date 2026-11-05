@@ -25,6 +25,7 @@ All paths are inside a datapack, or `data/` in a mod's resources.
 | Resource Farm recipes | `data/<namespace>/recipe/resource_farm/<name>.json` |
 | Plant Farm recipes | `data/<namespace>/recipe/plant_farm/<name>.json` |
 | Mob Farm recipes | `data/<namespace>/recipe/mob_farm/<name>.json` |
+| Liquid Farm recipes | `data/<namespace>/recipe/liquid_farm/<name>.json` |
 | Tool tiers | `data/<namespace>/easy_farms/farm_tier/<name>.json` |
 | Upgrade cards | `data/<namespace>/easy_farms/farm_upgrade/<name>.json` |
 
@@ -95,6 +96,27 @@ Plant recipes are **slot-ordered**: the first input is the soil (slot 1), the se
   ]
 }
 ```
+
+### Example: a liquid farm recipe
+
+Liquid recipes have no `drops`; they add a fluid to the tank every cycle. The visual type is `fluid`.
+
+```json
+{
+  "type": "easy_farms:liquid_farm",
+  "inputs": [
+    { "item": "minecraft:honey_bottle" },
+    { "item": "minecraft:cauldron" },
+    { "item": "minecraft:pointed_dripstone" }
+  ],
+  "visual": { "type": "fluid", "target": "mymod:honey" },
+  "base_ticks": 2400,
+  "visual_ticks": 0,
+  "fluid": { "fluid": "mymod:honey", "amount": 1000 }
+}
+```
+
+`fluid.amount` is millibuckets per cycle. The tank holds `liquidBaseCapacityMb` (config, default 1000 = one bucket) times the Capacity cards.
 
 ### Recipe fields
 
@@ -255,7 +277,7 @@ card id (see [cards without registering an item](#cards-without-registering-an-i
 | `name` | Optional. The card's display name, a text component (a plain string works). Used by the generic `easy_farms:upgrade_card`, so a recipe only needs to set the `easy_farms:card` component. |
 | `description` | Optional. What the card does, shown in its tooltip. |
 | `card` | Optional. For the generic `easy_farms:upgrade_card` item: the id its `easy_farms:card` component must hold. Without it, any stack of `item` is the card. |
-| `kinds` | `resource`, `plant` and/or `mob`: the farms that accept it. |
+| `kinds` | `resource`, `plant`, `mob` and/or `liquid`: the farms that accept it. |
 | `requires` | Shown in the card's tooltip: the text key `gui.easy_farms.requires.<value>`. The built-ins are `any`, `smeltable`, `toolless`, `nether` and `inscriber`. Add your own key in your lang file. |
 | `restrictions` | Optional. Compatibility rules, see [Card restrictions](#card-restrictions). |
 | `effects` | What the card does (a list; a card can have several). Empty means nothing happens. |
@@ -317,11 +339,17 @@ What happens:
   change so that a rule is broken, the card stays in its slot but is switched off. Where two cards clash, the one in
   the earlier slot keeps working. A card with a missing requirement does nothing until the requirement returns.
 
+### Stacking cards
+
+`farm_upgrade` files accept `max_count` (default 1): how many of the card one farm holds, stacked in one slot. `stack_requires` lists upgrade ids that
+must be installed to stack beyond 1, and `stack_exempt_kinds` lists farm kinds (`resource`, `plant`, `mob`, `liquid`) that stack without them.
+The Capacity card uses `"max_count": 4, "stack_requires": ["easy_farms:powered"], "stack_exempt_kinds": ["liquid"]`.
+
 ### Built-in effects
 
 | Type | Parameters | Effect |
 |---|---|---|
-| `easy_farms:cycle_time` | `divisor`, `toolless_only` (default true) | Divides the work part of a cycle. Used by the Speed card. |
+| `easy_farms:cycle_time` | `divisor`, `toolless_only` (default true), `kind_divisors` (e.g. `{"liquid": 2.0}`) | Divides the work part of a cycle. Used by the Speed card (8x, but 2x on the Liquid Farm). |
 | `easy_farms:smelt` | none | Smeltable recipes drop their smelted form. |
 | `easy_farms:nether_environment` | none | Recipes marked `nether` ignore their environment. |
 | `easy_farms:infinite_inputs` | none | The tool never wears out and the inputs are never consumed. |
@@ -330,6 +358,8 @@ What happens:
 | `easy_farms:inscribe` | none | The Inscriber card: recipes with an `inscriber` object drop its drops instead. |
 | `easy_farms:drop_multiplier` | `multiplier` | Multiplies the item counts of each cycle. A fractional part is a chance of one more. |
 | `easy_farms:convert_drops` | `rules` | Turns the finished drops into other items. See below. |
+| `easy_farms:powered` | `capacity` (1000), `min_energy` (100), `energy_per_tick` (2), `tier` (`easy_farms:diamond`), `toolless_divisor` (4), `energy_mods` (a list of mod ids) | The farm runs on energy (needs an energy API: FE on NeoForge, Team Reborn Energy on Fabric). `tier` is a farm_tier whose speed replaces the tool's if faster; toolless recipes are divided by `toolless_divisor`. Stops below `min_energy`, drains `energy_per_tick` while working. The card is refused (and says "FE or other energy generation mod required to use") unless one of the `energy_mods` is loaded; replace the list to add your pack's energy mod, or give `[]` to always allow it. |
+| `easy_farms:capacity` | `energy_multiplier` (2), `fluid_multiplier` (2), `item_multiplier` (2), `unstackable_base` (8) | Per installed card: multiplies the ME buffer, the liquid tank and the output stack size. Unstackable items get `unstackable_base x multiplier`. |
 
 These are enough to build new cards **with no code**: a datapack plus an item (for example one added with a
 datapack-friendly item mod) is a complete card.

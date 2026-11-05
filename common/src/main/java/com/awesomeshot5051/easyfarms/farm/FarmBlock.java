@@ -105,6 +105,20 @@ public class FarmBlock extends Block implements EntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos, Player player,
                                               InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof FarmBlockEntity farm)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (kind == FarmKind.LIQUID && held.is(net.minecraft.world.item.Items.BUCKET)) {
+            // Empty bucket on a Liquid Farm: take a full bucket out of the tank (needs 1000 mB, i.e. Capacity upgrades).
+            var fluidId = farm.fluidId();
+            var fluid = fluidId == null ? null : net.minecraft.core.registries.BuiltInRegistries.FLUID.get(fluidId);
+            if (fluid == null || fluid == net.minecraft.world.level.material.Fluids.EMPTY || farm.fluidAmount() < 1000) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            ItemStack filled = new ItemStack(fluid.getBucket());
+            if (filled.isEmpty() || filled.is(net.minecraft.world.item.Items.BUCKET)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            if (!level.isClientSide) {
+                farm.extractFluid(1000, false);
+                player.setItemInHand(hand, net.minecraft.world.item.ItemUtils.createFilledResult(held, player, filled));
+                level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BUCKET_FILL, net.minecraft.sounds.SoundSource.BLOCKS, 1F, 1F);
+            }
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
         boolean isCard = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.isCard(level.registryAccess(), held);
         if (isCard) {
             if (!level.isClientSide) {

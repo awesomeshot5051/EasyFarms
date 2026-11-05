@@ -39,6 +39,10 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
 
     @Override
     public void render(FarmBlockEntity farm, float partialTick, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+        if (farm.kind() == com.awesomeshot5051.easyfarms.farm.FarmKind.LIQUID) {
+            renderTank(farm, pose, buffer, light, overlay);
+            return;
+        }
         FarmRecipe.Visual visual = farm.getVisual();
         if (visual == null) return; // no matching recipe: just the empty glass case
         BlockState farmState = farm.getBlockState();
@@ -53,6 +57,33 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
                 if (timer >= farm.visualStart()) renderMob(farm, visual, pose, buffer, light);
             }
             default -> {
+            }
+        }
+    }
+
+    /** The Liquid Farm: the fluid's still texture as a surface that rises with the tank level. */
+    private void renderTank(FarmBlockEntity farm, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+        var id = farm.fluidId();
+        if (id == null || farm.fluidAmount() <= 0) return;
+        var fluid = BuiltInRegistries.FLUID.get(id);
+        if (fluid == net.minecraft.world.level.material.Fluids.EMPTY) return;
+        var sprite = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(fluid.defaultFluidState().createLegacyBlock());
+        float level = Math.min(1f, farm.fluidAmount() / (float) Math.max(1, farm.fluidCapacity()));
+        float y = 1f / 16f + level * (13f / 16f);
+        float x0 = 1f / 16f, x1 = 15f / 16f;
+        int tint = FluidTint.of(fluid);
+        int r = tint >> 16 & 255, g = tint >> 8 & 255, b = tint & 255;
+        int lit = fluid.defaultFluidState().createLegacyBlock().getLightEmission() > 0 ? 15728880 : light;
+        var vc = buffer.getBuffer(RenderType.translucent());
+        var last = pose.last();
+        float[][] corners = {{x0, x0}, {x0, x1}, {x1, x1}, {x1, x0}};
+        // Both windings, so the surface is visible from above and below whatever the culling does.
+        for (int pass = 0; pass < 2; pass++) {
+            for (int i = 0; i < 4; i++) {
+                float[] c = corners[pass == 0 ? i : 3 - i];
+                vc.addVertex(last, c[0], y, c[1]).setColor(r, g, b, 220)
+                        .setUv(sprite.getU(c[0]), sprite.getV(c[1])).setOverlay(overlay).setLight(lit)
+                        .setNormal(last, 0f, pass == 0 ? 1f : -1f, 0f);
             }
         }
     }

@@ -108,7 +108,7 @@ final class AutoResourceRecipes {
             }
             boolean smeltable = drops.get(0).smeltItem().isPresent();
             FarmRecipe recipe = new FarmRecipe(FarmKind.RESOURCE, List.of(SizedIngredient.of(item, 1)), Optional.of(tool), rank,
-                    new FarmRecipe.Visual("block", id), 600, 80, smeltable, false, Optional.empty(), false, false, Optional.empty(), drops);
+                    new FarmRecipe.Visual("block", id), 600, 80, smeltable, false, Optional.empty(), false, false, Optional.empty(), drops, Optional.empty());
             out.accept(ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "resource_farm/auto/" + path), recipe, null);
             count++;
         }

@@ -27,12 +27,15 @@ dependencies {
     modCompileOnly "maven.modrinth:jade:${jade_fabric_version}"
     modLocalRuntime "maven.modrinth:jade:${jade_fabric_version}"
 
+    modCompileOnly "teamreborn:energy:${team_reborn_energy_version}"
     modCompileOnly "curse.maven:configured-457570:${configured_id}"
     modLocalRuntime "curse.maven:configured-457570:${configured_id}"
     modLocalRuntime "com.terraformersmc:modmenu:${modmenu_version}"
 
     // Patchouli: the Easy Farms guide book is plain data, so it is only needed at runtime to see it.
     modLocalRuntime "maven.modrinth:patchouli:${patchouli_fabric_version}"
+    // Patchouli nests Fiber (its config library) as a jar-in-jar, which Loom's dev runtime does not load for this version: add it directly.
+    modLocalRuntime files('dev-libs/fiber-0.23.0-2.jar')
 
     if (project.findProperty('with_content_mods')?.toString() == 'true') {
         modLocalRuntime "maven.modrinth:refined-storage:${refined_storage_version}"

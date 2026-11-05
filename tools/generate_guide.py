@@ -173,7 +173,7 @@ def notes_of(r):
         notes.append("Tool: " + TIER[min(r.get("min_tier_rank", 0), 5)] + TOOL_NAME.get(tool.split(":")[-1], tool.split(":")[-1]))
     else:
         notes.append("No tool needed")
-    drops = r["drops"]
+    drops = r.get("drops", [])
     fort = [d for d in drops if "fortune_max" in d or "fortune_min" in d]
     if fort:
         d = fort[0]
@@ -212,18 +212,21 @@ def notes_of(r):
 def recipe_block(r, title):
     lines = [f"$(thing){title}$()"]
     lines.append("In: " + " + ".join(inputs_of(r)))
-    lines.append("Out: " + ", ".join(drop_text(d) for d in r["drops"]))
+    outs = [drop_text(d) for d in r.get("drops", [])]
+    if r.get("fluid"):
+        outs.append(f"{r['fluid']['amount']} mB {item_name(r['fluid']['fluid'])}")
+    lines.append("Out: " + ", ".join(outs))
     lines.append("$(7)" + "; ".join(notes_of(r)) + "$()")
     return "\n".join(lines)
 
 
 def self_drop(r):
-    return (len(r["drops"]) == 1 and len(r["inputs"]) == 1 and r["drops"][0]["item"] == input_ing(r["inputs"][0])
+    return (len(r.get("drops", [])) == 1 and len(r["inputs"]) == 1 and r["drops"][0]["item"] == input_ing(r["inputs"][0])
             and not r.get("smeltable") and not r.get("inscriber") and "silk_item" not in r["drops"][0])
 
 
 def first_item(r):
-    d = r["drops"][0]["item"] if r["drops"] else "minecraft:stone"
+    d = r["drops"][0]["item"] if r.get("drops") else "minecraft:stone"
     return d
 
 
@@ -261,7 +264,7 @@ def recipe_pages(r_id, text=None):
 def build_basics():
     category("basics", "Getting Started", "What the farms are and how to use them.", f"{NS}:resource_farm", 0)
     entry("basics", "welcome", "Welcome", f"{NS}:resource_farm", prose([
-        "$(thing)Easy Farms$() adds three machines that farm almost everything in Minecraft: a $(item)Resource Farm$(), a $(item)Plant Farm$() and a $(item)Mob Farm$().",
+        "$(thing)Easy Farms$() adds four machines that farm almost everything in Minecraft: a $(item)Resource Farm$(), a $(item)Plant Farm$(), a $(item)Mob Farm$() and a $(item)Liquid Farm$() that makes water and lava.",
         "What a farm makes is not built into the block. You put items into it and it matches them against $(thing)recipes$(). Swap the items, get a different result.",
         "Each farm is a glass case that shows what it is doing: a block being mined by a swinging tool, a plant growing, or a mob standing inside.",
         "This book explains the farms, the upgrade cards, and lists every recipe the farms know.",
@@ -278,6 +281,7 @@ def build_basics():
         "$(thing)3 input slots$(): the items the recipe is made of. 2 porkchops make a pig farm; wheat seeds plus a hoe make wheat.",
         "$(thing)1 tool slot$(): decides the speed and how long the farm lasts. Any pickaxe, shovel, axe, hoe or sword works, including other mods' tools.",
         "$(thing)4 output slots$(): take-only. Hoppers and pipes can pull from them, and push into the inputs.",
+        "$(thing)Liquid Farm$(): has no output slots; a tank bar shows the fluid instead.",
         "$(thing)Arrow buttons$(), top right: the first opens the Upgrades screen. A second appears under it when an installed card needs a catalyst.",
         "A farm only runs while its inputs and tool match a recipe $(item)exactly$(). Extra items in the input slots mean no match. Plant Farm recipes are slot-ordered: $(item)soil in slot 1$(), then the plant.",
     ]))
@@ -315,12 +319,13 @@ def build_basics():
         "Config file: $(item)config/easy_farms-common.toml$()",
         "$(thing)timeMultiplier$() (1.0): multiplies every farm's cycle time. 2.0 is twice as slow.",
         "$(thing)baseInputLifetimeDays$() (30): Minecraft days before the tool breaks (or, for toolless recipes, the inputs are used up) at the base tier.",
+        "$(thing)liquidBaseCapacityMb$() (1000): how much a Liquid Farm tank holds before Capacity cards.",
         "Tool tiers, recipes and upgrade cards are datapack data, so a modpack can change them without code.",
     ]))
 
 
 def build_farms():
-    category("farms", "The Farms", "The three machines and how to craft them.", f"{NS}:plant_farm", 1)
+    category("farms", "The Farms", "The four machines and how to craft them.", f"{NS}:plant_farm", 1)
     entry("farms", "resource_farm", "Resource Farm", f"{NS}:resource_farm", [
         text_page("The $(item)Resource Farm$() mines blocks: stone, ores, sand, nether blocks and so on. It needs a $(item)pickaxe, shovel or axe$() in the tool slot.$(br2)Its floor is stone.$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 pickaxe (any), 1 iron block."),
         recipe_pages(f"{NS}:resource_farm", "Glass panes around a pickaxe, over an iron block."),
@@ -335,6 +340,11 @@ def build_farms():
         text_page("The $(item)Mob Farm$() \"kills\" mobs for their drops. It needs a $(item)sword$() plus the food or item that mob needs as input.$(br2)Its floor is lava with stone.$(br2)$(thing)Ingredients$(): 5 glass panes (any), 1 lava bucket, 1 sword (any), 2 iron ingots."),
         recipe_pages(f"{NS}:mob_farm", "Glass panes over a lava bucket, with a sword between two iron ingots below."),
         text_page("Inputs follow the original Mob Farms mod: for example porkchops for pigs, raw beef for cows. See $(l:easy_farms:mob_recipes/passive)Mob Farm Recipes$() for every mob."),
+    ])
+    entry("farms", "liquid_farm", "Liquid Farm", f"{NS}:liquid_farm", [
+        text_page("The $(item)Liquid Farm$() makes $(item)water$() or $(item)lava$() into an internal tank. It needs no tool.$(br2)It makes $(item)one bucket (1000 mB)$() every $(item)2 minutes$(), or every minute with the Speed Upgrade. The tank holds one bucket; each Capacity Upgrade doubles that, up to 16000 mB.$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 bucket, 1 pointed dripstone, 1 cauldron."),
+        recipe_pages(f"{NS}:liquid_farm", "Glass panes around a column of bucket, pointed dripstone and cauldron."),
+        text_page("$(thing)Water$(): water bucket + cauldron + pointed dripstone.$(br2)$(thing)Lava$(): lava bucket + cauldron + pointed dripstone.$(br2)The tank shows as a bar in the farm screen and in Jade. Pipes take fluid from any side, and an empty bucket right-clicked on the farm is filled.$(br2)When the farm's input lifetime ends, the empty bucket is left in its slot."),
     ])
 
 
@@ -356,7 +366,7 @@ def build_cards():
         recipe_pages(f"{NS}:smelter_upgrade"),
     ])
     entry("cards", "speed", "Speed Upgrade", f"{NS}:speed_upgrade", [
-        text_page("$(thing)Farms$(): Plant, Mob.$(br2)Recipes that need $(item)no tool$() run $(item)8 times faster$().$(br2)$(thing)Ingredients$(): 7 redstone dust, 1 flint and steel, 1 nether quartz."),
+        text_page("$(thing)Farms$(): Plant, Mob, Liquid.$(br2)Recipes that need $(item)no tool$() run $(item)8 times faster$(). The Liquid Farm runs $(item)2 times$() faster.$(br2)$(thing)Ingredients$(): 7 redstone dust, 1 flint and steel, 1 nether quartz."),
         recipe_pages(f"{NS}:speed_upgrade"),
     ])
     entry("cards", "nether", "Nether Upgrade", f"{NS}:nether_upgrade", [
@@ -366,6 +376,14 @@ def build_cards():
     entry("cards", "infinity", "Infinity Upgrade", f"{NS}:infinity_upgrade", [
         text_page("$(thing)Farms$(): all.$(br2)The tool $(item)never wears out$(), the inputs are $(item)never used up$(), and $(item)catalysts$() are never consumed.$(br2)$(thing)Ingredients$(): 4 diamonds, 4 eyes of ender, 1 nether star."),
         recipe_pages(f"{NS}:infinity_upgrade"),
+    ])
+    entry("cards", "powered", "Powered Upgrade", f"{NS}:powered_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)Runs the farm on $(item)energy$() (FE, or the power of any energy mod) at $(item)diamond speed$(). It needs at least $(item)100 ME$() stored and holds 1000 ME. Pipes and cables feed it from any side.$(br2)The farm screen shows a red $(item)energy bar$() while the card is installed, and Jade shows an ME bar.$(br2)An $(item)energy generation mod$() must be installed: without one the card cannot be placed in a farm."),
+        recipe_pages(f"{NS}:powered_upgrade"),
+    ])
+    entry("cards", "capacity", "Capacity Upgrade", f"{NS}:capacity_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)Each card $(item)doubles$(): the stack size of the output slots (16 to 32, 64 to 128, items that do not stack hold 16), the ME buffer of a Powered farm, and the tank of a Liquid Farm.$(br2)Cards stack up to $(item)4$() in a Powered or Liquid farm (16000 ME, 16000 mB). A plain farm takes one."),
+        recipe_pages(f"{NS}:capacity_upgrade"),
     ])
     entry("cards", "inscriber", "Inscriber Upgrade", f"{NS}:inscriber_upgrade", [
         text_page("$(thing)Farms$(): Resource. Needs $(item)Applied Energistics 2$().$(br2)Does the AE2 Inscriber's job inside a farm. It is crafted with, and turns back into, an AE2 Inscriber.$(br2)$(thing)Grinding$(): with the card, a Sky Stone farm makes sky dust and a Certus Quartz farm makes certus quartz dust."),
@@ -483,13 +501,21 @@ def build_recipes():
         entry("mob_recipes", gid.replace("mod:", ""), gname, icons.get(gid, "minecraft:egg"), [text_page(t) for t in pack(blocks)], **({"flag": "mod:" + flag} if flag else {}))
 
 
+    # ---------------------------------------------------------------- liquid farm
+    category("liquid_recipes", "Liquid Farm Recipes", "The fluids the Liquid Farm makes.", "minecraft:water_bucket", 6)
+    liquids = sorted(load_recipes("liquid"), key=lambda r: r["_id"])
+    if liquids:
+        blocks = [recipe_block(r, item_name(r["fluid"]["fluid"])) for r in liquids]
+        entry("liquid_recipes", "liquids", "Liquids", "minecraft:water_bucket", [text_page(t) for t in pack(blocks)])
+
+
 # ---------------------------------------------------------------- output
 def write_all():
     for d in (DATA_DIR, ASSET_DIR):
         shutil.rmtree(d, ignore_errors=True)
     write_json(os.path.join(DATA_DIR, "book.json"), {
         "name": "Easy Farms Guide",
-        "landing_text": "Resource, Plant and Mob farms in a glass case. This guide covers how they work, the upgrade cards, and every recipe the farms know.",
+        "landing_text": "Resource, Plant, Mob and Liquid farms in a glass case. This guide covers how they work, the upgrade cards, and every recipe the farms know.",
         "subtitle": "How to farm everything",
         "book_texture": "patchouli:textures/gui/book_green.png",
         "creative_tab": "minecraft:tools_and_utilities",

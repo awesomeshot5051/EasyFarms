@@ -116,7 +116,10 @@ public class ItemStackHandler implements Container {
         ListTag list = new ListTag();
         for (int i = 0; i < stacks.size(); i++) {
             if (stacks.get(i).isEmpty()) continue;
-            CompoundTag item = (CompoundTag) stacks.get(i).save(provider);
+            ItemStack stack = stacks.get(i);
+            // ItemStack's codec only allows counts up to 99; bigger stacks (Capacity card) keep the real count beside it.
+            CompoundTag item = (CompoundTag) stack.copyWithCount(Math.min(stack.getCount(), 99)).save(provider);
+            if (stack.getCount() > 99) item.putInt("BigCount", stack.getCount());
             item.putInt("Slot", i);
             list.add(item);
         }
@@ -133,7 +136,12 @@ public class ItemStackHandler implements Container {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag item = list.getCompound(i);
             int slot = item.getInt("Slot");
-            if (slot >= 0 && slot < stacks.size()) ItemStack.parse(provider, item).ifPresent(s -> stacks.set(slot, s));
+            if (slot >= 0 && slot < stacks.size()) {
+                ItemStack.parse(provider, item).ifPresent(s -> {
+                    if (item.contains("BigCount")) s.setCount(item.getInt("BigCount"));
+                    stacks.set(slot, s);
+                });
+            }
         }
     }
 

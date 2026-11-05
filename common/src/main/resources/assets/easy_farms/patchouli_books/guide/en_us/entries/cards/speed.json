@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(thing)Farms$(): Plant, Mob.$(br2)Recipes that need $(item)no tool$() run $(item)8 times faster$().$(br2)$(thing)Ingredients$(): 7 redstone dust, 1 flint and steel, 1 nether quartz."
+      "text": "$(thing)Farms$(): Plant, Mob, Liquid.$(br2)Recipes that need $(item)no tool$() run $(item)8 times faster$(). The Liquid Farm runs $(item)2 times$() faster.$(br2)$(thing)Ingredients$(): 7 redstone dust, 1 flint and steel, 1 nether quartz."
     },
     {
       "type": "patchouli:crafting",

@@ -1,0 +1,15 @@
+{
+  "name": "Powered Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:powered_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)Runs the farm on $(item)energy$() (FE, or the power of any energy mod) at $(item)diamond speed$(). It needs at least $(item)100 ME$() stored and holds 1000 ME. Pipes and cables feed it from any side.$(br2)The farm screen shows a red $(item)energy bar$() while the card is installed, and Jade shows an ME bar.$(br2)An $(item)energy generation mod$() must be installed: without one the card cannot be placed in a farm."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:powered_upgrade"
+    }
+  ]
+}

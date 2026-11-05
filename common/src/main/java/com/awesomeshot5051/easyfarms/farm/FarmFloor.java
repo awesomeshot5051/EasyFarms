@@ -29,6 +29,7 @@ public enum FarmFloor implements StringRepresentable {
             case RESOURCE -> STONE;
             case MOB -> LAVA;
             case PLANT -> GRASS;
+            case LIQUID -> STONE;
         };
     }
 }

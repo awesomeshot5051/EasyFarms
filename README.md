@@ -23,6 +23,10 @@ Each farm is a glass case that shows what it is doing: the block being mined wit
 growing, or the mob standing inside. The floor changes with the recipe: stone for the Resource Farm, grass, farmland
 with water or soul sand for the Plant Farm, and lava with stone for the Mob Farm.
 
+### The Liquid Farm
+
+A fourth machine that makes **fluids** instead of items. Put a **water bucket + cauldron + pointed dripstone** in the input slots for water, or swap the water bucket for a **lava bucket** for lava. It makes **one bucket (1000 mB) every 2 minutes** (1 minute with the Speed card) into an internal tank that holds one bucket by default; each Capacity card doubles it, up to 16000 mB. When its water or lava bucket is used up (like any farm's inputs, after the lifetime) an empty bucket is left in the slot. The farm screen shows the tank as a bar in the fluid's own texture with the amount in the middle. Pipes can take fluid from any side, and an empty bucket right-clicked on it is filled. What it makes is a recipe (`liquid_farm/*.json`), so packs can add their own fluids.
+
 ### Crafting
 
 | Block | Recipe |
@@ -30,6 +34,9 @@ with water or soul sand for the Plant Farm, and lava with stone for the Mob Farm
 | Resource Farm | Glass panes around a **pickaxe** (any), over an **iron block** |
 | Plant Farm | Glass panes around a **hoe** (any), over **dirt** |
 | Mob Farm | Glass panes over a **lava bucket**, with a **sword** between two iron ingots below |
+| Liquid Farm | Glass panes around a column of **bucket**, **pointed dripstone** and **cauldron** |
+| Powered Upgrade | Redstone block in the middle, redstone and copper ingots around it |
+| Capacity Upgrade | A chest ringed by iron ingots |
 
 (Exact shapes are visible in JEI/EMI.)
 
@@ -97,6 +104,8 @@ install it.
 | **Speed** | Plant, Mob | Recipes that need no tool run much faster |
 | **Nether** | Plant, Mob | Nether recipes run anywhere, not only in the Nether |
 | **Infinity** | All | The tool never wears out and the inputs are never consumed |
+| **Powered** | All | Runs the farm on energy (FE or any energy mod's power) at **diamond speed**. Needs an energy-generating mod installed (the card says so in its tooltip and cannot be installed without one). Needs at least 100 ME stored; 1000 ME buffer. The farm screen gets a red energy bar (only while the card is installed) and Jade/TOP show an ME bar |
+| **Capacity** | All | Doubles per card: the stack size of the output slots (16→32, 64→128, unstackables get 16), the ME buffer of a Powered farm (up to 4 cards: 16000 ME), and the tank of a Liquid Farm (1000→16000 mB). Stacks to 4 on Powered and Liquid farms; a plain farm takes 1 |
 | **Inscriber** | Resource | Emulates the AE2 Inscriber: farms that make AE2 items produce the processed form instead (see below) |
 
 Cards are data-driven. A modpack or another mod can add more (see the modder guide).

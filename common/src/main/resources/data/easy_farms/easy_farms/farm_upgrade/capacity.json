@@ -1,0 +1,26 @@
+{
+  "item": "easy_farms:capacity_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob",
+    "liquid"
+  ],
+  "requires": "capacity",
+  "max_count": 4,
+  "stack_requires": [
+    "easy_farms:powered"
+  ],
+  "stack_exempt_kinds": [
+    "liquid"
+  ],
+  "effects": [
+    {
+      "type": "easy_farms:capacity",
+      "energy_multiplier": 2.0,
+      "fluid_multiplier": 2.0,
+      "item_multiplier": 2.0,
+      "unstackable_base": 8
+    }
+  ]
+}

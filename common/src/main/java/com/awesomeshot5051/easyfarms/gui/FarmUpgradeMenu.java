@@ -48,12 +48,12 @@ public class FarmUpgradeMenu extends AbstractContainerMenu {
                 public boolean mayPlace(ItemStack stack) {
                     // Any card this farm kind accepts, in any free slot, once. The server also checks the farm's other slots.
                     if (farm != null) return farm.canInstall(stack, index);
-                    return upgrades.stream().anyMatch(u -> u.matches(stack)) && restrictionProblem(stack, index) == null;
+                    return upgrades.stream().anyMatch(u -> u.matches(stack) && u.available()) && restrictionProblem(stack, index) == null;
                 }
 
                 @Override
                 public int getMaxStackSize() {
-                    return 1;
+                    return 64;   // the farm's own limit per card (max_count) applies
                 }
             });
         }

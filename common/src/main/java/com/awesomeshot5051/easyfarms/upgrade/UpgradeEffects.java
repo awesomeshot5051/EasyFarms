@@ -30,10 +30,11 @@ public final class UpgradeEffects {
     public static final Registry<MapCodec<? extends UpgradeEffect>> REGISTRY = Services.PLATFORM.createSyncedRegistry(KEY);
 
     /** Divides the "work" part of a cycle (everything except the animation window). Default: only for toolless recipes. */
-    public record CycleTime(double divisor, boolean toolessOnly) implements UpgradeEffect {
+    public record CycleTime(double divisor, boolean toolessOnly, java.util.Map<com.awesomeshot5051.easyfarms.farm.FarmKind, Double> kindDivisors) implements UpgradeEffect {
         public static final MapCodec<CycleTime> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.DOUBLE.fieldOf("divisor").forGetter(CycleTime::divisor),
-                Codec.BOOL.optionalFieldOf("toolless_only", true).forGetter(CycleTime::toolessOnly)
+                Codec.BOOL.optionalFieldOf("toolless_only", true).forGetter(CycleTime::toolessOnly),
+                Codec.unboundedMap(com.awesomeshot5051.easyfarms.farm.FarmKind.CODEC, Codec.DOUBLE).optionalFieldOf("kind_divisors", java.util.Map.of()).forGetter(CycleTime::kindDivisors)
         ).apply(i, CycleTime::new));
 
         @Override
@@ -44,7 +45,8 @@ public final class UpgradeEffects {
         @Override
         public double modifyCycleTicks(FarmBlockEntity farm, FarmRecipe r, double ticks) {
             if (toolessOnly && !r.toolless()) return ticks;
-            return (ticks - r.visualTicks()) / divisor + r.visualTicks();
+            double d = kindDivisors.getOrDefault(farm.kind(), divisor);
+            return (ticks - r.visualTicks()) / d + r.visualTicks();
         }
     }
 
@@ -402,6 +404,122 @@ public final class UpgradeEffects {
         }
     }
 
+    /**
+     * The Powered card: the farm runs on energy (ME / FE / E) delivered by pipes, cables or any energy mod, and works at the speed of
+     * another tool tier (diamond by default). It stops while less than {@code min_energy} is stored.
+     * <pre>{"type": "easy_farms:powered", "capacity": 1000, "min_energy": 100, "energy_per_tick": 2,
+     *  "tier": "easy_farms:diamond", "toolless_divisor": 4}</pre>
+     * {@code tier} is a farm_tier id whose speed replaces the tool's. Recipes without a tool ignore tiers, so they are
+     * divided by {@code toolless_divisor} instead (like the Speed card).
+     */
+    public record Powered(long capacity, long minEnergy, long energyPerTick, ResourceLocation tier, double toollessDivisor,
+                          List<String> energyMods) implements UpgradeEffect {
+        /** Mods that make energy; the card needs one of them. A pack replaces the list in the card's JSON (empty = always allowed). */
+        public static final List<String> DEFAULT_ENERGY_MODS = List.of("mekanism", "mekanismgenerators", "thermal", "thermal_expansion",
+                "immersiveengineering", "enderio", "powah", "industrialforegoing", "bigreactors", "draconicevolution", "pneumaticcraft",
+                "createaddition", "create_new_age", "flux_networks", "ad_astra", "techreborn", "modern_industrialization", "indrev",
+                "energizedpower", "galacticraft", "extremereactors", "fluxnetworks", "ender_io", "mekanism_extras", "generatorgalore", "solarflux");
+
+        public static final MapCodec<Powered> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.LONG.optionalFieldOf("capacity", 1000L).forGetter(Powered::capacity),
+                Codec.LONG.optionalFieldOf("min_energy", 100L).forGetter(Powered::minEnergy),
+                Codec.LONG.optionalFieldOf("energy_per_tick", 2L).forGetter(Powered::energyPerTick),
+                ResourceLocation.CODEC.optionalFieldOf("tier", ResourceLocation.fromNamespaceAndPath(EasyFarms.MODID, "diamond")).forGetter(Powered::tier),
+                Codec.DOUBLE.optionalFieldOf("toolless_divisor", 4.0).forGetter(Powered::toollessDivisor),
+                Codec.STRING.listOf().optionalFieldOf("energy_mods", DEFAULT_ENERGY_MODS).forGetter(Powered::energyMods)
+        ).apply(i, Powered::new));
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean available() {
+            if (!Services.PLATFORM.energyAvailable()) return false;
+            if (energyMods.isEmpty()) return true;
+            for (String mod : energyMods) if (Services.PLATFORM.isModLoaded(mod)) return true;
+            return false;
+        }
+
+        @Override
+        public net.minecraft.network.chat.Component unavailableReason() {
+            return Services.PLATFORM.energyAvailable() && available() ? null
+                    : net.minecraft.network.chat.Component.translatable("tooltip.easy_farms.energy_mod_required");
+        }
+
+        @Override
+        public long energyCapacity() {
+            return capacity;
+        }
+
+        @Override
+        public boolean pausesFarm(FarmBlockEntity farm) {
+            return farm.energyStored() < Math.max(1, minEnergy);
+        }
+
+        @Override
+        public void onWorkTick(FarmBlockEntity farm) {
+            farm.extractEnergy(energyPerTick);
+        }
+
+        @Override
+        public com.awesomeshot5051.easyfarms.tier.FarmTier overrideTier(FarmBlockEntity farm, com.awesomeshot5051.easyfarms.tier.FarmTier current) {
+            if (farm.getLevel() == null) return current;
+            var registry = farm.getLevel().registryAccess().registryOrThrow(com.awesomeshot5051.easyfarms.tier.FarmTier.REGISTRY_KEY);
+            var powered = registry.get(tier);
+            if (powered == null) return current;
+            return current == null || powered.speedDivisor() > current.speedDivisor() ? powered : current;
+        }
+
+        @Override
+        public double modifyCycleTicks(FarmBlockEntity farm, FarmRecipe r, double ticks) {
+            if (!r.toolless() || toollessDivisor <= 1) return ticks;
+            return (ticks - r.visualTicks()) / toollessDivisor + r.visualTicks();
+        }
+    }
+
+    /**
+     * The Capacity card. Each installed card multiplies: the energy buffer of a Powered farm, the tank of a Liquid Farm, and
+     * the stack size of the output slots. Stacking comes from the card's {@code max_count}.
+     * <pre>{"type": "easy_farms:capacity", "energy_multiplier": 2, "fluid_multiplier": 2, "item_multiplier": 2, "unstackable_base": 8}</pre>
+     */
+    public record Capacity(double energyMultiplier, double fluidMultiplier, double itemMultiplier, int unstackableBase) implements UpgradeEffect {
+        public static final MapCodec<Capacity> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.DOUBLE.optionalFieldOf("energy_multiplier", 2.0).forGetter(Capacity::energyMultiplier),
+                Codec.DOUBLE.optionalFieldOf("fluid_multiplier", 2.0).forGetter(Capacity::fluidMultiplier),
+                Codec.DOUBLE.optionalFieldOf("item_multiplier", 2.0).forGetter(Capacity::itemMultiplier),
+                Codec.INT.optionalFieldOf("unstackable_base", 8).forGetter(Capacity::unstackableBase)
+        ).apply(i, Capacity::new));
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public double energyCapacityMultiplier() {
+            return energyMultiplier;
+        }
+
+        @Override
+        public double fluidCapacityMultiplier() {
+            return fluidMultiplier;
+        }
+
+        @Override
+        public double itemStackMultiplier() {
+            return itemMultiplier;
+        }
+
+        @Override
+        public int unstackableBase() {
+            return unstackableBase;
+        }
+    }
+
+    public static final Supplier<MapCodec<Powered>> POWERED = Services.PLATFORM.register(KEY, "powered", () -> Powered.CODEC);
+    public static final Supplier<MapCodec<Capacity>> CAPACITY = Services.PLATFORM.register(KEY, "capacity", () -> Capacity.CODEC);
     public static final Supplier<MapCodec<ConvertDrops>> CONVERT_DROPS = Services.PLATFORM.register(KEY, "convert_drops", () -> ConvertDrops.CODEC);
     public static final Supplier<MapCodec<Inscribe>> INSCRIBE = Services.PLATFORM.register(KEY, "inscribe", () -> Inscribe.CODEC);
     public static final Supplier<MapCodec<CycleTime>> CYCLE_TIME = Services.PLATFORM.register(KEY, "cycle_time", () -> CycleTime.CODEC);

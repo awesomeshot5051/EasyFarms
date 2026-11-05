@@ -53,6 +53,50 @@ public interface UpgradeEffect {
         return 1;
     }
 
+    /** False if this effect cannot work in this installation (the card is then refused). Power needs an energy API. */
+    default boolean available() {
+        return true;
+    }
+
+    /** Why {@link #available()} is false (shown in the card's tooltip), or null. */
+    default net.minecraft.network.chat.Component unavailableReason() {
+        return null;
+    }
+
+    /** Lets a card replace the tool tier the cycle time is computed from (for example the Powered card's diamond speed). */
+    default com.awesomeshot5051.easyfarms.tier.FarmTier overrideTier(FarmBlockEntity farm, com.awesomeshot5051.easyfarms.tier.FarmTier current) {
+        return current;
+    }
+
+    /** Server side, once per tick in which the farm really works (not paused, blocked or idle). */
+    default void onWorkTick(FarmBlockEntity farm) {
+    }
+
+    /** Base energy capacity (ME) this card gives the farm; 0 for cards that need no power. */
+    default long energyCapacity() {
+        return 0;
+    }
+
+    /** Multiplies the energy capacity (Capacity card). */
+    default double energyCapacityMultiplier() {
+        return 1;
+    }
+
+    /** Multiplies the liquid tank capacity (Capacity card). */
+    default double fluidCapacityMultiplier() {
+        return 1;
+    }
+
+    /** Multiplies the stack size of the output slots (Capacity card). */
+    default double itemStackMultiplier() {
+        return 1;
+    }
+
+    /** Output stack size for items that normally do not stack, at a multiplier of 1x (Capacity card gives 8, so one card = 16). 0 = none. */
+    default int unstackableBase() {
+        return 0;
+    }
+
     /** Server side: change the drops of a finished cycle before they go into the output slots. */
     default void modifyDrops(FarmBlockEntity farm, ServerLevel level, FarmRecipe recipe, List<ItemStack> drops) {
     }

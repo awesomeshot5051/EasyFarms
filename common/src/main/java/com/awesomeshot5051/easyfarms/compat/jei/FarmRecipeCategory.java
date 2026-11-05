@@ -103,6 +103,16 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
                     .addRichTooltipCallback((slot, tooltip) -> describe(drop, tooltip));
             i++;
         }
+        if (recipe.fluid().isPresent()) {
+            var out = recipe.fluid().get();
+            ItemStack bucket = new ItemStack(BuiltInRegistries.FLUID.get(out.fluid()).getBucket());
+            if (!bucket.isEmpty()) {
+                int col = i % 7, row = i / 7;
+                builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT).addItemStack(bucket)
+                        .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.fluid", out.amount(), bucket.getHoverName())));
+                i++;
+            }
+        }
         // What the Inscriber card makes instead (AE2 prints and dust), listed after the normal drops.
         if (recipe.inscriber().isPresent()) {
             var ins = recipe.inscriber().get();

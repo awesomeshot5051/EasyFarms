@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)4 output slots$(): take-only. Hoppers and pipes can pull from them, and push into the inputs.$(br2)$(thing)Arrow buttons$(), top right: the first opens the Upgrades screen. A second appears under it when an installed card needs a catalyst."
+      "text": "$(thing)4 output slots$(): take-only. Hoppers and pipes can pull from them, and push into the inputs.$(br2)$(thing)Liquid Farm$(): has no output slots; a tank bar shows the fluid instead.$(br2)$(thing)Arrow buttons$(), top right: the first opens the Upgrades screen. A second appears under it when an installed card needs a catalyst."
     },
     {
       "type": "patchouli:text",

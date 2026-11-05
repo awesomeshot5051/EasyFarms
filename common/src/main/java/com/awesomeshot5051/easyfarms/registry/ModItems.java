@@ -15,6 +15,10 @@ public class ModItems {
     public static final Supplier<Item> SPEED_UPGRADE = card("speed_upgrade");
     public static final Supplier<Item> NETHER_UPGRADE = card("nether_upgrade");
     public static final Supplier<Item> INSCRIBER_UPGRADE = card("inscriber_upgrade");
+    /** Runs the farm on energy (ME / FE) at diamond speed. */
+    public static final Supplier<Item> POWERED_UPGRADE = card("powered_upgrade");
+    /** Doubles item stacks, the energy buffer and the liquid tank per card; stacks (see its farm_upgrade). */
+    public static final Supplier<Item> CAPACITY_UPGRADE = Services.PLATFORM.register(Registries.ITEM, "capacity_upgrade", () -> new Item(new Item.Properties().stacksTo(64)));
     /** New in EasyFarms: with this installed, the recipe's input items are never used up. */
     public static final Supplier<Item> INFINITY_UPGRADE = card("infinity_upgrade");
 
@@ -25,7 +29,7 @@ public class ModItems {
     public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.register(Registries.ITEM, "upgrade_card", () -> new UpgradeCardItem(new Item.Properties().stacksTo(1)));
 
     public static final List<Supplier<Item>> UPGRADES = List.of(
-            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE);
+            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE);
 
     private static Supplier<Item> card(String name) {
         return Services.PLATFORM.register(Registries.ITEM, name, () -> new Item(new Item.Properties().stacksTo(1)));

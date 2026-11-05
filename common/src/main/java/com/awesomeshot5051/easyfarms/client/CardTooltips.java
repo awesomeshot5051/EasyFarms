@@ -24,6 +24,10 @@ public final class CardTooltips {
         List<Component> kinds = upgrade.kinds().stream()
                 .map(k -> (Component) Component.translatable("farm_kind.easy_farms." + k.getSerializedName())).toList();
         tooltip.add(Component.translatable("tooltip.easy_farms.card_kinds", ComponentUtils.formatList(kinds, Component.literal(", "))).withStyle(ChatFormatting.GRAY));
+        for (var effect : upgrade.effects()) {
+            Component reason = effect.unavailableReason();
+            if (reason != null) tooltip.add(reason.copy().withStyle(ChatFormatting.RED));
+        }
         if (!upgrade.requires().equals("any")) {
             tooltip.add(Component.translatable("gui.easy_farms.requires." + upgrade.requires()).withStyle(ChatFormatting.DARK_GRAY));
         }

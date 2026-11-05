@@ -71,6 +71,11 @@ public class FarmBlockEntity extends BlockEntity {
     };
     private final ItemStackHandler outputs = new ItemStackHandler(OUTPUTS) {
         @Override
+        protected int getStackLimit(int slot, ItemStack stack) {
+            return outputLimit(stack);
+        }
+
+        @Override
         protected void onContentsChanged(int slot) {
             setChanged();
         }
@@ -116,7 +121,7 @@ public class FarmBlockEntity extends BlockEntity {
 
         @Override
         protected int getStackLimit(int slot, ItemStack stack) {
-            return 1;
+            return cardLimit(stack);
         }
 
         @Override
@@ -226,6 +231,12 @@ public class FarmBlockEntity extends BlockEntity {
     private DyeColor color = DyeColor.WHITE;
     /** Set while a Silk Touch break is in progress: the contents travel with the item instead of dropping. */
     private boolean keepContents;
+    /** Energy (ME) stored by the Powered card's buffer. */
+    private long energy;
+    /** The Liquid Farm's tank: fluid id (null = empty) and millibuckets. */
+    @Nullable
+    private net.minecraft.resources.ResourceLocation fluidId;
+    private int fluidAmount;
     private long timer;
     /** Ticks the recipe has really been running since its inputs were last used up. */
     private long operatingTicks;
@@ -456,11 +467,39 @@ public class FarmBlockEntity extends BlockEntity {
     private boolean isInstallable(ItemStack card, int slot) {
         if (level == null || card.isEmpty()) return false;
         com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), card);
-        if (upgrade == null || !upgrade.kinds().contains(kind)) return false;
-        for (int i = 0; i < upgrades.getSlots(); i++) {
-            if (i != slot && upgrade.matches(upgrades.getStackInSlot(i))) return false;
+        if (upgrade == null || !upgrade.kinds().contains(kind) || !upgrade.available()) return false;
+        int holder = holderSlot(upgrade, slot);
+        if (holder >= 0) {
+            // A card lives in one slot; more of the same card stack into it (up to its max_count), but only via "any free slot".
+            if (slot != -1) return false;
+            return upgrades.getStackInSlot(holder).getCount() < upgrade.allowedCount(kind, installedIds());
         }
         return true;
+    }
+
+    /** The slot (other than {@code except}) already holding this card, or -1. */
+    private int holderSlot(com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade, int except) {
+        for (int i = 0; i < upgrades.getSlots(); i++) {
+            if (i != except && upgrade.matches(upgrades.getStackInSlot(i))) return i;
+        }
+        return -1;
+    }
+
+    private List<net.minecraft.resources.ResourceLocation> installedIds() {
+        List<net.minecraft.resources.ResourceLocation> ids = new ArrayList<>();
+        if (level == null) return ids;
+        for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade : installedUpgrades(-1)) {
+            var id = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.id(level.registryAccess(), upgrade);
+            if (id != null) ids.add(id);
+        }
+        return ids;
+    }
+
+    /** How many of this card one upgrade slot may hold right now. */
+    private int cardLimit(ItemStack card) {
+        if (level == null) return 1;
+        com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), card);
+        return upgrade == null ? 1 : upgrade.allowedCount(kind, installedIds());
     }
 
     /** Why the card's restrictions forbid it here (shown to the player), or null if they do not. */
@@ -468,7 +507,8 @@ public class FarmBlockEntity extends BlockEntity {
     public net.minecraft.network.chat.Component installProblem(ItemStack card, int slot) {
         if (!isInstallable(card, slot)) return null;
         com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), card);
-        return com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.installProblem(rulesContext(), upgrade, installedUpgrades(slot));
+        int except = slot >= 0 ? slot : holderSlot(upgrade, -1);
+        return com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.installProblem(rulesContext(), upgrade, installedUpgrades(except));
     }
 
     /** The registered upgrades in the slots, skipping {@code exceptSlot}, in slot order. */
@@ -497,6 +537,14 @@ public class FarmBlockEntity extends BlockEntity {
     /** Puts an upgrade card into the first free upgrade slot if this farm accepts it and doesn't have it yet. */
     public boolean installCard(ItemStack card) {
         if (!canInstall(card, -1)) return false;
+        com.awesomeshot5051.easyfarms.tier.FarmUpgrade wanted = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), card);
+        int holder = wanted == null ? -1 : holderSlot(wanted, -1);
+        if (holder >= 0) {
+            ItemStack stack = upgrades.getStackInSlot(holder);
+            stack.grow(1);
+            upgrades.setStackInSlot(holder, stack);
+            return true;
+        }
         for (int i = 0; i < upgrades.getSlots(); i++) {
             if (upgrades.getStackInSlot(i).isEmpty()) {
                 upgrades.setStackInSlot(i, card.copyWithCount(1));
@@ -528,13 +576,123 @@ public class FarmBlockEntity extends BlockEntity {
             // Cards whose requirements are missing, or that clash with an earlier card or the tool's enchantments, are off.
             for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade :
                     com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.working(rulesContext(), installedUpgrades(-1))) {
-                list.addAll(upgrade.effects());
+                int copies = Math.min(stackCountOf(upgrade), upgrade.allowedCount(kind, installedIds()));
+                for (int n = 0; n < Math.max(1, copies); n++) list.addAll(upgrade.effects());
             }
             for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade : installedUpgrades(-1)) {
                 for (var restriction : upgrade.restrictions()) effectsDependOnWorld |= !restriction.requiresBlockBelow().isEmpty();
             }
         }
+        if (level == null) return List.copyOf(list);
         return effectCache = List.copyOf(list);
+    }
+
+    private int stackCountOf(com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade) {
+        int total = 0;
+        for (int i = 0; i < upgrades.getSlots(); i++) if (upgrade.matches(upgrades.getStackInSlot(i))) total += upgrades.getStackInSlot(i).getCount();
+        return total;
+    }
+
+    // ---- capacity: output stacks, energy buffer, liquid tank ----
+
+    /** Output slot stack size: the item's own, enlarged by Capacity cards (items that never stack get a base of their own). */
+    public int outputLimit(ItemStack stack) {
+        double multiplier = 1;
+        int unstackable = 0;
+        for (UpgradeEffect e : effects()) {
+            multiplier *= e.itemStackMultiplier();
+            unstackable = Math.max(unstackable, e.unstackableBase());
+        }
+        int max = stack.getMaxStackSize();
+        if (multiplier <= 1) return max;
+        if (max > 1) return (int) Math.min(1 << 20, Math.round(max * multiplier));
+        return unstackable > 0 ? (int) Math.min(1 << 20, Math.round(unstackable * multiplier)) : max;
+    }
+
+    /** True while a Powered card works in this farm. */
+    public boolean isPoweredFarm() {
+        return energyCapacity() > 0;
+    }
+
+    public long energyCapacity() {
+        long base = 0;
+        double multiplier = 1;
+        for (UpgradeEffect e : effects()) {
+            base += e.energyCapacity();
+            multiplier *= e.energyCapacityMultiplier();
+        }
+        return base <= 0 ? 0 : Math.round(base * multiplier);
+    }
+
+    public long energyStored() {
+        return energy;
+    }
+
+    /** Accepts energy from pipes and cables. Returns what was taken. */
+    public long receiveEnergy(long max, boolean simulate) {
+        long accepted = Math.min(Math.max(0, max), Math.max(0, energyCapacity() - energy));
+        if (accepted > 0 && !simulate) {
+            energy += accepted;
+            setChanged();
+        }
+        return accepted;
+    }
+
+    public long extractEnergy(long amount) {
+        long taken = Math.min(Math.max(0, amount), energy);
+        if (taken > 0) {
+            energy -= taken;
+            setChanged();
+        }
+        return taken;
+    }
+
+    /** Fabric transactions roll the energy buffer back with this. */
+    public void setEnergy(long value) {
+        energy = Math.max(0, value);
+        setChanged();
+    }
+
+    /** Fabric transactions roll the tank back with this. */
+    public void restoreFluid(@Nullable net.minecraft.resources.ResourceLocation id, int amount) {
+        fluidId = amount > 0 ? id : null;
+        fluidAmount = fluidId == null ? 0 : amount;
+        sync();
+    }
+
+    /** Tank size in mB; 0 on every farm but the Liquid Farm (so tank displays, Jade included, only show up there). */
+    public int fluidCapacity() {
+        if (kind != FarmKind.LIQUID) return 0;
+        double multiplier = 1;
+        for (UpgradeEffect e : effects()) multiplier *= e.fluidCapacityMultiplier();
+        return (int) Math.min(Integer.MAX_VALUE / 2, Math.round(Config.LIQUID_BASE_CAPACITY.get() * multiplier));
+    }
+
+    public int fluidAmount() {
+        return fluidAmount;
+    }
+
+    @Nullable
+    public net.minecraft.resources.ResourceLocation fluidId() {
+        return fluidAmount <= 0 ? null : fluidId;
+    }
+
+    /** Takes up to {@code max} mB out of the tank (pipes, bucket). Returns what was (or would be) taken. */
+    public int extractFluid(int max, boolean simulate) {
+        int taken = Math.min(Math.max(0, max), fluidAmount);
+        if (taken > 0 && !simulate) {
+            fluidAmount -= taken;
+            if (fluidAmount <= 0) fluidId = null;
+            sync();
+        }
+        return taken;
+    }
+
+    private boolean tankHasRoom() {
+        if (recipe == null || recipe.value().fluid().isEmpty()) return fluidAmount < fluidCapacity();
+        var out = recipe.value().fluid().get();
+        // A whole cycle's output must fit, so nothing is wasted.
+        return fluidAmount + Math.min(out.amount(), fluidCapacity()) <= fluidCapacity() && (fluidAmount <= 0 || out.fluid().equals(fluidId));
     }
 
     public boolean hasInfiniteInputs() {
@@ -622,7 +780,7 @@ public class FarmBlockEntity extends BlockEntity {
         double ticks = r.baseTicks() * Config.TIME_MULTIPLIER.get();
         if (r.toolless()) {
         } else {
-            FarmTier tier = tier();
+            FarmTier tier = effectiveTier();
             if (tier != null) ticks = ticks / tier.speedDivisor() + breakTicks(r, tier);
         }
         for (UpgradeEffect e : effects()) ticks = e.modifyCycleTicks(this, r, ticks);
@@ -648,8 +806,16 @@ public class FarmBlockEntity extends BlockEntity {
         if (recipe == null) return 0;
         FarmRecipe r = recipe.value();
         if (r.toolless()) return r.visualTicks();
-        FarmTier tier = tier();
+        FarmTier tier = effectiveTier();
         return tier == null ? r.visualTicks() : breakTicks(r, tier);
+    }
+
+    /** The tier speed comes from: the tool's, unless a card (Powered) brings a faster one. */
+    @Nullable
+    private FarmTier effectiveTier() {
+        FarmTier tier = tier();
+        for (UpgradeEffect e : effects()) tier = e.overrideTier(this, tier);
+        return tier;
     }
 
     @Nullable
@@ -683,8 +849,13 @@ public class FarmBlockEntity extends BlockEntity {
             reconcileCatalysts();
         }
         if (recipeDirty) refreshRecipe();
+        long energyCap = energyCapacity();
+        if (energy > energyCap) energy = energyCap;
+        int fluidCap = fluidCapacity();
+        if (fluidAmount > fluidCap) fluidAmount = fluidCap;
         if (recipe == null || isPaused() || !hasOutputRoom() || !environmentOk()) return;
 
+        for (UpgradeEffect e : effects()) e.onWorkTick(this);
         operatingTicks++;
         if (++timer >= cycleTicks()) {
             timer = 0;
@@ -701,15 +872,24 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     private boolean hasOutputRoom() {
+        if (kind == FarmKind.LIQUID) return tankHasRoom();
         for (int i = 0; i < outputs.getSlots(); i++) {
             ItemStack stack = outputs.getStackInSlot(i);
-            if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) return true;
+            if (stack.isEmpty() || stack.getCount() < outputLimit(stack)) return true;
         }
         return false;
     }
 
     private void produce(ServerLevel server) {
         FarmRecipe r = recipe.value();
+        if (r.fluid().isPresent()) {
+            var out = r.fluid().get();
+            if (fluidAmount <= 0 || out.fluid().equals(fluidId)) {
+                fluidId = out.fluid();
+                fluidAmount = Math.min(fluidCapacity(), fluidAmount + out.amount());
+                sync();
+            }
+        }
         boolean fortune = enchantLevel(Enchantments.FORTUNE) > 0;
         boolean silk = enchantLevel(Enchantments.SILK_TOUCH) > 0;
         boolean smelter = false;
@@ -798,7 +978,13 @@ public class FarmBlockEntity extends BlockEntity {
         FarmRecipe r = recipe.value();
         int[] assigned = r.assignInputs(inputSlots());
         if (assigned != null) {
-            for (int i = 0; i < assigned.length; i++) inputs.extractItem(assigned[i], r.inputs().get(i).count(), false);
+            for (int i = 0; i < assigned.length; i++) {
+                // A Liquid Farm leaves the empty bucket behind when its liquid is used up.
+                Item remainder = kind == FarmKind.LIQUID ? inputs.getStackInSlot(assigned[i]).getItem().getCraftingRemainingItem() : null;
+                ItemStack leftover = remainder == null ? ItemStack.EMPTY : new ItemStack(remainder);
+                inputs.extractItem(assigned[i], r.inputs().get(i).count(), false);
+                if (!leftover.isEmpty() && inputs.getStackInSlot(assigned[i]).isEmpty()) inputs.setStackInSlot(assigned[i], leftover);
+            }
         }
         recipeDirty = true;
     }
@@ -838,6 +1024,11 @@ public class FarmBlockEntity extends BlockEntity {
         tag.put("Catalysts", catalysts.serializeNBT(provider));
         tag.putIntArray("CatalystOwners", catalystOwner);
         tag.putDouble("ToolWear", toolWear);
+        tag.putLong("Energy", energy);
+        if (fluidId != null && fluidAmount > 0) {
+            tag.putString("FluidId", fluidId.toString());
+            tag.putInt("FluidAmount", fluidAmount);
+        }
         tag.putLong("Timer", timer);
         tag.putLong("OperatingTicks", operatingTicks);
         tag.putString("Color", color.getName());
@@ -879,6 +1070,10 @@ public class FarmBlockEntity extends BlockEntity {
             catalystDirty = true;
         }
         toolWear = tag.getDouble("ToolWear");
+        energy = tag.getLong("Energy");
+        fluidAmount = tag.getInt("FluidAmount");
+        fluidId = fluidAmount > 0 && tag.contains("FluidId") ? net.minecraft.resources.ResourceLocation.tryParse(tag.getString("FluidId")) : null;
+        if (fluidId == null) fluidAmount = 0;
         timer = tag.getLong("Timer");
         operatingTicks = tag.getLong("OperatingTicks");
         color = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
@@ -900,10 +1095,25 @@ public class FarmBlockEntity extends BlockEntity {
 
     private FarmContents snapshot() {
         List<ItemStack> stacks = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
+        boolean big = false;
         for (ItemStackHandler handler : allHandlers()) {
-            for (int i = 0; i < handler.getSlots(); i++) stacks.add(handler.getStackInSlot(i).copy());
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                big |= stack.getCount() > 99;
+                counts.add(stack.getCount());
+                stacks.add(stack.copyWithCount(Math.min(stack.getCount(), 99)));
+            }
         }
-        return new FarmContents(stacks, operatingTicks, color.getName());
+        CompoundTag extra = new CompoundTag();
+        // ItemStack's codec stops at 99: keep the real counts beside the stacks.
+        if (big) extra.putIntArray("Counts", counts);
+        if (energy > 0) extra.putLong("Energy", energy);
+        if (fluidId != null && fluidAmount > 0) {
+            extra.putString("FluidId", fluidId.toString());
+            extra.putInt("FluidAmount", fluidAmount);
+        }
+        return new FarmContents(stacks, operatingTicks, color.getName(), extra);
     }
 
     private void restore(FarmContents contents) {
@@ -914,6 +1124,20 @@ public class FarmBlockEntity extends BlockEntity {
                 index++;
             }
         }
+        int[] counts = contents.extra().getIntArray("Counts");
+        if (counts.length > 0) {
+            int slot = 0;
+            for (ItemStackHandler handler : allHandlers()) {
+                for (int i = 0; i < handler.getSlots(); i++, slot++) {
+                    ItemStack stack = handler.getStackInSlot(i);
+                    if (slot < counts.length && !stack.isEmpty()) stack.setCount(counts[slot]);
+                }
+            }
+        }
+        energy = contents.extra().getLong("Energy");
+        fluidAmount = contents.extra().getInt("FluidAmount");
+        fluidId = fluidAmount > 0 ? net.minecraft.resources.ResourceLocation.tryParse(contents.extra().getString("FluidId")) : null;
+        if (fluidId == null) fluidAmount = 0;
         operatingTicks = contents.operatingTicks();
         color = DyeColor.byName(contents.color(), DyeColor.WHITE);
         recipeDirty = true;
@@ -932,7 +1156,7 @@ public class FarmBlockEntity extends BlockEntity {
     protected void collectImplicitComponents(DataComponentMap.Builder builder) {
         super.collectImplicitComponents(builder);
         FarmContents contents = snapshot();
-        if (contents.stackCount() > 0) builder.set(ModDataComponents.FARM_CONTENTS.get(), contents);
+        if (contents.stackCount() > 0 || contents.hasExtra()) builder.set(ModDataComponents.FARM_CONTENTS.get(), contents);
     }
 
     @Override
@@ -944,7 +1168,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     @Override
     public void removeComponentsFromTag(CompoundTag tag) {
-        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color"}) tag.remove(key);
+        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color", "Energy", "FluidId", "FluidAmount"}) tag.remove(key);
     }
 
     @Override
