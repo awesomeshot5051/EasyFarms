@@ -2,6 +2,7 @@
   "values": [
     "easy_farms:resource_farm",
     "easy_farms:plant_farm",
-    "easy_farms:mob_farm"
+    "easy_farms:mob_farm",
+    "easy_farms:liquid_farm"
   ]
 }

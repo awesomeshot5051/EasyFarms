@@ -31,6 +31,10 @@ public class EasyFarmsNeoForge {
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Item.BLOCK, EasyFarms.FARM_BE.get(),
                 (farm, side) -> new WorldlyContainerWrapper(farm.automation(), side));
+        // Energy in (Powered card) and fluid out (Liquid Farm only, so tank displays stay off the other farms).
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, EasyFarms.FARM_BE.get(), (farm, side) -> new FarmEnergyAdapter(farm));
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, EasyFarms.FARM_BE.get(),
+                (farm, side) -> farm.kind() == com.awesomeshot5051.easyfarms.farm.FarmKind.LIQUID ? new FarmFluidAdapter(farm) : null);
     }
 
     private static void onCommonSetup(FMLCommonSetupEvent event) {

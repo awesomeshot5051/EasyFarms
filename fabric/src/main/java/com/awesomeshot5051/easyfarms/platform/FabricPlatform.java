@@ -49,6 +49,11 @@ public class FabricPlatform implements IPlatform {
     }
 
     @Override
+    public boolean energyAvailable() {
+        return FabricLoader.getInstance().isModLoaded("team_reborn_energy");
+    }
+
+    @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
     }

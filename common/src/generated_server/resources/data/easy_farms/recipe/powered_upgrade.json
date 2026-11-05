@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:redstone_block",
+    "C": "minecraft:copper_ingot",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "CRC",
+    "RBR",
+    "CRC"
+  ],
+  "result": {
+    "id": "easy_farms:powered_upgrade"
+  }
+}

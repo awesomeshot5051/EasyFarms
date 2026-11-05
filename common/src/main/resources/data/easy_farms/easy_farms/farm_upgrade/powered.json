@@ -1,0 +1,20 @@
+{
+  "item": "easy_farms:powered_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob",
+    "liquid"
+  ],
+  "requires": "power",
+  "effects": [
+    {
+      "type": "easy_farms:powered",
+      "capacity": 1000,
+      "min_energy": 100,
+      "energy_per_tick": 2,
+      "tier": "easy_farms:diamond",
+      "toolless_divisor": 4.0
+    }
+  ]
+}

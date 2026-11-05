@@ -31,11 +31,15 @@ import java.util.Optional;
  * @param requires translation key suffix explaining what the recipe needs ("any", "smeltable", "toolless", ...)
  * @param effects  what the card does; see {@link com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect}
  * @param restrictions compatibility rules: other cards or tool enchantments it excludes, and cards it requires
+ * @param maxCount how many of this card one farm holds (they stack in a single upgrade slot); 1 = no stacking
+ * @param stackRequires stacking beyond one needs all of these upgrades installed (upgrade ids)...
+ * @param stackExemptKinds ...except on these farm kinds, which stack freely
  */
 public record FarmUpgrade(Item item, Optional<Identifier> card, Optional<Component> name, Optional<Component> description,
                           List<FarmKind> kinds, String requires,
                           List<com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect> effects,
-                          List<UpgradeRestriction> restrictions) {
+                          List<UpgradeRestriction> restrictions,
+                          int maxCount, List<Identifier> stackRequires, List<FarmKind> stackExemptKinds) {
     public static final ResourceKey<Registry<FarmUpgrade>> REGISTRY_KEY =
             ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(EasyFarms.MODID, "farm_upgrade"));
 
@@ -47,8 +51,23 @@ public record FarmUpgrade(Item item, Optional<Identifier> card, Optional<Compone
             FarmKind.CODEC.listOf().fieldOf("kinds").forGetter(FarmUpgrade::kinds),
             Codec.STRING.optionalFieldOf("requires", "any").forGetter(FarmUpgrade::requires),
             com.awesomeshot5051.easyfarms.upgrade.UpgradeEffect.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(FarmUpgrade::effects),
-            UpgradeRestriction.CODEC.listOf().optionalFieldOf("restrictions", List.of()).forGetter(FarmUpgrade::restrictions)
+            UpgradeRestriction.CODEC.listOf().optionalFieldOf("restrictions", List.of()).forGetter(FarmUpgrade::restrictions),
+            Codec.intRange(1, 64).optionalFieldOf("max_count", 1).forGetter(FarmUpgrade::maxCount),
+            Identifier.CODEC.listOf().optionalFieldOf("stack_requires", List.of()).forGetter(FarmUpgrade::stackRequires),
+            FarmKind.CODEC.listOf().optionalFieldOf("stack_exempt_kinds", List.of()).forGetter(FarmUpgrade::stackExemptKinds)
     ).apply(i, FarmUpgrade::new));
+
+    /** How many of this card a farm of this kind may hold given the other installed cards (ids). */
+    public int allowedCount(FarmKind kind, java.util.Collection<Identifier> installedIds) {
+        if (maxCount <= 1 || stackRequires.isEmpty() || stackExemptKinds.contains(kind) || installedIds.containsAll(stackRequires)) return maxCount;
+        return 1;
+    }
+
+    /** False if an effect of this card cannot work in this installation (for example power without an energy API). */
+    public boolean available() {
+        for (var effect : effects) if (!effect.available()) return false;
+        return true;
+    }
 
     /** The upgrades shown for a kind, in a stable order (by id) so slot positions don't move between sessions. */
     public static List<FarmUpgrade> forKind(RegistryAccess access, FarmKind kind) {

@@ -79,6 +79,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_lava_bucket", has(Items.LAVA_BUCKET))
                 .save(out, id("mob_farm"));
 
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, EasyFarms.FARM_BLOCKS.get(FarmKind.LIQUID).get())
+                .pattern("#B#").pattern("#D#").pattern("#C#")
+                .define('#', Tags.Items.GLASS_PANES).define('B', Items.BUCKET).define('D', Items.POINTED_DRIPSTONE).define('C', Items.CAULDRON)
+                .unlockedBy("has_cauldron", has(Items.CAULDRON))
+                .save(out, id("liquid_farm"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.POWERED_UPGRADE.get())
+                .pattern("CRC").pattern("RBR").pattern("CRC")
+                .define('C', Items.COPPER_INGOT).define('R', Items.REDSTONE).define('B', Items.REDSTONE_BLOCK)
+                .unlockedBy("has_redstone_block", has(Items.REDSTONE_BLOCK))
+                .save(out, id("powered_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.CAPACITY_UPGRADE.get())
+                .pattern("III").pattern("ICI").pattern("III")
+                .define('I', Items.IRON_INGOT).define('C', Items.CHEST)
+                .unlockedBy("has_chest", has(Items.CHEST))
+                .save(out, id("capacity_upgrade"));
+
         // Cards (same recipes as the old mods).
         ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.SPEED_UPGRADE.get())
                 .pattern("RRR").pattern("RFR").pattern("RNR")

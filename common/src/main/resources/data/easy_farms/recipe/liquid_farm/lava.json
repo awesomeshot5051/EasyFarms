@@ -1,0 +1,27 @@
+{
+  "type": "easy_farms:liquid_farm",
+  "inputs": [
+    {
+      "ingredient": "minecraft:lava_bucket",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:cauldron",
+      "count": 1
+    },
+    {
+      "ingredient": "minecraft:pointed_dripstone",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "fluid",
+    "target": "minecraft:lava"
+  },
+  "base_ticks": 2400,
+  "fluid": {
+    "fluid": "minecraft:lava",
+    "amount": 1000
+  },
+  "visual_ticks": 0
+}

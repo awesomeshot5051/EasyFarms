@@ -24,6 +24,7 @@ dependencies {
     compileOnly "maven.modrinth:jade:${jade_fabric_version}"
     localRuntime "maven.modrinth:jade:${jade_fabric_version}"
 
+    compileOnly "teamreborn:energy:${team_reborn_energy_version}"
     compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
     localRuntime "com.terraformersmc:modmenu:${modmenu_version}"
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "#c:glass_panes",
+    "B": "minecraft:bucket",
+    "C": "minecraft:cauldron",
+    "D": "minecraft:pointed_dripstone"
+  },
+  "pattern": [
+    "#B#",
+    "#D#",
+    "#C#"
+  ],
+  "result": {
+    "id": "easy_farms:liquid_farm"
+  }
+}

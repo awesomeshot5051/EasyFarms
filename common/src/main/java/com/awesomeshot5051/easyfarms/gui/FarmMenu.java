@@ -1,6 +1,8 @@
 package com.awesomeshot5051.easyfarms.gui;
 
+import com.awesomeshot5051.easyfarms.farm.FarmBlock;
 import com.awesomeshot5051.easyfarms.farm.FarmBlockEntity;
+import com.awesomeshot5051.easyfarms.farm.FarmKind;
 import com.awesomeshot5051.easyfarms.registry.ModItems;
 import com.awesomeshot5051.easyfarms.tier.FarmTier;
 import net.minecraft.core.BlockPos;
@@ -21,7 +23,9 @@ import com.awesomeshot5051.easyfarms.util.ItemStackHandler;
 /** Main farm GUI: three input slots, the tool slot, four take-only output slots, and a button to the Upgrades screen. */
 public class FarmMenu extends AbstractContainerMenu {
     public static final int INPUT_X = 52, INPUT_Y = 20, OUTPUT_Y = 51;
-    private static final int TOOL_SLOT = FarmBlockEntity.INPUTS, FIRST_PLAYER = FarmBlockEntity.INPUTS + 1 + FarmBlockEntity.OUTPUTS;
+    private static final int TOOL_SLOT = FarmBlockEntity.INPUTS;
+    private final int firstPlayer;
+    private final FarmKind kind;
 
     private final BlockPos pos;
     private final FarmBlockEntity farm;
@@ -31,6 +35,9 @@ public class FarmMenu extends AbstractContainerMenu {
         super(ModMenus.FARM.get(), id);
         this.pos = pos;
         this.farm = farm;
+        // The client only gets the position: the kind comes from the block there.
+        this.kind = farm != null ? farm.kind()
+                : inventory.player.level().getBlockState(pos).getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.RESOURCE;
         if (farm != null && inventory.player instanceof net.minecraft.server.level.ServerPlayer) farm.setLastUser(inventory.player.getUUID());
         ItemStackHandler inputs = farm != null ? farm.inputs() : new ItemStackHandler(FarmBlockEntity.INPUTS);
         ItemStackHandler tool = farm != null ? farm.toolSlot() : new ItemStackHandler(1);
@@ -49,7 +56,9 @@ public class FarmMenu extends AbstractContainerMenu {
                 return 1;
             }
         });
-        for (int i = 0; i < FarmBlockEntity.OUTPUTS; i++) {
+        // A Liquid Farm has a tank bar where the output slots are.
+        int outputSlots = kind == FarmKind.LIQUID ? 0 : FarmBlockEntity.OUTPUTS;
+        for (int i = 0; i < outputSlots; i++) {
             addSlot(new HandlerSlot(outputs, i, INPUT_X + i * 18, OUTPUT_Y) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
@@ -57,6 +66,7 @@ public class FarmMenu extends AbstractContainerMenu {
                 }
             });
         }
+        this.firstPlayer = FarmBlockEntity.INPUTS + 1 + outputSlots;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 82 + row * 18));
         }
@@ -73,6 +83,14 @@ public class FarmMenu extends AbstractContainerMenu {
                     case 4 -> farm.isRunning() ? 1 : 0;
                     case 6 -> farm.usesTool() ? 1 : 0;
                     case 7 -> farm.catalystMask();
+                    case 8 -> (int) (farm.energyStored() & 0xFFFF);
+                    case 9 -> (int) ((farm.energyStored() >> 16) & 0xFFFF);
+                    case 10 -> (int) (farm.energyCapacity() & 0xFFFF);
+                    case 11 -> (int) ((farm.energyCapacity() >> 16) & 0xFFFF);
+                    case 12 -> Math.min(32767, farm.fluidAmount());
+                    case 13 -> Math.min(32767, farm.fluidCapacity());
+                    case 14 -> farm.fluidId() == null ? -1 : net.minecraft.core.registries.BuiltInRegistries.FLUID.getId(
+                            net.minecraft.core.registries.BuiltInRegistries.FLUID.getValue(farm.fluidId()));
                     default -> farm.environmentOk() ? 1 : 0;
                 };
             }
@@ -83,10 +101,42 @@ public class FarmMenu extends AbstractContainerMenu {
 
             @Override
             public int getCount() {
-                return 8;
+                return 15;
             }
-        } : new SimpleContainerData(8);
+        } : new SimpleContainerData(15);
         addDataSlots(data);
+    }
+
+    public FarmKind kind() {
+        return kind;
+    }
+
+    /** Stored energy (ME). ContainerData sends 16 bits at a time. */
+    public long energy() {
+        return (data.get(8) & 0xFFFFL) | ((data.get(9) & 0xFFFFL) << 16);
+    }
+
+    public long energyCapacity() {
+        return (data.get(10) & 0xFFFFL) | ((data.get(11) & 0xFFFFL) << 16);
+    }
+
+    /** True while a Powered card works in the farm (the energy bar is shown). */
+    public boolean powered() {
+        return energyCapacity() > 0;
+    }
+
+    public int fluidAmount() {
+        return data.get(12);
+    }
+
+    public int fluidCapacity() {
+        return Math.max(1, data.get(13));
+    }
+
+    /** The fluid in the tank, or null when empty. */
+    public net.minecraft.world.level.material.Fluid fluid() {
+        int id = data.get(14);
+        return id < 0 ? null : net.minecraft.core.registries.BuiltInRegistries.FLUID.byId(id);
     }
 
     public int progress() {
@@ -142,8 +192,8 @@ public class FarmMenu extends AbstractContainerMenu {
         if (slot == null || !slot.hasItem()) return ItemStack.EMPTY;
         ItemStack stack = slot.getItem();
         ItemStack copy = stack.copy();
-        if (index < FIRST_PLAYER) {
-            if (!moveItemStackTo(stack, FIRST_PLAYER, slots.size(), true)) return ItemStack.EMPTY;
+        if (index < firstPlayer) {
+            if (!moveItemStackTo(stack, firstPlayer, slots.size(), true)) return ItemStack.EMPTY;
         } else {
             // Try the tool slot first (it only accepts tier tools), then the two inputs.
             if (!moveItemStackTo(stack, TOOL_SLOT, TOOL_SLOT + 1, false) && !moveItemStackTo(stack, 0, FarmBlockEntity.INPUTS, false)) return ItemStack.EMPTY;

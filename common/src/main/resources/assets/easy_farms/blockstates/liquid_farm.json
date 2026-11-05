@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "facing=east,floor=farmland": {
+      "model": "easy_farms:block/farm_farmland",
+      "y": 90
+    },
+    "facing=east,floor=grass": {
+      "model": "easy_farms:block/farm_grass",
+      "y": 90
+    },
+    "facing=east,floor=lava": {
+      "model": "easy_farms:block/farm_lava",
+      "y": 90
+    },
+    "facing=east,floor=soul_sand": {
+      "model": "easy_farms:block/farm_soul_sand",
+      "y": 90
+    },
+    "facing=east,floor=stone": {
+      "model": "easy_farms:block/farm_stone",
+      "y": 90
+    },
+    "facing=north,floor=farmland": {
+      "model": "easy_farms:block/farm_farmland"
+    },
+    "facing=north,floor=grass": {
+      "model": "easy_farms:block/farm_grass"
+    },
+    "facing=north,floor=lava": {
+      "model": "easy_farms:block/farm_lava"
+    },
+    "facing=north,floor=soul_sand": {
+      "model": "easy_farms:block/farm_soul_sand"
+    },
+    "facing=north,floor=stone": {
+      "model": "easy_farms:block/farm_stone"
+    },
+    "facing=south,floor=farmland": {
+      "model": "easy_farms:block/farm_farmland",
+      "y": 180
+    },
+    "facing=south,floor=grass": {
+      "model": "easy_farms:block/farm_grass",
+      "y": 180
+    },
+    "facing=south,floor=lava": {
+      "model": "easy_farms:block/farm_lava",
+      "y": 180
+    },
+    "facing=south,floor=soul_sand": {
+      "model": "easy_farms:block/farm_soul_sand",
+      "y": 180
+    },
+    "facing=south,floor=stone": {
+      "model": "easy_farms:block/farm_stone",
+      "y": 180
+    },
+    "facing=west,floor=farmland": {
+      "model": "easy_farms:block/farm_farmland",
+      "y": 270
+    },
+    "facing=west,floor=grass": {
+      "model": "easy_farms:block/farm_grass",
+      "y": 270
+    },
+    "facing=west,floor=lava": {
+      "model": "easy_farms:block/farm_lava",
+      "y": 270
+    },
+    "facing=west,floor=soul_sand": {
+      "model": "easy_farms:block/farm_soul_sand",
+      "y": 270
+    },
+    "facing=west,floor=stone": {
+      "model": "easy_farms:block/farm_stone",
+      "y": 270
+    }
+  }
+}

@@ -56,6 +56,20 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
         state.block = null;
         state.mob = null;
         state.tool.clear();
+        state.fluidSprite = null;
+        if (farm.kind() == com.awesomeshot5051.easyfarms.farm.FarmKind.LIQUID) {
+            // The Liquid Farm shows its tank level whatever the recipe does.
+            var id = farm.fluidId();
+            if (id == null || farm.fluidAmount() <= 0) return;
+            var fluid = BuiltInRegistries.FLUID.getValue(id);
+            if (fluid == net.minecraft.world.level.material.Fluids.EMPTY) return;
+            state.type = "tank";
+            state.fluidSprite = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).stillMaterial().sprite();
+            state.fluidLevel = Math.min(1f, farm.fluidAmount() / (float) Math.max(1, farm.fluidCapacity()));
+            state.fluidTint = 0xDC000000 | FluidTint.of(fluid);
+            state.fluidLight = fluid.defaultFluidState().createLegacyBlock().getLightEmission() > 0 ? 15728880 : state.lightCoords;
+            return;
+        }
         FarmRecipe.Visual visual = farm.getVisual();
         if (visual == null || !(farm.getLevel() instanceof ClientLevel level)) return; // no matching recipe: just the empty glass case
         BlockState farmState = farm.getBlockState();
@@ -135,6 +149,25 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
                     state.tool.submit(pose, collector, state.lightCoords, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0);
                     pose.popPose();
                 }
+            }
+            case "tank" -> {
+                var sprite = state.fluidSprite;
+                if (sprite == null) return;
+                float y = 1f / 16f + state.fluidLevel * (13f / 16f);
+                float x0 = 1f / 16f, x1 = 15f / 16f;
+                int color = state.fluidTint, light = state.fluidLight;
+                collector.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.translucentMovingBlock(), (last, vc) -> {
+                    float[][] corners = {{x0, x0}, {x0, x1}, {x1, x1}, {x1, x0}};
+                    // Both windings, so the surface is visible from above and below whatever the culling does.
+                    for (int pass = 0; pass < 2; pass++) {
+                        for (int i = 0; i < 4; i++) {
+                            float[] c = corners[pass == 0 ? i : 3 - i];
+                            vc.addVertex(last, c[0], y, c[1]).setColor(color)
+                                    .setUv(sprite.getU(c[0]), sprite.getV(c[1])).setOverlay(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY).setLight(light)
+                                    .setNormal(last, 0f, pass == 0 ? 1f : -1f, 0f);
+                        }
+                    }
+                });
             }
             case "plant" -> {
                 if (state.block == null) return;

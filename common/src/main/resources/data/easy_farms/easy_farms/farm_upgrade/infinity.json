@@ -3,7 +3,8 @@
   "kinds": [
     "resource",
     "plant",
-    "mob"
+    "mob",
+    "liquid"
   ],
   "requires": "any",
   "effects": [

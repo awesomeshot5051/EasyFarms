@@ -119,6 +119,10 @@ public final class Config {
             "Minecraft days of operation before a farm uses up its input items, at the base tier.",
             "Each tool tier multiplies this (see the farm_tier data). The Infinity upgrade skips it.");
 
+    public static final Value<Integer> LIQUID_BASE_CAPACITY = new Value<>("liquidBaseCapacityMb", 1000, 1, 1000000, Integer::parseInt,
+            "Millibuckets (mB) a Liquid Farm's tank holds without Capacity upgrades (1000 mB = one bucket).",
+            "Each Capacity upgrade multiplies it (see the capacity card's farm_upgrade data).");
+
     private Config() {
     }
 

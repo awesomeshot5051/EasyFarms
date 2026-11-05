@@ -3,9 +3,9 @@ package com.awesomeshot5051.easyfarms.farm;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;
 
-/** The three machines. What each one does is decided by the machine recipes of its kind. */
+/** The four machines. What each one does is decided by the machine recipes of its kind. */
 public enum FarmKind implements StringRepresentable {
-    RESOURCE, PLANT, MOB;
+    RESOURCE, PLANT, MOB, LIQUID;
 
     public static final Codec<FarmKind> CODEC = StringRepresentable.fromEnum(FarmKind::values);
 

@@ -3,9 +3,11 @@ package com.awesomeshot5051.easyfarms;
 import com.awesomeshot5051.easyfarms.events.FarmEvents;
 import com.awesomeshot5051.easyfarms.farm.FarmKind;
 import com.awesomeshot5051.easyfarms.recipe.ModRecipes;
+import com.awesomeshot5051.easyfarms.platform.Services;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +26,11 @@ public class EasyFarmsFabric implements ModInitializer {
         for (FarmKind kind : FarmKind.values()) {
             RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.SERIALIZERS_BY_KIND.get(kind).get());
         }
+
+        // Liquid Farm tank: pipes and tanks can take fluid out.
+        FluidStorage.SIDED.registerForBlockEntity((farm, side) -> farm.kind() == com.awesomeshot5051.easyfarms.farm.FarmKind.LIQUID ? new FarmFluidStorage(farm) : null, EasyFarms.FARM_BE.get());
+        // Powered card: Team Reborn Energy (the standard Fabric energy API) is optional.
+        if (Services.PLATFORM.isModLoaded("team_reborn_energy")) FarmEnergyStorage.register();
 
         // Cards and dyes work on a farm while sneaking: vanilla skips a block's use when you sneak with an item in hand.
         UseBlockCallback.EVENT.register((player, level, hand, hit) -> {

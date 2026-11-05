@@ -113,10 +113,19 @@ public class ItemStackHandler implements Container {
 
     public void serialize(ValueOutput output) {
         ValueOutput.TypedOutputList<ItemStackWithSlot> list = output.list("Items", ItemStackWithSlot.CODEC);
+        java.util.List<Integer> big = new java.util.ArrayList<>();
         for (int i = 0; i < stacks.size(); i++) {
-            if (!stacks.get(i).isEmpty()) list.add(new ItemStackWithSlot(i, stacks.get(i)));
+            ItemStack stack = stacks.get(i);
+            if (stack.isEmpty()) continue;
+            // ItemStack's codec only allows counts up to 99; bigger stacks (Capacity card) keep the real count beside it.
+            list.add(new ItemStackWithSlot(i, stack.copyWithCount(Math.min(stack.getCount(), 99))));
+            if (stack.getCount() > 99) {
+                big.add(i);
+                big.add(stack.getCount());
+            }
         }
         output.putInt("Size", stacks.size());
+        if (!big.isEmpty()) output.putIntArray("BigCounts", big.stream().mapToInt(Integer::intValue).toArray());
     }
 
     public void deserialize(ValueInput input) {
@@ -124,6 +133,11 @@ public class ItemStackHandler implements Container {
         input.listOrEmpty("Items", ItemStackWithSlot.CODEC).forEach(entry -> {
             if (entry.isValidInContainer(stacks.size())) stacks.set(entry.slot(), entry.stack());
         });
+        // Counts above 99 (see serialize) are stored as slot, count pairs.
+        int[] big = input.getIntArray("BigCounts").orElse(new int[0]);
+        for (int i = 0; i + 1 < big.length; i += 2) {
+            if (big[i] >= 0 && big[i] < stacks.size() && !stacks.get(big[i]).isEmpty()) stacks.get(big[i]).setCount(big[i + 1]);
+        }
     }
 
     // ---- vanilla Container view ----

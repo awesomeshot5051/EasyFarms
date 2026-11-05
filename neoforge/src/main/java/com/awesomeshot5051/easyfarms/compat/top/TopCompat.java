@@ -29,7 +29,16 @@ public class TopCompat implements Function<ITheOneProbe, Void> {
             @Override
             public void addProbeInfo(ProbeMode mode, IProbeInfo info, Player player, Level level, BlockState state, IProbeHitData data) {
                 if (level.getBlockEntity(data.getPos()) instanceof FarmBlockEntity farm) {
-                    for (Component line : FarmInfo.of(farm).lines()) info.mcText(line);
+                    FarmInfo.Snapshot s = FarmInfo.of(farm);
+                    for (Component line : s.lines()) info.mcText(line);
+                    if (s.hasTank()) {
+                        info.progress(s.fluidAmount(), s.fluidCapacity(), info.defaultProgressStyle().filledColor(0xFF3F76E4).alternateFilledColor(0xFF3F76E4)
+                                .suffix(" mB").borderColor(0xFF373737));
+                    }
+                    if (s.energyFill() >= 0) {
+                        info.progress((int) Math.min(Integer.MAX_VALUE, s.energy()), (int) Math.min(Integer.MAX_VALUE, s.energyCapacity()),
+                                info.defaultProgressStyle().filledColor(0xFFD02828).alternateFilledColor(0xFFD02828).suffix(" ME").borderColor(0xFF373737));
+                    }
                 }
             }
         });

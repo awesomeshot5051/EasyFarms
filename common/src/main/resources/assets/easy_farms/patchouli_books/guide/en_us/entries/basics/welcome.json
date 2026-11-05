@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(thing)Easy Farms$() adds three machines that farm almost everything in Minecraft: a $(item)Resource Farm$(), a $(item)Plant Farm$() and a $(item)Mob Farm$().$(br2)What a farm makes is not built into the block. You put items into it and it matches them against $(thing)recipes$(). Swap the items, get a different result."
+      "text": "$(thing)Easy Farms$() adds four machines that farm almost everything in Minecraft: a $(item)Resource Farm$(), a $(item)Plant Farm$(), a $(item)Mob Farm$() and a $(item)Liquid Farm$() that makes water and lava.$(br2)What a farm makes is not built into the block. You put items into it and it matches them against $(thing)recipes$(). Swap the items, get a different result."
     },
     {
       "type": "patchouli:text",

@@ -36,6 +36,9 @@ public interface IPlatform {
 
     String loaderName();
 
+    /** True if an energy API (NeoForge FE, Fabric Team Reborn Energy) is available, so the Powered card can work. */
+    boolean energyAvailable();
+
     boolean isModLoaded(String modId);
 
     /** Directory that holds config files, e.g. {@code config/}. */

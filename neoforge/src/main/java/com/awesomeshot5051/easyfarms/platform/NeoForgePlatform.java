@@ -76,6 +76,11 @@ public class NeoForgePlatform implements IPlatform {
     }
 
     @Override
+    public boolean energyAvailable() {
+        return true;   // FE is part of NeoForge itself
+    }
+
+    @Override
     public boolean isModLoaded(String modId) {
         return ModList.get().isLoaded(modId);
     }

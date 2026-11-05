@@ -104,6 +104,20 @@ public class FarmBlock extends Block implements EntityBlock {
     protected InteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos, Player player,
                                          InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof FarmBlockEntity farm)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+        if (kind == FarmKind.LIQUID && held.is(net.minecraft.world.item.Items.BUCKET)) {
+            // Empty bucket on a Liquid Farm: take a full bucket out of the tank (needs 1000 mB).
+            var fluidId = farm.fluidId();
+            var fluid = fluidId == null ? null : net.minecraft.core.registries.BuiltInRegistries.FLUID.getValue(fluidId);
+            if (fluid == null || fluid == net.minecraft.world.level.material.Fluids.EMPTY || farm.fluidAmount() < 1000) return InteractionResult.TRY_WITH_EMPTY_HAND;
+            ItemStack filled = new ItemStack(fluid.getBucket());
+            if (filled.isEmpty() || filled.is(net.minecraft.world.item.Items.BUCKET)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+            if (!level.isClientSide()) {
+                farm.extractFluid(1000, false);
+                player.setItemInHand(hand, net.minecraft.world.item.ItemUtils.createFilledResult(held, player, filled));
+                level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BUCKET_FILL, net.minecraft.sounds.SoundSource.BLOCKS, 1F, 1F);
+            }
+            return InteractionResult.SUCCESS;
+        }
         boolean isCard = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.isCard(level.registryAccess(), held);
         if (isCard) {
             if (!level.isClientSide()) {

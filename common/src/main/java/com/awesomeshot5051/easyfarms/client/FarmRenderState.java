@@ -18,4 +18,9 @@ public class FarmRenderState extends BlockEntityRenderState {
     public final ItemStackRenderState tool = new ItemStackRenderState();
     public boolean shovel;
     public @Nullable EntityRenderState mob;
+    /** Liquid Farm: the fluid surface (type "tank"). */
+    public net.minecraft.client.renderer.texture.@Nullable TextureAtlasSprite fluidSprite;
+    public float fluidLevel;
+    public int fluidTint = 0xFFFFFFFF;
+    public int fluidLight;
 }

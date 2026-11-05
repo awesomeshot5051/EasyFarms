@@ -1,0 +1,20 @@
+{
+  "name": "Liquid Farm",
+  "category": "easy_farms:farms",
+  "icon": "easy_farms:liquid_farm",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The $(item)Liquid Farm$() makes $(item)water$() or $(item)lava$() into an internal tank. It needs no tool.$(br2)It makes $(item)one bucket (1000 mB)$() every $(item)2 minutes$(), or every minute with the Speed Upgrade. The tank holds one bucket; each Capacity Upgrade doubles that, up to 16000 mB.$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 bucket, 1 pointed dripstone, 1 cauldron."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:liquid_farm",
+      "text": "Glass panes around a column of bucket, pointed dripstone and cauldron."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Water$(): water bucket + cauldron + pointed dripstone.$(br2)$(thing)Lava$(): lava bucket + cauldron + pointed dripstone.$(br2)The tank shows as a bar in the farm screen and in Jade. Pipes take fluid from any side, and an empty bucket right-clicked on the farm is filled.$(br2)When the farm's input lifetime ends, the empty bucket is left in its slot."
+    }
+  ]
+}
