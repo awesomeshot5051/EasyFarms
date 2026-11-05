@@ -8,8 +8,9 @@
 		"awesomeshot5051"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/"
+		"homepage": "https://github.com/awesomeshot5051/EasyFarms",
+		"sources": "https://github.com/awesomeshot5051/EasyFarms",
+		"issues": "https://github.com/awesomeshot5051/EasyFarms/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/easy_farms/icon.png",
