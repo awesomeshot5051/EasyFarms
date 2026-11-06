@@ -30,6 +30,7 @@ public class EasyFarmsFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientCommon.init();
+        com.awesomeshot5051.easyfarms.platform.FabricPlatform.registerClientReceivers();
         BlockEntityRenderers.register(EasyFarms.FARM_BE.get(), FarmRenderer::new);
         MenuScreens.register(ModMenus.FARM.get(), FarmScreen::new);
         MenuScreens.register(ModMenus.FARM_UPGRADES.get(), FarmUpgradeScreen::new);

@@ -21,15 +21,15 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Dirt$()$(br)In: Dirt$(br)Out: Dirt x1-3$(br)$(7)Tool: shovel; Fortune: Dirt x1-5$()$(br2)$(thing)Granite$()$(br)In: Granite$(br)Out: Granite x1-3$(br)$(7)Tool: pickaxe; Fortune: Granite x1-5$()"
+      "text": "$(thing)Dirt$()$(br)In: Dirt$(br)Out: Dirt x1-3$(br)$(7)Tool: shovel; Fortune: Dirt x1-5$()$(br2)$(thing)Water Bucket$()$(br)In: Water Bucket$(br)Out: loot table minecraft:gameplay/fishing$(br)$(7)Tool: fishing_rods$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Grass Block$()$(br)In: Grass Block$(br)Out: Dirt x1-3$(br)$(7)Tool: shovel; Fortune: Dirt x1-5; Silk Touch: Grass Block$()$(br2)$(thing)Gravel$()$(br)In: Gravel$(br)Out: Gravel x1-3$(br)$(7)Tool: shovel$()"
+      "text": "$(thing)Granite$()$(br)In: Granite$(br)Out: Granite x1-3$(br)$(7)Tool: pickaxe; Fortune: Granite x1-5$()$(br2)$(thing)Grass Block$()$(br)In: Grass Block$(br)Out: Dirt x1-3$(br)$(7)Tool: shovel; Fortune: Dirt x1-5; Silk Touch: Grass Block$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Mud$()$(br)In: Mud$(br)Out: Mud x1-3$(br)$(7)Tool: shovel; Fortune: Mud x1-5$()$(br2)$(thing)Red Sand$()$(br)In: Red Sand$(br)Out: Red Sand x1-3$(br)$(7)Tool: shovel; Fortune: Red Sand x1-5; Smelter: Glass$()"
+      "text": "$(thing)Gravel$()$(br)In: Gravel$(br)Out: Gravel x1-3$(br)$(7)Tool: shovel$()$(br2)$(thing)Mud$()$(br)In: Mud$(br)Out: Mud x1-3$(br)$(7)Tool: shovel; Fortune: Mud x1-5$()$(br2)$(thing)Red Sand$()$(br)In: Red Sand$(br)Out: Red Sand x1-3$(br)$(7)Tool: shovel; Fortune: Red Sand x1-5; Smelter: Glass$()"
     },
     {
       "type": "patchouli:text",

@@ -26,7 +26,7 @@ See the [changelog](Changelog.md) for everything.
 
 | Farm | What it does | Needs |
 |---|---|---|
-| **Resource Farm** | Mines blocks: stone, ores, wood, sand, nether blocks, and so on | A pickaxe, shovel or axe in the tool slot |
+| **Resource Farm** | Mines blocks: stone, ores, wood, sand, nether blocks, and so on. It also **fishes**: a water bucket as input and a **fishing rod** as the tool gives the vanilla fishing loot (Luck of the Sea improves the loot and Lure speeds it up, as in vanilla) | A pickaxe, shovel or axe (or a fishing rod) in the tool slot |
 | **Plant Farm** | Grows crops, flowers, mushrooms, saplings and trees | Usually a hoe or axe, plus the plant (and soil) as inputs |
 | **Mob Farm** | "Kills" mobs for their drops | A sword, plus the food or item that mob needs as input |
 

@@ -19,6 +19,7 @@ public final class SecretSync {
     public static void onClientTick() {
         if (++ticks % 20 != 0) return;
         var player = Minecraft.getInstance().player;
+        if (player == null) LootPreviewClient.clear();
         Set<ResourceLocation> now = player == null ? Set.of() : Set.copyOf(SecretRecipes.discovered(player));
         if (now.equals(last)) return;
         last = now;

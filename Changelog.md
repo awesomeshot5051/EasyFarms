@@ -44,7 +44,11 @@ items" support, and more tuning options. Datapack authors get new recipe fields 
 ### Recipes and data
 - New recipe field `xp` (experience per cycle). New recipe field `fluid_input`. A drop entry can name a `loot_table` instead of an
   item (fishing and chest tables; the tool and its luck are passed along), so any author can pull from existing loot pools.
-  Example: `mob_farm/fishing.json`.
+  Example: the new **fishing** Resource Farm recipe (`resource_farm/fishing.json`): a fishing rod in the tool slot and a water
+  bucket as input pull from the vanilla fishing loot table. The rod's Luck of the Sea works as in vanilla (more treasure, less junk) and Lure
+  shortens the cycle (I/II/III: 71 %/43 %/14 % of the time); the fishing rod is in the iron tier and wears out like any tool. JEI shows
+  what a loot-table drop can give, with the chance of each: the server rolls the table and sends the result (a new payload on both
+  loaders, resent on `/reload`). A drop can still list a `preview` of extra items.
 - The Powered card no longer checks a list of energy mods: it is always accepted on NeoForge (on Fabric it needs Team Reborn
   Energy) and its tooltip always shows "FE or other energy generation mod required to use" as a hint. The `energy_mods` field is gone.
 

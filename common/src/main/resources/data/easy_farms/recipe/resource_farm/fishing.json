@@ -1,0 +1,43 @@
+{
+  "type": "easy_farms:resource_farm",
+  "inputs": [
+    {
+      "item": "minecraft:water_bucket",
+      "count": 1
+    }
+  ],
+  "tool": "easy_farms:fishing_rods",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:water_cauldron"
+  },
+  "base_ticks": 600,
+  "drops": [
+    {
+      "loot_table": "minecraft:gameplay/fishing",
+      "preview": [
+        "minecraft:cod",
+        "minecraft:salmon",
+        "minecraft:pufferfish",
+        "minecraft:tropical_fish",
+        "minecraft:bowl",
+        "minecraft:leather",
+        "minecraft:leather_boots",
+        "minecraft:rotten_flesh",
+        "minecraft:stick",
+        "minecraft:string",
+        "minecraft:potion",
+        "minecraft:bone",
+        "minecraft:ink_sac",
+        "minecraft:tripwire_hook",
+        "minecraft:lily_pad",
+        "minecraft:bow",
+        "minecraft:enchanted_book",
+        "minecraft:fishing_rod",
+        "minecraft:name_tag",
+        "minecraft:nautilus_shell",
+        "minecraft:saddle"
+      ]
+    }
+  ]
+}

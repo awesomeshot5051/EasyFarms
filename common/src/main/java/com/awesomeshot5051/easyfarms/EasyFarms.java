@@ -86,6 +86,8 @@ public final class EasyFarms {
         ModMenus.init();
 
         // Synced to clients: the farm GUI and recipes look tiers up on both sides.
+        Services.PLATFORM.registerClientboundPayload(com.awesomeshot5051.easyfarms.net.LootPreviewPayload.TYPE, com.awesomeshot5051.easyfarms.net.LootPreviewPayload.CODEC,
+                com.awesomeshot5051.easyfarms.client.LootPreviewClient::receive);
         Services.PLATFORM.registerSyncedDatapackRegistry(FarmTier.REGISTRY_KEY, FarmTier.CODEC);
         Services.PLATFORM.registerSyncedDatapackRegistry(FarmUpgrade.REGISTRY_KEY, FarmUpgrade.CODEC);
         Services.PLATFORM.registerSyncedDatapackRegistry(com.awesomeshot5051.easyfarms.tier.FluidContainer.REGISTRY_KEY, com.awesomeshot5051.easyfarms.tier.FluidContainer.CODEC);

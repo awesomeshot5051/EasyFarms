@@ -71,6 +71,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("easy_farms.configuration.cycleSoundVolume", "Cycle Sound Volume");
         add("easy_farms.configuration.cycleParticles", "Cycle Particles");
         add(ModItems.MEMORY_CARD.get(), "Memory Card");
+        add("gui.easy_farms.jei.loot_table", "From the loot table %s");
+        add("gui.easy_farms.jei.loot_chance", "About %s %% of catches (without luck)");
         add("farm_kind.easy_farms.liquid", "Liquid Farm");
         add("tooltip.easy_farms.energy_mod_required", "FE or other energy generation mod required to use");
         add("gui.easy_farms.requires.power", "Runs the farm on energy (ME): diamond speed, needs at least 100 ME");

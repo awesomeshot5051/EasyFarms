@@ -41,6 +41,17 @@ public interface IPlatform {
 
     boolean isModLoaded(String modId);
 
+    /**
+     * Registers a server-to-client payload. {@code clientHandler} runs on the client when it arrives. (On Fabric the handler is attached
+     * when the client entrypoint calls {@code FabricPlatform.registerClientReceivers()}.)
+     */
+    <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void registerClientboundPayload(
+            net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            java.util.function.Consumer<T> clientHandler);
+
+    /** Sends a payload to one player. */
+    void sendToPlayer(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload);
+
     /** Offers a stack to the item container at {@code pos}, reached from {@code side}. Returns what did not fit (the whole stack if there is no container). */
     net.minecraft.world.item.ItemStack insertItem(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
                                                   net.minecraft.core.Direction side, net.minecraft.world.item.ItemStack stack);

@@ -360,7 +360,7 @@ public final class UpgradeEffects {
                     var made = com.awesomeshot5051.easyfarms.farm.DropEntry.simple(out.item(), out.count() * lo, out.count() * hi);
                     result.add(new com.awesomeshot5051.easyfarms.farm.DropEntry(made.item(), made.min(), made.max(),
                             drop.chance() * out.chance(), java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(),
-                            java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), false, java.util.Optional.empty()));
+                            java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), false, java.util.Optional.empty(), java.util.List.of()));
                 }
             }
             return result;

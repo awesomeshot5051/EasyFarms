@@ -69,6 +69,8 @@
   "gui.easy_farms.jei.fluid": "Makes %s mB of %s per cycle",
   "gui.easy_farms.jei.fortune": "With Fortune: %s-%s",
   "gui.easy_farms.jei.inputs": "Input",
+  "gui.easy_farms.jei.loot_chance": "About %s %% of catches (without luck)",
+  "gui.easy_farms.jei.loot_table": "From the loot table %s",
   "gui.easy_farms.jei.looting": "With Looting: %s-%s",
   "gui.easy_farms.jei.min_tier": "Tool tier %s or higher",
   "gui.easy_farms.jei.outputs": "Output",

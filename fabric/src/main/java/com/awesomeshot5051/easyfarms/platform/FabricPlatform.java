@@ -77,6 +77,27 @@ public class FabricPlatform implements IPlatform {
         }
     }
 
+    private static final java.util.List<Runnable> CLIENT_RECEIVERS = new java.util.ArrayList<>();
+
+    @Override
+    public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void registerClientboundPayload(
+            net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            java.util.function.Consumer<T> clientHandler) {
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(type, codec);
+        CLIENT_RECEIVERS.add(() -> net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(type,
+                (payload, context) -> clientHandler.accept(payload)));
+    }
+
+    /** Called by the client entrypoint: attaches the handlers of the payloads registered above. */
+    public static void registerClientReceivers() {
+        CLIENT_RECEIVERS.forEach(Runnable::run);
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
+    }
+
     @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);

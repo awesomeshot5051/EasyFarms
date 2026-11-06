@@ -822,6 +822,7 @@ public class FarmBlockEntity extends BlockEntity {
             FarmTier tier = effectiveTier();
             if (tier != null) ticks = ticks / tier.speedDivisor() + breakTicks(r, tier);
         }
+        ticks *= lureFactor(r);
         for (UpgradeEffect e : effects()) ticks = e.modifyCycleTicks(this, r, ticks);
         return Math.max(1, ticks);
     }
@@ -841,6 +842,18 @@ public class FarmBlockEntity extends BlockEntity {
      * How long the mob or plant is visible at the end of a cycle: the old mob and plant farms showed it for exactly
      * the work time, which depends on the tool tier. Toolless recipes use the recipe's visual_ticks.
      */
+    /**
+     * Lure on the tool shortens a fishing recipe (one that pulls from a loot table) as it shortens a vanilla bite: the average wait
+     * is 17.5 s (350 ticks) and each level takes 5 s (100 ticks) off, never below 1 s. Lure I is 71 %, II 43 %, III 14 % of the time.
+     */
+    private double lureFactor(FarmRecipe r) {
+        boolean fishing = false;
+        for (DropEntry d : r.drops()) fishing |= d.lootTable().isPresent();
+        if (!fishing) return 1;
+        int lure = enchantLevel(Enchantments.LURE);
+        return lure <= 0 ? 1 : Math.max(20.0, 350.0 - 100.0 * lure) / 350.0;
+    }
+
     public double visualWindow() {
         if (recipe == null) return 0;
         FarmRecipe r = recipe.value();
@@ -1013,9 +1026,9 @@ public class FarmBlockEntity extends BlockEntity {
         return kind == FarmKind.RESOURCE && Config.XP_ENABLED.get() && anyEffect(e -> recipe != null && e.smelts(recipe.value()));
     }
 
-    /** Luck for loot-table drops (fishing): Luck of the Sea or Fortune on the tool. */
+    /** Luck for loot-table drops (fishing): the tool's Luck of the Sea level, as for a vanilla fishing rod. */
     public float lootLuck() {
-        return Math.max(enchantLevel(Enchantments.LUCK_OF_THE_SEA), enchantLevel(Enchantments.FORTUNE));
+        return enchantLevel(Enchantments.LUCK_OF_THE_SEA);
     }
 
     public int xp() {

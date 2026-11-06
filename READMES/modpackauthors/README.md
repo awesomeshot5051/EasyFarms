@@ -173,7 +173,8 @@ any one is enough. With both, both must hold. A farm with the matching card (see
 | Field | Default | Meaning |
 |---|---|---|
 | `item` | required (unless `loot_table`) | Item id of the drop. |
-| `loot_table` | none | A loot table to roll instead of an item, e.g. `minecraft:gameplay/fishing`. Fishing tables see the farm's tool and its luck (Luck of the Sea or Fortune); chest tables work too. Entity and block tables are skipped. |
+| `loot_table` | none | A loot table to roll instead of an item, e.g. `minecraft:gameplay/fishing`. Fishing tables see the farm's tool, its Luck of the Sea level and a fishing bobber in open water (so treasure can drop). The built-in fishing recipe is `resource_farm/fishing.json`; Lure on the tool shortens any recipe with a loot-table drop (Luck of the Sea, as for a vanilla fishing rod); chest tables work too. Entity and block tables are skipped. |
+| `preview` | none | Extra items JEI shows for a `loot_table` drop. JEI already shows what the loot table can give, with chances: the server rolls the table and sends the result to the client, so this list only adds rare items sampling might miss, or covers a client that received nothing. It has no effect on what drops. |
 | `min`, `max` | 1, 1 | Count range. |
 | `chance` | 1.0 | Chance per cycle (0 to 1). |
 | `fortune_min`, `fortune_max` | none | A different count range when the tool has Fortune (resource and plant). |
@@ -572,7 +573,7 @@ them only when that mod is installed. See Patchouli's documentation for the page
 |---|---|
 | `xp` | Experience per cycle (float, default 0). Only given by farms with an Experience card. Smelting Resource Farms also give the vanilla furnace experience of each smelted item. Config: `xpEnabled`, `xpMultiplier`. |
 | `fluid_input` | `{"fluid": "minecraft:water", "amount": 250}`: fluid taken from the farm's tank each cycle. The farm stops without it. Pipes and the Auto-Export card can fill the tank with that fluid only. |
-| drops `loot_table` | A drop entry may name a loot table instead of an item: `{"loot_table": "minecraft:gameplay/fishing"}`. Fishing tables see the farm's tool and its luck (Luck of the Sea or Fortune); chest tables work too. Entity and block tables are not supported (they need an entity or block). `item` is optional on such an entry. |
+| drops `loot_table` | A drop entry may name a loot table instead of an item: `{"loot_table": "minecraft:gameplay/fishing"}`. Fishing tables see the farm's tool, its Luck of the Sea level and a fishing bobber in open water (so treasure can drop). The built-in fishing recipe is `resource_farm/fishing.json`; Lure on the tool shortens any recipe with a loot-table drop (Luck of the Sea, as for a vanilla fishing rod); chest tables work too. Entity and block tables are not supported (they need an entity or block). `item` is optional on such an entry. |
 
 
 ## Fluid containers (`fluid_container`)

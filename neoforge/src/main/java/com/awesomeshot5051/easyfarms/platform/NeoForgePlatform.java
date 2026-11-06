@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 public class NeoForgePlatform implements IPlatform {
     private static final Map<ResourceLocation, DeferredRegister<?>> REGISTERS = new LinkedHashMap<>();
     private static final List<Runnable> DATAPACK_REGISTRIES = new ArrayList<>();
+    private static final List<java.util.function.Consumer<net.neoforged.neoforge.network.registration.PayloadRegistrar>> PAYLOADS = new ArrayList<>();
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, EasyFarms.MODID);
 
     private static final Supplier<AttachmentType<Set<ResourceLocation>>> DISCOVERED_SECRETS = ATTACHMENTS.register("discovered_secrets",
@@ -50,6 +51,24 @@ public class NeoForgePlatform implements IPlatform {
         REGISTERS.values().forEach(r -> r.register(modBus));
         ATTACHMENTS.register(modBus);
         modBus.addListener(NeoForgePlatform::onNewDatapackRegistry);
+        modBus.addListener(NeoForgePlatform::onRegisterPayloads);
+    }
+
+    private static void onRegisterPayloads(net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent event) {
+        var registrar = event.registrar("1");
+        PAYLOADS.forEach(p -> p.accept(registrar));
+    }
+
+    @Override
+    public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void registerClientboundPayload(
+            net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            java.util.function.Consumer<T> clientHandler) {
+        PAYLOADS.add(registrar -> registrar.playToClient(type, codec, (payload, context) -> clientHandler.accept(payload)));
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, payload);
     }
 
     private static void onNewDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
