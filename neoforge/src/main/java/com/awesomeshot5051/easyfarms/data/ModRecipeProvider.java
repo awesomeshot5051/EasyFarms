@@ -104,6 +104,31 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('O', Items.OBSIDIAN).define('E', Items.ENDER_PEARL).define('D', Items.ENDER_EYE)
                 .unlockedBy("has_ender_eye", has(Items.ENDER_EYE))
                 .save(out, id("chunk_loader_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.VOID_UPGRADE.get())
+                .pattern("OPO").pattern("PDP").pattern("OPO")
+                .define('O', Items.OBSIDIAN).define('P', Items.ENDER_PEARL).define('D', Items.DIAMOND)
+                .unlockedBy("has_diamond", has(Items.DIAMOND))
+                .save(out, id("void_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.FILTER_UPGRADE.get())
+                .pattern("GCG").pattern("CHC").pattern("GCG")
+                .define('G', Items.GOLD_INGOT).define('C', Items.COMPARATOR).define('H', Items.HOPPER)
+                .unlockedBy("has_hopper", has(Items.HOPPER))
+                .save(out, id("filter_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.AUTO_EXPORT_UPGRADE.get())
+                .pattern("RHR").pattern("HPH").pattern("RHR")
+                .define('R', Items.REDSTONE).define('H', Items.HOPPER).define('P', Items.PISTON)
+                .unlockedBy("has_hopper", has(Items.HOPPER))
+                .save(out, id("auto_export_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.EXPERIENCE_UPGRADE.get())
+                .pattern("LBL").pattern("BEB").pattern("LBL")
+                .define('L', Items.LAPIS_LAZULI).define('B', Items.GLASS_BOTTLE).define('E', Items.EMERALD)
+                .unlockedBy("has_emerald", has(Items.EMERALD))
+                .save(out, id("experience_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.MEMORY_CARD.get())
+                .pattern("NPN").pattern("PRP").pattern("NPN")
+                .define('N', Items.IRON_NUGGET).define('P', Items.PAPER).define('R', Items.REDSTONE)
+                .unlockedBy("has_paper", has(Items.PAPER))
+                .save(out, id("memory_card"));
 
         // Cards (same recipes as the old mods).
         ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.SPEED_UPGRADE.get())

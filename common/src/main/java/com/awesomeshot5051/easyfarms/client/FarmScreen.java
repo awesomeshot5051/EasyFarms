@@ -23,7 +23,14 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     private static final int TANK_X = 52, TANK_Y = 51, TANK_W = 72, TANK_H = 16;
     private static final int ENERGY_COLOR = 0xFFD02828;
 
-    private ArrowButton catalystButton;
+    private ArrowButton catalystButton, filterButton, sideButton;
+    private net.minecraft.client.gui.components.Button xpButton;
+    /** Auto-Export card: the side panel (a pop-out left of the screen) is open. */
+    private boolean sidePanelOpen;
+    private static final String[] FACE_KEYS = {"front", "back", "left", "right", "top", "bottom"};
+    /** Cell (column, row) of each relative face in the side panel's unfolded cross. */
+    private static final int[][] FACE_CELLS = {{1, 1}, {3, 1}, {0, 1}, {2, 1}, {1, 0}, {1, 2}};
+    private static final int PANEL_W = 80, PANEL_H = 74, CELL = 18;
 
     public FarmScreen(FarmMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, 164);
@@ -40,12 +47,97 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         catalystButton = addRenderableWidget(new ArrowButton(leftPos + imageWidth - 20, topPos + 21, Component.translatable("gui.easy_farms.catalysts"),
                 b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1)));
         catalystButton.visible = menu.hasCatalystCards();
+        // Under that, only with a Filter card: its own screen.
+        filterButton = addRenderableWidget(new ArrowButton(leftPos + imageWidth - 20, topPos + 37, Component.translatable("gui.easy_farms.filter"),
+                b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 2)));
+        // Experience card: hands the stored experience to the player.
+        xpButton = addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal("xp"),
+                        b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 3))
+                .bounds(leftPos + imageWidth - 22, topPos + 53, 18, 14).build());
+        // Left edge, only with an Auto-Export card: opens the side panel that sets what each face of the farm does.
+        sideButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 5, Component.translatable("gui.easy_farms.sides"),
+                b -> sidePanelOpen = !sidePanelOpen));
+        updateCardWidgets();
+    }
+
+    private void updateCardWidgets() {
+        if (catalystButton != null) catalystButton.visible = menu.hasCatalystCards();
+        if (filterButton != null) filterButton.visible = menu.hasFilterCard();
+        if (xpButton != null) {
+            xpButton.visible = menu.hasExperienceCard();
+            xpButton.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("gui.easy_farms.collect_xp", menu.xp())));
+        }
+        if (sideButton != null) sideButton.visible = menu.hasExportCard();
+        if (!menu.hasExportCard()) sidePanelOpen = false;
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
-        if (catalystButton != null) catalystButton.visible = menu.hasCatalystCards();
+        updateCardWidgets();
+    }
+
+    private int panelX() {
+        return leftPos - 16 - PANEL_W;
+    }
+
+    private int faceX(int face) {
+        return panelX() + 4 + FACE_CELLS[face][0] * CELL;
+    }
+
+    private int faceY(int face) {
+        return topPos + 18 + FACE_CELLS[face][1] * CELL;
+    }
+
+    /** -1 when the mouse is not over a face cell of the open side panel. */
+    private int faceAt(double mouseX, double mouseY) {
+        if (!sidePanelOpen) return -1;
+        for (int f = 0; f < 6; f++) {
+            if (mouseX >= faceX(f) && mouseX < faceX(f) + CELL - 2 && mouseY >= faceY(f) && mouseY < faceY(f) + CELL - 2) return f;
+        }
+        return -1;
+    }
+
+    private static int modeColor(int mode) {
+        return switch (mode) {
+            case 1 -> 0xFF4A7BD0;   // input
+            case 2 -> 0xFFE08A2E;   // output
+            case 3 -> 0xFF404040;   // off
+            default -> 0xFF5FA05F;  // both (the farm's normal behaviour)
+        };
+    }
+
+    private static String modeLetter(int mode) {
+        return switch (mode) {
+            case 1 -> "I";
+            case 2 -> "O";
+            case 3 -> "-";
+            default -> "IO";
+        };
+    }
+
+    private void drawSidePanel(GuiGraphicsExtractor g) {
+        int x = panelX(), y = topPos + 5;
+        g.fill(x, y, x + PANEL_W, y + PANEL_H + 14, 0xFF373737);
+        g.fill(x + 1, y + 1, x + PANEL_W - 1, y + PANEL_H + 13, 0xFFC6C6C6);
+        g.text(font, Component.translatable("gui.easy_farms.sides"), x + 5, y + 4, 0xFF404040, false);
+        for (int f = 0; f < 6; f++) {
+            int cx = faceX(f), cy = faceY(f), mode = menu.sideMode(f);
+            g.fill(cx, cy, cx + CELL - 2, cy + CELL - 2, 0xFF373737);
+            g.fill(cx + 1, cy + 1, cx + CELL - 3, cy + CELL - 3, modeColor(mode));
+            String letter = modeLetter(mode);
+            g.text(font, letter, cx + (CELL - 2 - font.width(letter)) / 2, cy + 5, 0xFFFFFFFF, true);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        int face = faceAt(event.x(), event.y());
+        if (face >= 0) {
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 4 + face);
+            return true;
+        }
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
@@ -60,6 +152,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         }
         if (menu.kind() == FarmKind.LIQUID) drawTank(g);
         if (menu.powered()) drawEnergy(g);
+        if (sidePanelOpen) drawSidePanel(g);
     }
 
     /** Red fill rising from the bottom; no colour at all when empty. The value is written along the bar. */
@@ -84,9 +177,9 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         // Hide the output slot backgrounds the shared texture draws here.
         g.fill(leftPos + TANK_X - 1, topPos + TANK_Y - 1, leftPos + TANK_X + TANK_W + 1, topPos + TANK_Y + TANK_H + 1, 0xFFC6C6C6);
         frame(g, x, y, TANK_W, TANK_H);
-        var fluid = menu.fluid();
+        var fluid = menu.fluidKey();
         int amount = menu.fluidAmount();
-        if (fluid != null && amount > 0) {
+        if (fluid != null && amount > 0 && FluidTint.known(fluid)) {
             int filled = Math.max(1, (TANK_W - 2) * Math.min(amount, menu.fluidCapacity()) / menu.fluidCapacity());
             drawFluid(g, fluid, x + 1, y + 1, filled, TANK_H - 2);
         }
@@ -94,9 +187,9 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         g.text(font, text, x + (TANK_W - font.width(text)) / 2, y + (TANK_H - 8) / 2, 0xFFFFFFFF, true);
     }
 
-    private void drawFluid(GuiGraphicsExtractor g, net.minecraft.world.level.material.Fluid fluid, int x, int y, int w, int h) {
-        var sprite = minecraft.getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).stillMaterial().sprite();
-        int tint = 0xFF000000 | FluidTint.of(fluid);
+    private void drawFluid(GuiGraphicsExtractor g, net.minecraft.resources.Identifier fluid, int x, int y, int w, int h) {
+        var sprite = FluidTint.sprite(fluid);
+        int tint = 0xFF000000 | FluidTint.tint(fluid);
         g.enableScissor(x, y, x + w, y + h);
         for (int tx = x; tx < x + w; tx += 16) for (int ty = y; ty < y + h; ty += 16) g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, tx, ty, 16, 16, tint);
         g.disableScissor();
@@ -123,12 +216,18 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
+        int hoveredFace = faceAt(mouseX, mouseY);
+        if (hoveredFace >= 0) {
+            g.setComponentTooltipForNextFrame(font, List.of(Component.translatable("gui.easy_farms.face." + FACE_KEYS[hoveredFace]),
+                    Component.translatable("gui.easy_farms.side_mode." + menu.sideMode(hoveredFace)),
+                    Component.translatable("gui.easy_farms.side_click").withStyle(net.minecraft.ChatFormatting.GRAY)), mouseX, mouseY);
+        }
         if (menu.powered() && inside(mouseX, mouseY, ENERGY_X, ENERGY_Y, ENERGY_W, ENERGY_H)) {
             g.setComponentTooltipForNextFrame(font, List.of(Component.translatable("gui.easy_farms.energy", menu.energy(), menu.energyCapacity())), mouseX, mouseY);
         }
         if (menu.kind() == FarmKind.LIQUID && inside(mouseX, mouseY, TANK_X, TANK_Y, TANK_W, TANK_H)) {
-            var fluid = menu.fluid();
-            Component name = fluid == null ? Component.translatable("gui.easy_farms.tank_empty") : FluidTint.name(fluid);
+            var fluid = menu.fluidKey();
+            Component name = fluid == null || menu.fluidAmount() <= 0 ? Component.translatable("gui.easy_farms.tank_empty") : FluidTint.name(fluid);
             g.setComponentTooltipForNextFrame(font, List.of(name, Component.translatable("gui.easy_farms.fluid_tank", menu.fluidAmount(), menu.fluidCapacity())), mouseX, mouseY);
         }
         if (mouseX >= leftPos + BAR_X && mouseX < leftPos + BAR_X + BAR_W && mouseY >= topPos + BAR_Y - 1 && mouseY <= topPos + BAR_Y + BAR_H + 1) {

@@ -29,5 +29,6 @@
       "fire_item": "minecraft:cooked_salmon"
     }
   ],
-  "type": "easy_farms:mob_farm"
+  "type": "easy_farms:mob_farm",
+  "xp": 2
 }

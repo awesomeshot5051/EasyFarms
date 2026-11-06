@@ -51,5 +51,7 @@ public class EasyFarmsNeoForge {
     /** Clients do not receive custom recipes by default; the JEI category and the farm screens need the machine recipes. */
     private static void syncRecipes(OnDatapackSyncEvent event) {
         ModRecipes.TYPES_BY_KIND.values().forEach(h -> event.sendRecipes(h.get()));
+        // JEI shows what a loot-table drop can give: the server rolls the tables and sends the result.
+        event.getRelevantPlayers().forEach(player -> com.awesomeshot5051.easyfarms.farm.LootPreview.send(event.getPlayerList().getServer(), player));
     }
 }

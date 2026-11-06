@@ -29,10 +29,12 @@ public class EasyFarmsFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientCommon.init();
+        com.awesomeshot5051.easyfarms.platform.FabricPlatform.registerClientReceivers();
         BlockEntityRendererRegistry.register(EasyFarms.FARM_BE.get(), FarmRenderer::new);
         MenuScreens.register(ModMenus.FARM.get(), FarmScreen::new);
         MenuScreens.register(ModMenus.FARM_UPGRADES.get(), FarmUpgradeScreen::new);
         MenuScreens.register(ModMenus.FARM_CATALYSTS.get(), FarmCatalystScreen::new);
+        MenuScreens.register(ModMenus.FARM_FILTER.get(), com.awesomeshot5051.easyfarms.client.FarmFilterScreen::new);
 
         Block[] farms = EasyFarms.FARM_BLOCKS.values().stream().map(Supplier::get).toArray(Block[]::new);
         BlockColorRegistry.register(List.of(ClientCommon.FLOOR_TINT), farms);

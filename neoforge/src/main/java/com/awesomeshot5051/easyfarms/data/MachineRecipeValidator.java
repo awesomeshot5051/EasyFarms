@@ -123,13 +123,13 @@ public class MachineRecipeValidator implements DataProvider {
             Identifier target = recipe.visual().target();
             boolean ok = switch (recipe.visual().type()) {
                 case "mob" -> BuiltInRegistries.ENTITY_TYPE.containsKey(target);
-                case "fluid" -> BuiltInRegistries.FLUID.containsKey(target);
+                case "fluid" -> BuiltInRegistries.FLUID.containsKey(target) || target.getNamespace().equals("easy_farms");
                 default -> BuiltInRegistries.BLOCK.containsKey(target);
             };
             if (!ok) errors.add(name + ": unknown visual target " + target);
             if (recipe.drops().isEmpty() && recipe.fluid().isEmpty()) errors.add(name + ": no drops");
             recipe.fluid().ifPresent(f -> {
-                if (!BuiltInRegistries.FLUID.containsKey(f.fluid())) errors.add(name + ": unknown fluid " + f.fluid());
+                if (!BuiltInRegistries.FLUID.containsKey(f.fluid()) && !f.fluid().getNamespace().equals("easy_farms")) errors.add(name + ": unknown fluid " + f.fluid());
             });
         } catch (Exception e) {
             errors.add(name + ": " + e);

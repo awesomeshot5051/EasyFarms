@@ -3,23 +3,84 @@
 This is the changelog for the `26.1.2` branch (Minecraft 26.1.2, NeoForge 26.1.2.126), written from the commit history.
 Versions are listed newest first, each with its commit and date.
 
+## 3.0.0
+
+A large feature update: five new upgrade cards, a Mekanism-style side configuration, experience, honey and milk, JEI "move
+items" support, and more tuning options. Datapack authors get new recipe fields (`xp`, `fluid_input`, `loot_table`) and a new
+`fluid_container` registry.
+
+### New upgrade cards
+- **Efficiency Upgrade** (`easy_farms:efficiency`): each card halves the energy a Powered farm uses per tick, up to 3 stacked
+  (1/8, fractions carry over between ticks). Needs the Powered card (a `requires` restriction). All farm kinds.
+- **Chunk Loader Upgrade** (`easy_farms:chunk_loader`): keeps the farm's chunk loaded with a vanilla forced chunk (same on
+  NeoForge and Fabric), so the farm works while nobody is near. Released when the card or the farm is removed; a chunk you
+  `/forceload`ed yourself is never released by it.
+- **Void Upgrade** (`easy_farms:void_overflow`): items that do not fit the output slots are destroyed, so a full output never
+  stalls the farm. Config `voidCardEnabled`.
+- **Filter Upgrade** (`easy_farms:output_filter`): an arrow on the farm screen opens a Filter screen that lists every item the
+  current recipe can output (Smelter, Inscriber and `convert_drops` changes applied). Click an item to throw it away instead of
+  keeping it. Each recipe keeps its own list. Config `filterCardEnabled`.
+- **Auto-Export Upgrade** (`easy_farms:auto_export`): an arrow on the left of the farm screen pops out a side panel where each
+  face (front, back, left, right, top, bottom) is set to input and output, input only, output only or off, as in Mekanism.
+  Output faces push items (and a Liquid Farm's fluid) into the neighbouring container; hoppers and pipes obey the face modes.
+  Config `autoExportEnabled`, `autoExportIntervalTicks`, `autoExportItemsPerPush`.
+- **Experience Upgrade** (`easy_farms:experience`): Mob farms drop the recipe's `xp` (all default mob recipes now have one).
+  The xp builds up in the farm and an `xp` button on the farm screen hands it to you. A Resource Farm with a **Smelter** card
+  also gives the vanilla furnace experience for every smelted item, with no extra card. Config `xpEnabled`, `xpMultiplier`.
+- **Memory Card**: sneak-click a farm to copy its side and filter settings, click another farm to paste them.
+- Every upgrade card now stacks to 64 in the inventory (installing takes one).
+
+### Liquid Farm
+- The default tank holds 16 buckets (16000 mB; config `liquidBaseCapacityMb`); Capacity cards still double it, up to 4 of them.
+- Speed cards stack to 3 on the Liquid Farm: 2 min per bucket, then 1 min, 30 s and 15 s. Other farm kinds still take 1.
+  New `kind_max_counts` field on `farm_upgrade` (e.g. `{"liquid": 3}`) overrides `max_count` per farm kind.
+- New **honey** and **milk** recipes. A new data-driven `fluid_container` registry (`data/<ns>/easy_farms/fluid_container`) turns
+  an empty item into a filled one when you right-click the farm (glass bottle to honey bottle, bucket to milk bucket) and defines
+  "virtual" fluids with their own texture. Virtual fluids are bottled by hand and do not go through pipes.
+- The tank is drawn as a solid column of fluid that fills the glass, not just a flat surface. Water is see-through; lava is
+  opaque and bright.
+- Recipes can use a fluid: `fluid_input` takes fluid from the farm's tank each cycle, and pipes or Auto-Export can fill it.
+
+### Recipes and data
+- New recipe field `xp` (experience per cycle). New recipe field `fluid_input`. A drop entry can name a `loot_table` instead of an
+  item (fishing and chest tables; the tool and its luck are passed along), so any author can pull from existing loot pools.
+  Example: the new **fishing** Resource Farm recipe (`resource_farm/fishing.json`): a fishing rod in the tool slot and a water
+  bucket as input pull from the vanilla fishing loot table. The rod's Luck of the Sea works as in vanilla (more treasure, less junk) and Lure
+  shortens the cycle (I/II/III: 71 %/43 %/14 % of the time); the fishing rod is in the iron tier and wears out like any tool. JEI shows what a loot-table drop can give, with the chance of each: the server rolls the table and
+  sends the result (a new payload on both loaders, resent on `/reload`). A drop can still list a `preview` of extra items. The rod tag is `easy_farms:fishing_rods`.
+- The Powered card no longer checks a list of energy mods: it is always accepted on NeoForge (on Fabric it needs Team Reborn
+  Energy) and its tooltip always shows "FE or other energy generation mod required to use" as a hint. The `energy_mods` field is gone.
+
+### Recipe viewers
+- JEI: the "+" button moves a recipe's inputs and tool from your inventory into the open farm, and missing ingredients are
+  highlighted red, as for the crafting table. The farm's tool now counts as an input in JEI.
+
+### Quality of life and config
+- Comparator output (`comparatorMode`: cycle progress, output fill or tank fill).
+- A soft chime and a few particles when a farm finishes a cycle (`cycleSoundVolume`, `cycleParticles`).
+- `difficultyPreset` config: 0 = your own values, 1 = casual, 2 = balanced, 3 = hard.
+- Config entries for every new feature; all of them can be switched off.
+- German, Spanish and French translations.
+- Guide book: new entries for every card above.
+
+### Fixes
+- Fabric now shows the mod icon (the icon is a square 512x512 image) and both loaders list the right description, source link,
+  issue tracker and credits.
+- A Resource Farm with a Smelter card could store experience with no way to collect it.
+
 ## 2.0.0
 
 ### Liquid Farm, Powered and Capacity upgrades
-- New **Liquid Farm** (`easy_farms:liquid_farm` recipes): makes one bucket (1000 mB) of a fluid every 2 minutes (Speed cards, up to 3, cut it to
-  1 min, 30 s and 15 s) into a 16-bucket tank (water and lava included; recipes can add any fluid). GUI tank bar, Jade/TOP bar,
+- New **Liquid Farm** (`easy_farms:liquid_farm` recipes): makes one bucket (1000 mB) of a fluid every 2 minutes (1 minute with
+  the Speed card) into a one-bucket tank (water and lava included; recipes can add any fluid). GUI tank bar, Jade/TOP bar,
   pipes can extract on NeoForge and Fabric, and an empty bucket takes a full bucket. When its bucket input is used up an empty
   bucket is left behind. Crafted from glass panes around a bucket, pointed dripstone and a cauldron.
 - New **Powered Upgrade** (`easy_farms:powered` effect): the farm runs on FE or any energy mod's power at diamond speed (1000 ME
-  buffer, needs 100 ME). Red energy bar in the GUI and in Jade/TOP. Its tooltip always says "FE or other energy
-  generation mod required to use" as a hint; no mod list is checked. On Fabric it needs Team Reborn Energy.
+  buffer, needs 100 ME). Red energy bar in the GUI and in Jade/TOP. It is refused, and its tooltip says "FE or other energy
+  generation mod required to use", unless an energy mod from the effect's `energy_mods` list is loaded; the base mod needs none.
 - New **Capacity Upgrade** (`easy_farms:capacity` effect, `max_count` / `stack_requires` / `stack_exempt_kinds` on
-  `farm_upgrade`): doubles output stack size, ME buffer and liquid tank (16000 mB base, up to 256000 mB) per card, stacking up to 4.
-- New **Efficiency Upgrade** (`easy_farms:efficiency` effect): each card halves the energy a Powered farm uses per tick, up to 3
-  stacked (1/8). Needs the Powered card (a `requires` restriction). All farm kinds.
-- New **Chunk Loader Upgrade** (`easy_farms:chunk_loader` effect): keeps the farm's chunk loaded (vanilla forced chunk, same on
-  NeoForge and Fabric) so the farm works while nobody is near. Released when the card or farm is removed. All farm kinds.
-- `cycle_time` takes `kind_divisors`. Config: `liquidBaseCapacityMb`. `farm_upgrade` kinds accept `liquid`; `kind_max_counts` sets a per-kind stack limit (Speed: 3 on the Liquid Farm).
+  `farm_upgrade`): doubles output stack size, ME buffer and liquid tank (up to 16000 mB) per card, stacking up to 4.
+- `cycle_time` takes `kind_divisors`. Config: `liquidBaseCapacityMb`. `farm_upgrade` kinds accept `liquid`.
 - Guide book: Liquid Farm, Powered and Capacity entries.
 
 ## 1.3.0

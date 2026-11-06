@@ -1,0 +1,27 @@
+{
+  "type": "easy_farms:liquid_farm",
+  "inputs": [
+    {
+      "item": "minecraft:milk_bucket",
+      "count": 1
+    },
+    {
+      "item": "minecraft:cauldron",
+      "count": 1
+    },
+    {
+      "item": "minecraft:wheat",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "fluid",
+    "target": "easy_farms:milk"
+  },
+  "base_ticks": 2400,
+  "fluid": {
+    "fluid": "easy_farms:milk",
+    "amount": 1000
+  },
+  "visual_ticks": 0
+}

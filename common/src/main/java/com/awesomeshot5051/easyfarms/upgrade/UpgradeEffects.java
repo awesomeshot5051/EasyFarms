@@ -1,5 +1,6 @@
 package com.awesomeshot5051.easyfarms.upgrade;
 
+import com.awesomeshot5051.easyfarms.Config;
 import com.awesomeshot5051.easyfarms.EasyFarms;
 import com.awesomeshot5051.easyfarms.platform.Services;
 import com.awesomeshot5051.easyfarms.farm.FarmBlockEntity;
@@ -359,7 +360,7 @@ public final class UpgradeEffects {
                     var made = com.awesomeshot5051.easyfarms.farm.DropEntry.simple(out.item(), out.count() * lo, out.count() * hi);
                     result.add(new com.awesomeshot5051.easyfarms.farm.DropEntry(made.item(), made.min(), made.max(),
                             drop.chance() * out.chance(), java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(),
-                            java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), false));
+                            java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), false, java.util.Optional.empty(), java.util.List.of()));
                 }
             }
             return result;
@@ -536,6 +537,70 @@ public final class UpgradeEffects {
         }
     }
 
+    /** The Void card: items that do not fit the output slots are destroyed, so the farm never stalls on a full output. */
+    public record VoidOverflow() implements UpgradeEffect {
+        public static final MapCodec<VoidOverflow> CODEC = MapCodec.unit(new VoidOverflow());
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean voidsOverflow() {
+            return Config.VOID_ENABLED.get();
+        }
+    }
+
+    /** The Experience card: the farm drops the recipe's experience (its {@code xp} field). Put it on the kinds you want in the card's JSON. */
+    public record Experience() implements UpgradeEffect {
+        public static final MapCodec<Experience> CODEC = MapCodec.unit(new Experience());
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean grantsExperience(FarmBlockEntity farm) {
+            return Config.XP_ENABLED.get();
+        }
+    }
+
+    /** The Filter card: a per-recipe list of blocked outputs (set on the card's own screen). Blocked items are discarded. */
+    public record OutputFilter() implements UpgradeEffect {
+        public static final MapCodec<OutputFilter> CODEC = MapCodec.unit(new OutputFilter());
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean filtersOutputs() {
+            return Config.FILTER_ENABLED.get();
+        }
+    }
+
+    /** The Auto-Export card: outputs are pushed to neighbouring containers, and each side of the farm can be input, output or off. */
+    public record AutoExport() implements UpgradeEffect {
+        public static final MapCodec<AutoExport> CODEC = MapCodec.unit(new AutoExport());
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean exportsOutputs() {
+            return Config.AUTO_EXPORT_ENABLED.get();
+        }
+    }
+
+    public static final Supplier<MapCodec<VoidOverflow>> VOID_OVERFLOW = Services.PLATFORM.register(KEY, "void_overflow", () -> VoidOverflow.CODEC);
+    public static final Supplier<MapCodec<Experience>> EXPERIENCE = Services.PLATFORM.register(KEY, "experience", () -> Experience.CODEC);
+    public static final Supplier<MapCodec<OutputFilter>> OUTPUT_FILTER = Services.PLATFORM.register(KEY, "output_filter", () -> OutputFilter.CODEC);
+    public static final Supplier<MapCodec<AutoExport>> AUTO_EXPORT = Services.PLATFORM.register(KEY, "auto_export", () -> AutoExport.CODEC);
     public static final Supplier<MapCodec<ChunkLoader>> CHUNK_LOADER = Services.PLATFORM.register(KEY, "chunk_loader", () -> ChunkLoader.CODEC);
     public static final Supplier<MapCodec<Efficiency>> EFFICIENCY = Services.PLATFORM.register(KEY, "efficiency", () -> Efficiency.CODEC);
     public static final Supplier<MapCodec<Powered>> POWERED = Services.PLATFORM.register(KEY, "powered", () -> Powered.CODEC);

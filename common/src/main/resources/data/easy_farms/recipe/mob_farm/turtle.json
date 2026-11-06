@@ -28,5 +28,6 @@
       "chance": 0.95
     }
   ],
-  "type": "easy_farms:mob_farm"
+  "type": "easy_farms:mob_farm",
+  "xp": 2
 }

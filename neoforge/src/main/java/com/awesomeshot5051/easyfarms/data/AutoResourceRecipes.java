@@ -91,7 +91,7 @@ final class AutoResourceRecipes {
             List<DropEntry> drops = new ArrayList<>();
             if (drop.silkOnly) {
                 drops.add(new DropEntry(id, 1, 1, 1F, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-                        Optional.empty(), Optional.empty(), Optional.empty(), true));
+                        Optional.empty(), Optional.empty(), Optional.empty(), true, Optional.empty(), java.util.List.of()));
             } else {
                 String smelted = SMELTS.get(dropId.getPath());
                 boolean smeltable = smelted != null && dropId.getNamespace().equals("minecraft");
@@ -99,7 +99,7 @@ final class AutoResourceRecipes {
                         Optional.empty(), Optional.empty(),
                         dropId.equals(id) ? Optional.empty() : Optional.of(id),
                         smeltable ? Optional.of(Identifier.withDefaultNamespace(smelted)) : Optional.empty(),
-                        Optional.empty(), false));
+                        Optional.empty(), false, Optional.empty(), java.util.List.of()));
             }
             if (path.equals("budding_amethyst")) {
                 // Vanilla gives the block no drops of its own; the buds that grow on it are what you get from it. Any of them, or nothing.
@@ -108,7 +108,7 @@ final class AutoResourceRecipes {
             }
             boolean smeltable = drops.get(0).smeltItem().isPresent();
             FarmRecipe recipe = new FarmRecipe(FarmKind.RESOURCE, List.of(SizedIngredient.of(item, 1)), Optional.of(tool), rank,
-                    new FarmRecipe.Visual("block", id), 600, 80, smeltable, false, Optional.empty(), false, false, Optional.empty(), drops, Optional.empty());
+                    new FarmRecipe.Visual("block", id), 600, 80, smeltable, false, Optional.empty(), false, false, Optional.empty(), drops, Optional.empty(), 0f, Optional.empty());
             out.accept(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, Identifier.fromNamespaceAndPath(EasyFarms.MODID, "resource_farm/auto/" + path)), recipe, null);
             count++;
         }
@@ -118,7 +118,7 @@ final class AutoResourceRecipes {
 
     private static DropEntry bud(String item, float chance) {
         return new DropEntry(Identifier.withDefaultNamespace(item), 1, 1, chance, Optional.empty(), Optional.empty(), Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false);
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, Optional.empty(), java.util.List.of());
     }
 
     // ---- which blocks ----

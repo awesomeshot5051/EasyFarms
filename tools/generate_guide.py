@@ -137,6 +137,8 @@ def rng(lo, hi):
 
 
 def drop_text(d):
+    if "loot_table" in d:
+        return "loot table " + d["loot_table"]
     name = item_name(d["item"])
     lo, hi = d.get("min", 1), d.get("max", 1)
     s = name if (lo, hi) == (1, 1) else f"{name} x{rng(lo, hi)}"
@@ -383,6 +385,26 @@ def build_cards():
     entry("cards", "chunk_loader", "Chunk Loader Upgrade", f"{NS}:chunk_loader_upgrade", [
         text_page("$(thing)Farms$(): all.$(br2)A farm only works while its chunk is loaded. This card keeps the $(item)chunk the farm stands in$() loaded, so the farm keeps working when you are far away or logged out.$(br2)It uses vanilla forced chunks (they show in $(thing)/forceload list$()). Breaking the farm or removing the card releases the chunk, unless /forceload holds it too. Several farms in one chunk share it."),
         recipe_pages(f"{NS}:chunk_loader_upgrade"),
+    ])
+    entry("cards", "void", "Void Upgrade", f"{NS}:void_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)Items that do not fit the output slots are $(item)destroyed$() instead of making the farm stop, so a full output never stalls it. Nothing is dropped on the ground either. Switch it off in the config (voidCardEnabled)."),
+        recipe_pages(f"{NS}:void_upgrade"),
+    ])
+    entry("cards", "filter", "Filter Upgrade", f"{NS}:filter_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)Adds an arrow on the farm screen that opens the $(item)Filter screen$(): every item the farm's current recipe can output (with the Smelter and Inscriber changes applied). Click an item to $(item)block$() it; the farm throws blocked items away. Each recipe keeps its own list, so changing the inputs shows that recipe's items."),
+        recipe_pages(f"{NS}:filter_upgrade"),
+    ])
+    entry("cards", "auto_export", "Auto-Export Upgrade", f"{NS}:auto_export_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)Adds an arrow on the $(item)left$() of the farm screen that pops out a $(item)side panel$(). Click a face (front, back, left, right, top, bottom) to cycle it: $(item)input and output$() (the normal behaviour), $(item)input only$(), $(item)output only$() or $(item)off$(). Faces set to output push items (and the tank of a Liquid Farm) into the container next to them. The back still feeds catalysts."),
+        recipe_pages(f"{NS}:auto_export_upgrade"),
+    ])
+    entry("cards", "experience", "Experience Upgrade", f"{NS}:experience_upgrade", [
+        text_page("$(thing)Farms$(): Mob.$(br2)Mob farms drop the $(item)experience$() of their recipe (the recipe's $(thing)xp$() field). It builds up in the farm; press the $(item)xp$() button on the farm screen to collect it. Resource Farms with a $(item)Smelter$() card give furnace experience for every smelted item, without this card."),
+        recipe_pages(f"{NS}:experience_upgrade"),
+    ])
+    entry("cards", "memory_card", "Memory Card", f"{NS}:memory_card", [
+        text_page("$(thing)Sneak-click$() a farm with the card to $(item)copy$() its side settings (Auto-Export) and its filter lists. $(thing)Click$() another farm to $(item)paste$() them. Experience is never copied."),
+        recipe_pages(f"{NS}:memory_card"),
     ])
     entry("cards", "inscriber", "Inscriber Upgrade", f"{NS}:inscriber_upgrade", [
         text_page("$(thing)Farms$(): Resource. Needs $(item)Applied Energistics 2$().$(br2)Does the AE2 Inscriber's job inside a farm. It is crafted with, and turns back into, an AE2 Inscriber.$(br2)$(thing)Grinding$(): with the card, a Sky Stone farm makes sky dust and a Certus Quartz farm makes certus quartz dust."),

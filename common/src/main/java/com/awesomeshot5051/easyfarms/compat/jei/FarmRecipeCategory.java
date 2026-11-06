@@ -84,7 +84,7 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         }
         // The tool slot (empty for recipes that need none).
         if (recipe.tool().isPresent()) {
-            builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 4 + 3 * SLOT + 6, INPUT_Y)
+            builder.addSlot(RecipeIngredientRole.INPUT, 4 + 3 * SLOT + 6, INPUT_Y)
                     .addItemStacks(toolStacks(recipe.tool().get()))
                     .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.tool")));
         }
@@ -96,7 +96,37 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         }
         int i = 0;
         for (DropEntry drop : recipe.drops()) {
-            int col = i % 7, row = i / 7;
+            if (drop.lootTable().isPresent()) {
+                // A loot table has no fixed item: show what the server rolled from it (with the chance of each), then any extra items
+                // the recipe lists in its "preview" (the fallback when nothing was synced, and a way to add rare items).
+                var table = drop.lootTable().get();
+                List<Identifier> shown = new ArrayList<>();
+                for (var entry : com.awesomeshot5051.easyfarms.client.LootPreviewClient.get(table)) {
+                    Item item = BuiltInRegistries.ITEM.getValue(entry.item());
+                    if (item == net.minecraft.world.item.Items.AIR) continue;
+                    shown.add(entry.item());
+                    int pc = i % 9, pr = i / 9;
+                    double percent = Math.round(entry.chance() * 1000) / 10.0;
+                    builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + pc * SLOT, OUTPUT_Y + pr * SLOT).addItemStack(new ItemStack(item))
+                            .addRichTooltipCallback((slot, tooltip) -> {
+                                tooltip.add(Component.translatable("gui.easy_farms.jei.loot_table", table.toString()).withStyle(net.minecraft.ChatFormatting.AQUA));
+                                tooltip.add(Component.translatable("gui.easy_farms.jei.loot_chance", percent));
+                            });
+                    i++;
+                }
+                for (Identifier previewId : drop.preview()) {
+                    Item previewItem = BuiltInRegistries.ITEM.getValue(previewId);
+                    if (previewItem == net.minecraft.world.item.Items.AIR || shown.contains(previewId)) continue;
+                    int pc = i % 9, pr = i / 9;
+                    builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + pc * SLOT, OUTPUT_Y + pr * SLOT).addItemStack(new ItemStack(previewItem))
+                            .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.loot_table", table.toString())
+                                    .withStyle(net.minecraft.ChatFormatting.AQUA)));
+                    i++;
+                }
+                continue;
+            }
+            if (BuiltInRegistries.ITEM.getValue(drop.item()) == net.minecraft.world.item.Items.AIR) continue;
+            int col = i % 9, row = i / 9;
             ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(drop.item()), Math.max(1, drop.max()));
             builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT)
                     .addItemStack(stack)
@@ -107,7 +137,7 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
             var out = recipe.fluid().get();
             ItemStack bucket = new ItemStack(BuiltInRegistries.FLUID.getValue(out.fluid()).getBucket());
             if (!bucket.isEmpty()) {
-                int col = i % 7, row = i / 7;
+                int col = i % 9, row = i / 9;
                 builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT).addItemStack(bucket)
                         .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.fluid", out.amount(), bucket.getHoverName())));
                 i++;
@@ -119,7 +149,7 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
             for (DropEntry drop : ins.drops()) {
                 Item item = BuiltInRegistries.ITEM.getValue(drop.item());
                 if (item == net.minecraft.world.item.Items.AIR) continue;
-                int col = i % 7, row = i / 7;
+                int col = i % 9, row = i / 9;
                 builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT)
                         .addItemStack(new ItemStack(item, Math.max(1, drop.max())))
                         .addRichTooltipCallback((slot, tooltip) -> {

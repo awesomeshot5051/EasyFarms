@@ -27,7 +27,7 @@ public final class FarmFluidAdapter extends SnapshotJournal<FarmFluidAdapter.Tan
     @Override
     public FluidResource getResource(int index) {
         var id = farm.fluidId();
-        return id == null ? FluidResource.EMPTY : FluidResource.of(BuiltInRegistries.FLUID.getValue(id));
+        return id == null || !BuiltInRegistries.FLUID.containsKey(id) ? FluidResource.EMPTY : FluidResource.of(BuiltInRegistries.FLUID.getValue(id));
     }
 
     @Override
@@ -42,12 +42,18 @@ public final class FarmFluidAdapter extends SnapshotJournal<FarmFluidAdapter.Tan
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
-        return false;
+        return !resource.isEmpty() && farm.insertFluid(BuiltInRegistries.FLUID.getKey(resource.getFluid()), 1, true) > 0;
     }
 
+    /** Only the fluid the farm's current recipe uses is accepted (fluid-input recipes). */
     @Override
     public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
-        return 0;
+        if (resource.isEmpty()) return 0;
+        var id = BuiltInRegistries.FLUID.getKey(resource.getFluid());
+        int accepted = farm.insertFluid(id, amount, true);
+        if (accepted <= 0) return 0;
+        updateSnapshots(transaction);
+        return farm.insertFluid(id, accepted, false);
     }
 
     @Override

@@ -61,13 +61,12 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
             // The Liquid Farm shows its tank level whatever the recipe does.
             var id = farm.fluidId();
             if (id == null || farm.fluidAmount() <= 0) return;
-            var fluid = BuiltInRegistries.FLUID.getValue(id);
-            if (fluid == net.minecraft.world.level.material.Fluids.EMPTY) return;
+            if (!FluidTint.known(id)) return;
             state.type = "tank";
-            state.fluidSprite = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).stillMaterial().sprite();
+            state.fluidSprite = FluidTint.sprite(id);
             state.fluidLevel = Math.min(1f, farm.fluidAmount() / (float) Math.max(1, farm.fluidCapacity()));
-            boolean glows = fluid.defaultFluidState().createLegacyBlock().getLightEmission() > 0;
-            state.fluidTint = (glows ? 0xFF000000 : 0xC8000000) | FluidTint.of(fluid);   // lava and the like opaque, water see-through
+            boolean glows = FluidTint.glows(id);
+            state.fluidTint = (glows ? 0xFF000000 : 0xC8000000) | FluidTint.tint(id);   // lava and the like opaque, water see-through
             state.fluidLight = glows ? 15728880 : state.lightCoords;
             return;
         }

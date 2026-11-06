@@ -1,0 +1,15 @@
+{
+  "name": "Auto-Export Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:auto_export_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)Adds an arrow on the $(item)left$() of the farm screen that pops out a $(item)side panel$(). Click a face (front, back, left, right, top, bottom) to cycle it: $(item)input and output$() (the normal behaviour), $(item)input only$(), $(item)output only$() or $(item)off$(). Faces set to output push items (and the tank of a Liquid Farm) into the container next to them. The back still feeds catalysts."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:auto_export_upgrade"
+    }
+  ]
+}

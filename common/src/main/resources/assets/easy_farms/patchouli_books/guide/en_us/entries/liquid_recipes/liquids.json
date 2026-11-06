@@ -5,7 +5,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(thing)Lava$()$(br)In: Lava Bucket + Cauldron + Pointed Dripstone$(br)Out: 1000 mB Lava$(br)$(7)No tool needed$()$(br2)$(thing)Water$()$(br)In: Water Bucket + Cauldron + Pointed Dripstone$(br)Out: 1000 mB Water$(br)$(7)No tool needed$()"
+      "text": "$(thing)Honey$()$(br)In: Honey Bottle + Cauldron + Honeycomb$(br)Out: 1000 mB Honey$(br)$(7)No tool needed$()$(br2)$(thing)Lava$()$(br)In: Lava Bucket + Cauldron + Pointed Dripstone$(br)Out: 1000 mB Lava$(br)$(7)No tool needed$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Milk$()$(br)In: Milk Bucket + Cauldron + Wheat$(br)Out: 1000 mB Milk$(br)$(7)No tool needed$()$(br2)$(thing)Water$()$(br)In: Water Bucket + Cauldron + Pointed Dripstone$(br)Out: 1000 mB Water$(br)$(7)No tool needed$()"
     }
   ]
 }

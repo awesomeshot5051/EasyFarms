@@ -42,6 +42,10 @@ public class EasyFarmsFabric implements ModInitializer {
             return result.consumesAction() ? result : InteractionResult.PASS;
         });
 
+        // JEI shows what a loot-table drop can give: the server rolls the tables and sends the result (after a reload and on join).
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) ->
+                com.awesomeshot5051.easyfarms.farm.LootPreview.send(player.level().getServer(), player));
+
         FarmEvents.registerDispenserBehaviors();
     }
 }

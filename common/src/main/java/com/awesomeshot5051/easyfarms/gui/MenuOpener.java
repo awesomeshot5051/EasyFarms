@@ -22,6 +22,15 @@ public final class MenuOpener {
                 (id, inv, p) -> new FarmCatalystMenu(id, inv, pos, farm, owners));
     }
 
+    /** The Filter screen: the items the farm's current recipe can output, each allowed or blocked. */
+    public static void openFilter(ServerPlayer player, BlockPos pos, FarmBlockEntity farm, Component title) {
+        java.util.List<net.minecraft.resources.Identifier> items = farm.possibleOutputs();
+        if (items.size() > FarmFilterMenu.MAX_ENTRIES) items = items.subList(0, FarmFilterMenu.MAX_ENTRIES);
+        final java.util.List<net.minecraft.resources.Identifier> shown = items;
+        Services.PLATFORM.openMenu(player, title, new ModMenus.FilterOpening(pos, shown), ModMenus.FilterOpening.CODEC,
+                (id, inv, p) -> new FarmFilterMenu(id, inv, pos, farm, shown));
+    }
+
     public static void openUpgrades(ServerPlayer player, BlockPos pos, FarmBlockEntity farm, Component title) {
         Services.PLATFORM.openMenu(player, title, new ModMenus.UpgradeOpening(pos, farm.kind()), ModMenus.UpgradeOpening.CODEC,
                 (id, inv, p) -> new FarmUpgradeMenu(id, inv, pos, farm));

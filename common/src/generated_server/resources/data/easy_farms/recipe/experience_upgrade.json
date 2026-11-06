@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:glass_bottle",
+    "E": "minecraft:emerald",
+    "L": "minecraft:lapis_lazuli"
+  },
+  "pattern": [
+    "LBL",
+    "BEB",
+    "LBL"
+  ],
+  "result": {
+    "id": "easy_farms:experience_upgrade"
+  }
+}

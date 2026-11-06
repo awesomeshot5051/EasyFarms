@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 public class NeoForgePlatform implements IPlatform {
     private static final Map<Identifier, DeferredRegister<?>> REGISTERS = new LinkedHashMap<>();
     private static final List<Runnable> DATAPACK_REGISTRIES = new ArrayList<>();
+    private static final List<java.util.function.Consumer<net.neoforged.neoforge.network.registration.PayloadRegistrar>> PAYLOADS = new ArrayList<>();
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, EasyFarms.MODID);
 
     private static final Supplier<AttachmentType<Set<Identifier>>> DISCOVERED_SECRETS = ATTACHMENTS.register("discovered_secrets",
@@ -52,6 +53,24 @@ public class NeoForgePlatform implements IPlatform {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         modBus.addListener(NeoForgePlatform::onNewDatapackRegistry);
+        modBus.addListener(NeoForgePlatform::onRegisterPayloads);
+    }
+
+    private static void onRegisterPayloads(net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent event) {
+        var registrar = event.registrar("1");
+        PAYLOADS.forEach(p -> p.accept(registrar));
+    }
+
+    @Override
+    public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void registerClientboundPayload(
+            net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            java.util.function.Consumer<T> clientHandler) {
+        PAYLOADS.add(registrar -> registrar.playToClient(type, codec, (payload, context) -> clientHandler.accept(payload)));
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, payload);
     }
 
     private static void onNewDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
@@ -78,6 +97,32 @@ public class NeoForgePlatform implements IPlatform {
     @Override
     public boolean energyAvailable() {
         return true;   // FE is part of NeoForge itself
+    }
+
+    @Override
+    public net.minecraft.world.item.ItemStack insertItem(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
+                                                         net.minecraft.core.Direction side, net.minecraft.world.item.ItemStack stack) {
+        var handler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Item.BLOCK, pos, side);
+        if (handler == null) return stack;
+        try (var tx = net.neoforged.neoforge.transfer.transaction.Transaction.openRoot()) {
+            int inserted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(handler,
+                    net.neoforged.neoforge.transfer.item.ItemResource.of(stack), stack.getCount(), tx);
+            tx.commit();
+            return stack.copyWithCount(stack.getCount() - inserted);
+        }
+    }
+
+    @Override
+    public int insertFluid(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side,
+                           Identifier fluid, int millibuckets) {
+        var handler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Fluid.BLOCK, pos, side);
+        var type = net.minecraft.core.registries.BuiltInRegistries.FLUID.getValue(fluid);
+        if (handler == null || type == net.minecraft.world.level.material.Fluids.EMPTY) return 0;
+        try (var tx = net.neoforged.neoforge.transfer.transaction.Transaction.openRoot()) {
+            int inserted = handler.insert(net.neoforged.neoforge.transfer.fluid.FluidResource.of(type), millibuckets, tx);
+            tx.commit();
+            return inserted;
+        }
     }
 
     @Override

@@ -23,6 +23,12 @@ public class ModItems {
     public static final Supplier<Item> EFFICIENCY_UPGRADE = Services.PLATFORM.registerItem("efficiency_upgrade", p -> new Item(p.stacksTo(64)));
     /** Keeps the farm's chunk loaded so it works while nobody is near. */
     public static final Supplier<Item> CHUNK_LOADER_UPGRADE = card("chunk_loader_upgrade");
+    public static final Supplier<Item> VOID_UPGRADE = card("void_upgrade");
+    public static final Supplier<Item> FILTER_UPGRADE = card("filter_upgrade");
+    public static final Supplier<Item> AUTO_EXPORT_UPGRADE = card("auto_export_upgrade");
+    public static final Supplier<Item> EXPERIENCE_UPGRADE = card("experience_upgrade");
+    /** Copies a farm's side and filter settings (sneak-click) and pastes them onto another farm (click). */
+    public static final Supplier<Item> MEMORY_CARD = Services.PLATFORM.registerItem("memory_card", p -> new Item(p.stacksTo(1)));
     /** New in EasyFarms: with this installed, the recipe's input items are never used up. */
     public static final Supplier<Item> INFINITY_UPGRADE = card("infinity_upgrade");
 
@@ -30,13 +36,13 @@ public class ModItems {
      * A blank card for datapacks: give it the {@code easy_farms:card} component and a farm_upgrade with the same
      * {@code card} id, and it is a new upgrade, with no Java and no item registration.
      */
-    public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.registerItem("upgrade_card", p -> new UpgradeCardItem(p.stacksTo(1)));
+    public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.registerItem("upgrade_card", p -> new UpgradeCardItem(p.stacksTo(64)));
 
     public static final List<Supplier<Item>> UPGRADES = List.of(
-            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE, EFFICIENCY_UPGRADE, CHUNK_LOADER_UPGRADE);
+            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE, EFFICIENCY_UPGRADE, CHUNK_LOADER_UPGRADE, VOID_UPGRADE, FILTER_UPGRADE, AUTO_EXPORT_UPGRADE, EXPERIENCE_UPGRADE);
 
     private static Supplier<Item> card(String name) {
-        return Services.PLATFORM.registerItem(name, p -> new Item(p.stacksTo(1)));
+        return Services.PLATFORM.registerItem(name, p -> new Item(p.stacksTo(64)));
     }
 
     public static void init() {

@@ -123,6 +123,51 @@ public final class Config {
             "Millibuckets (mB) a Liquid Farm's tank holds without Capacity upgrades (1000 mB = one bucket; default 16000 = 16 buckets).",
             "Each Capacity upgrade multiplies it (see the capacity card's farm_upgrade data).");
 
+    public static final Value<Boolean> XP_ENABLED = new Value<>("xpEnabled", true, false, true, Boolean::parseBoolean,
+            "Farms with the Experience card (and smelting Resource Farms) drop experience.");
+    public static final Value<Double> XP_MULTIPLIER = new Value<>("xpMultiplier", 1.0, 0.0, 100.0, Double::parseDouble,
+            "Multiplies all experience farms give (0.5 = half).");
+    public static final Value<Boolean> VOID_ENABLED = new Value<>("voidCardEnabled", true, false, true, Boolean::parseBoolean,
+            "The Void card destroys items that do not fit the output slots. Turn off to disable the card's effect.");
+    public static final Value<Boolean> FILTER_ENABLED = new Value<>("filterCardEnabled", true, false, true, Boolean::parseBoolean,
+            "The Filter card discards the outputs you block. Turn off to disable the card's effect.");
+    public static final Value<Boolean> AUTO_EXPORT_ENABLED = new Value<>("autoExportEnabled", true, false, true, Boolean::parseBoolean,
+            "The Auto-Export card pushes outputs into neighbouring containers and applies its per-side settings.");
+    public static final Value<Integer> AUTO_EXPORT_INTERVAL = new Value<>("autoExportIntervalTicks", 20, 1, 1200, Integer::parseInt,
+            "How often the Auto-Export card pushes (20 ticks = 1 second).");
+    public static final Value<Integer> AUTO_EXPORT_ITEMS = new Value<>("autoExportItemsPerPush", 16, 1, 64, Integer::parseInt,
+            "Maximum items the Auto-Export card moves per push, per side.");
+
+    public static final Value<Integer> PRESET = new Value<>("difficultyPreset", 0, 0, 3, Integer::parseInt,
+            "0 = use timeMultiplier and baseInputLifetimeDays below as they are.",
+            "1 = casual (farms twice as fast, inputs last twice as long), 2 = balanced, 3 = hard (twice as slow, inputs last half as long).");
+    public static final Value<Integer> COMPARATOR_MODE = new Value<>("comparatorMode", 0, 0, 2, Integer::parseInt,
+            "What a comparator reads from a farm: 0 = cycle progress, 1 = how full the output slots are, 2 = how full the Liquid Farm tank is.");
+    public static final Value<Double> WORK_SOUND_VOLUME = new Value<>("cycleSoundVolume", 0.3, 0.0, 1.0, Double::parseDouble,
+            "Volume of the soft chime a farm plays when it finishes a cycle (0 = silent).");
+    public static final Value<Boolean> CYCLE_PARTICLES = new Value<>("cycleParticles", true, false, true, Boolean::parseBoolean,
+            "A few particles above a farm each time it finishes a cycle.");
+
+    /** timeMultiplier with the difficulty preset applied. */
+    public static double effectiveTimeMultiplier() {
+        return switch (PRESET.get()) {
+            case 1 -> 0.5;
+            case 2 -> 1.0;
+            case 3 -> 2.0;
+            default -> TIME_MULTIPLIER.get();
+        };
+    }
+
+    /** baseInputLifetimeDays with the difficulty preset applied. */
+    public static int effectiveInputLifetimeDays() {
+        return switch (PRESET.get()) {
+            case 1 -> 60;
+            case 2 -> 30;
+            case 3 -> 15;
+            default -> BASE_INPUT_LIFETIME_DAYS.get();
+        };
+    }
+
     private Config() {
     }
 

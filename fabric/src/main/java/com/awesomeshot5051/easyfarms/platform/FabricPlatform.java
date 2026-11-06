@@ -54,6 +54,52 @@ public class FabricPlatform implements IPlatform {
     }
 
     @Override
+    public net.minecraft.world.item.ItemStack insertItem(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
+                                                         net.minecraft.core.Direction side, net.minecraft.world.item.ItemStack stack) {
+        var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(level, pos, side);
+        if (storage == null) return stack;
+        try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+            long inserted = storage.insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(stack), stack.getCount(), tx);
+            tx.commit();
+            return stack.copyWithCount(stack.getCount() - (int) inserted);
+        }
+    }
+
+    @Override
+    public int insertFluid(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side,
+                           Identifier fluid, int millibuckets) {
+        var storage = net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.SIDED.find(level, pos, side);
+        var type = net.minecraft.core.registries.BuiltInRegistries.FLUID.getValue(fluid);
+        if (storage == null || type == net.minecraft.world.level.material.Fluids.EMPTY) return 0;
+        try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+            long inserted = storage.insert(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(type), millibuckets * 81L, tx);
+            tx.commit();
+            return (int) (inserted / 81L);
+        }
+    }
+
+    private static final java.util.List<Runnable> CLIENT_RECEIVERS = new java.util.ArrayList<>();
+
+    @Override
+    public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void registerClientboundPayload(
+            net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            java.util.function.Consumer<T> clientHandler) {
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(type, codec);
+        CLIENT_RECEIVERS.add(() -> net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(type,
+                (payload, context) -> clientHandler.accept(payload)));
+    }
+
+    /** Called by the client entrypoint: attaches the handlers of the payloads registered above. */
+    public static void registerClientReceivers() {
+        CLIENT_RECEIVERS.forEach(Runnable::run);
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
+    }
+
+    @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
     }

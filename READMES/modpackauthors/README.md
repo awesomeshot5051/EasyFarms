@@ -5,6 +5,7 @@ and their effects. This guide covers all of it.
 
 [← Back to the main README](../../README.md)
 
+* [What is new in 3.0](#what-is-new-in-30)
 * [Where files go](#where-files-go)
 * [Machine recipes](#machine-recipes)
 * [Tool tiers](#tool-tiers)
@@ -15,6 +16,15 @@ and their effects. This guide covers all of it.
 * [Testing](#testing)
 
 ---
+
+## What is new in 3.0
+
+* Recipe fields `xp`, `fluid_input` and drops with a `loot_table` (see [Recipe fields](#recipe-fields) and [Drop entries](#drop-entries)).
+* A `fluid_container` registry for bottling a Liquid Farm's tank and for virtual fluids (see [Fluid containers](#fluid-containers-fluid_container)).
+* New effects: `efficiency`, `chunk_loader`, `void_overflow`, `output_filter`, `auto_export`, `experience` (see [Built-in effects](#built-in-effects)).
+* `farm_upgrade` field `kind_max_counts` (per farm kind stack limit) and `Powered` no longer takes `energy_mods`.
+* New config values (`xpEnabled`, `xpMultiplier`, `voidCardEnabled`, `filterCardEnabled`, `autoExport*`, `difficultyPreset`, `comparatorMode`, `cycleSoundVolume`, `cycleParticles`).
+* All upgrade cards stack to 64; JEI can move a recipe's items into an open farm.
 
 ## Where files go
 
@@ -135,6 +145,9 @@ Liquid recipes have no `drops`; they add a fluid to the tank every cycle. The vi
 | `secret` | no (false) | Hidden from JEI and EMI until the player fills a farm with the inputs. See [secret recipes](#secret-recipes-and-achievements). |
 | `environment` | no | Where the recipe may run when there is no Nether card. See below. |
 | `drops` | yes | The list of drop entries. |
+| `xp` | no (0) | Experience per cycle. Farms with an Experience card drop it; a Resource Farm with a Smelter card also gives furnace experience for every smelted item. |
+| `fluid_input` | no | `{"fluid": "minecraft:water", "amount": 250}`: fluid taken from the farm's tank each cycle; the farm waits without it. See below. |
+| `fluid` | no | (Liquid Farm) the fluid made each cycle: `{"fluid": "easy_farms:honey", "amount": 1000}`. |
 
 **Matching rules**
 
@@ -159,7 +172,9 @@ any one is enough. With both, both must hold. A farm with the matching card (see
 
 | Field | Default | Meaning |
 |---|---|---|
-| `item` | required | Item id of the drop. |
+| `item` | required (unless `loot_table`) | Item id of the drop. |
+| `loot_table` | none | A loot table to roll instead of an item, e.g. `minecraft:gameplay/fishing`. Fishing tables see the farm's tool, its Luck of the Sea level and a fishing bobber in open water (so treasure can drop). The built-in fishing recipe is `resource_farm/fishing.json`; Lure on the tool shortens any recipe with a loot-table drop (Luck of the Sea, as for a vanilla fishing rod); chest tables work too. Entity and block tables are skipped. |
+| `preview` | none | Extra items JEI shows for a `loot_table` drop. JEI already shows what the loot table can give, with chances: the server rolls the table and sends the result to the client, so this list only adds rare items sampling might miss, or covers a client that received nothing. It has no effect on what drops. |
 | `min`, `max` | 1, 1 | Count range. |
 | `chance` | 1.0 | Chance per cycle (0 to 1). |
 | `fortune_min`, `fortune_max` | none | A different count range when the tool has Fortune (resource and plant). |
@@ -361,6 +376,10 @@ The Capacity card uses `"max_count": 4, "stack_requires": ["easy_farms:powered"]
 | `easy_farms:powered` | `capacity` (1000), `min_energy` (100), `energy_per_tick` (2), `tier` (`easy_farms:diamond`), `toolless_divisor` (4) | The farm runs on energy (needs an energy API: FE on NeoForge, Team Reborn Energy on Fabric). `tier` is a farm_tier whose speed replaces the tool's if faster; toolless recipes are divided by `toolless_divisor`. Stops below `min_energy`, drains `energy_per_tick` while working. The card's tooltip always says "FE or other energy generation mod required to use" as a hint (no mod list is checked, so any energy mod works); on Fabric the card is refused (tooltip in red) only if Team Reborn Energy is missing. |
 | `easy_farms:efficiency` | `energy_use_multiplier` (0.5) | Per installed card: multiplies the energy the Powered card drains per working tick (fractions carry over between ticks). The Efficiency card requires the Powered card through a `requires` restriction and stacks to 3 (`max_count`). |
 | `easy_farms:chunk_loader` | none | Keeps the farm's chunk loaded through vanilla forced chunks (saved in the dimension's `easy_farms_chunk_loaders` data). A chunk already forced by /forceload is never released by it. |
+| `easy_farms:void_overflow` | none | Destroys items that do not fit the output slots (config `voidCardEnabled`). |
+| `easy_farms:output_filter` | none | A per-recipe list of blocked outputs, edited on the Filter screen (config `filterCardEnabled`). |
+| `easy_farms:auto_export` | none | Side panel: each face is both / input / output / off. Output faces push items and tank fluid to neighbours every `autoExportIntervalTicks` (config `autoExport*`). |
+| `easy_farms:experience` | none | The farm drops the recipe's `xp`. Put the card on the kinds you want in its `kinds` list (default: mob). |
 | `easy_farms:capacity` | `energy_multiplier` (2), `fluid_multiplier` (2), `item_multiplier` (2), `unstackable_base` (8) | Per installed card: multiplies the ME buffer, the liquid tank and the output stack size. Unstackable items get `unstackable_base x multiplier`. |
 
 These are enough to build new cards **with no code**: a datapack plus an item (for example one added with a
@@ -545,3 +564,33 @@ them only when that mod is installed. See Patchouli's documentation for the page
 * In JEI or EMI, open a farm category to see whether your recipe loaded and what its numbers are.
 * Jade and The One Probe show what a placed farm is doing, including "wrong environment".
 * `./gradlew runData` in the mod's own repository validates every shipped recipe and upgrade file against the real codecs before you ship.
+
+
+## Details of the 3.0 recipe fields
+
+| Field | Meaning |
+|---|---|
+| `xp` | Experience per cycle (float, default 0). Only given by farms with an Experience card. Smelting Resource Farms also give the vanilla furnace experience of each smelted item. Config: `xpEnabled`, `xpMultiplier`. |
+| `fluid_input` | `{"fluid": "minecraft:water", "amount": 250}`: fluid taken from the farm's tank each cycle. The farm stops without it. Pipes and the Auto-Export card can fill the tank with that fluid only. |
+| drops `loot_table` | A drop entry may name a loot table instead of an item: `{"loot_table": "minecraft:gameplay/fishing"}`. Fishing tables see the farm's tool, its Luck of the Sea level and a fishing bobber in open water (so treasure can drop). The built-in fishing recipe is `resource_farm/fishing.json` (Luck of the Sea, as for a vanilla fishing rod); chest tables work too. Entity and block tables are not supported (they need an entity or block). `item` is optional on such an entry. |
+
+
+## Fluid containers (`fluid_container`)
+
+`data/<ns>/easy_farms/fluid_container/*.json` lets a Liquid Farm's tank be bottled by hand and defines "virtual" fluids:
+
+```json
+{
+  "fluid": "easy_farms:honey",
+  "empty": "minecraft:glass_bottle",
+  "filled": "minecraft:honey_bottle",
+  "amount": 250,
+  "texture": "easy_farms:block/honey_still",
+  "tint": 16777215
+}
+```
+
+Right-clicking a Liquid Farm holding `empty` takes `amount` mB from the tank (if it holds `fluid`) and gives `filled`. A fluid id that
+is not a registered game fluid (honey, milk) is a virtual fluid: the tank, screen and block draw it with `texture` and `tint`, and its
+name is the translation key `fluid.<namespace>.<path>`. Virtual fluids are bottled by hand and do not go through pipes; real fluids
+(water, lava, any mod's) still do. Use the fluid id in a `liquid_farm` recipe's `fluid` (and `visual` target) as usual.

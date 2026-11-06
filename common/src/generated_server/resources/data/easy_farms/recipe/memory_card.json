@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "P": "minecraft:paper",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "NPN",
+    "PRP",
+    "NPN"
+  ],
+  "result": {
+    "id": "easy_farms:memory_card"
+  }
+}
