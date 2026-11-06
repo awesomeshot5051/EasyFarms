@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)liquidBaseCapacityMb$() (1000): how much a Liquid Farm tank holds before Capacity cards.$(br2)Tool tiers, recipes and upgrade cards are datapack data, so a modpack can change them without code."
+      "text": "$(thing)liquidBaseCapacityMb$() (16000): how much a Liquid Farm tank holds before Capacity cards.$(br2)Tool tiers, recipes and upgrade cards are datapack data, so a modpack can change them without code."
     }
   ]
 }

@@ -6,6 +6,9 @@
     "liquid"
   ],
   "requires": "toolless",
+  "kind_max_counts": {
+    "liquid": 3
+  },
   "effects": [
     {
       "type": "easy_farms:cycle_time",

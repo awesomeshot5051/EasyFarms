@@ -6,16 +6,20 @@ Versions are listed newest first, each with its commit and date.
 ## 2.0.0
 
 ### Liquid Farm, Powered and Capacity upgrades
-- New **Liquid Farm** (`easy_farms:liquid_farm` recipes): makes one bucket (1000 mB) of a fluid every 2 minutes (1 minute with
-  the Speed card) into a one-bucket tank (water and lava included; recipes can add any fluid). GUI tank bar, Jade/TOP bar,
+- New **Liquid Farm** (`easy_farms:liquid_farm` recipes): makes one bucket (1000 mB) of a fluid every 2 minutes (Speed cards, up to 3, cut it to
+  1 min, 30 s and 15 s) into a 16-bucket tank (water and lava included; recipes can add any fluid). GUI tank bar, Jade/TOP bar,
   pipes can extract on NeoForge and Fabric, and an empty bucket takes a full bucket. When its bucket input is used up an empty
   bucket is left behind. Crafted from glass panes around a bucket, pointed dripstone and a cauldron.
 - New **Powered Upgrade** (`easy_farms:powered` effect): the farm runs on FE or any energy mod's power at diamond speed (1000 ME
-  buffer, needs 100 ME). Red energy bar in the GUI and in Jade/TOP. It is refused, and its tooltip says "FE or other energy
-  generation mod required to use", unless an energy mod from the effect's `energy_mods` list is loaded; the base mod needs none.
+  buffer, needs 100 ME). Red energy bar in the GUI and in Jade/TOP. Its tooltip always says "FE or other energy
+  generation mod required to use" as a hint; no mod list is checked. On Fabric it needs Team Reborn Energy.
 - New **Capacity Upgrade** (`easy_farms:capacity` effect, `max_count` / `stack_requires` / `stack_exempt_kinds` on
-  `farm_upgrade`): doubles output stack size, ME buffer and liquid tank (up to 16000 mB) per card, stacking up to 4.
-- `cycle_time` takes `kind_divisors`. Config: `liquidBaseCapacityMb`. `farm_upgrade` kinds accept `liquid`.
+  `farm_upgrade`): doubles output stack size, ME buffer and liquid tank (16000 mB base, up to 256000 mB) per card, stacking up to 4.
+- New **Efficiency Upgrade** (`easy_farms:efficiency` effect): each card halves the energy a Powered farm uses per tick, up to 3
+  stacked (1/8). Needs the Powered card (a `requires` restriction). All farm kinds.
+- New **Chunk Loader Upgrade** (`easy_farms:chunk_loader` effect): keeps the farm's chunk loaded (vanilla forced chunk, same on
+  NeoForge and Fabric) so the farm works while nobody is near. Released when the card or farm is removed. All farm kinds.
+- `cycle_time` takes `kind_divisors`. Config: `liquidBaseCapacityMb`. `farm_upgrade` kinds accept `liquid`; `kind_max_counts` sets a per-kind stack limit (Speed: 3 on the Liquid Farm).
 - Guide book: Liquid Farm, Powered and Capacity entries.
 
 ## 1.3.0

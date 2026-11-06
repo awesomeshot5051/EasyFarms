@@ -61,30 +61,42 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
         }
     }
 
-    /** The Liquid Farm: the fluid's still texture as a surface that rises with the tank level. */
+    /** The Liquid Farm: a solid column of the fluid's still texture inside the glass, rising with the tank level. */
     private void renderTank(FarmBlockEntity farm, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
         var id = farm.fluidId();
         if (id == null || farm.fluidAmount() <= 0) return;
         var fluid = BuiltInRegistries.FLUID.get(id);
         if (fluid == net.minecraft.world.level.material.Fluids.EMPTY) return;
-        var sprite = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(fluid.defaultFluidState().createLegacyBlock());
+        var state = fluid.defaultFluidState().createLegacyBlock();
+        var sprite = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(state);
         float level = Math.min(1f, farm.fluidAmount() / (float) Math.max(1, farm.fluidCapacity()));
-        float y = 1f / 16f + level * (13f / 16f);
-        float x0 = 1f / 16f, x1 = 15f / 16f;
+        float y0 = 1f / 16f, y1 = y0 + level * (14f / 16f);
+        float a = 1f / 16f + 0.001f, b = 15f / 16f - 0.001f;   // just inside the glass so the faces don't z-fight with it
         int tint = FluidTint.of(fluid);
-        int r = tint >> 16 & 255, g = tint >> 8 & 255, b = tint & 255;
-        int lit = fluid.defaultFluidState().createLegacyBlock().getLightEmission() > 0 ? 15728880 : light;
+        int r = tint >> 16 & 255, g = tint >> 8 & 255, bl = tint & 255;
+        boolean glows = state.getLightEmission() > 0;
+        int lit = glows ? 15728880 : light;
+        int alpha = glows ? 255 : 200;
         var vc = buffer.getBuffer(RenderType.translucent());
         var last = pose.last();
-        float[][] corners = {{x0, x0}, {x0, x1}, {x1, x1}, {x1, x0}};
-        // Both windings, so the surface is visible from above and below whatever the culling does.
-        for (int pass = 0; pass < 2; pass++) {
-            for (int i = 0; i < 4; i++) {
-                float[] c = corners[pass == 0 ? i : 3 - i];
-                vc.addVertex(last, c[0], y, c[1]).setColor(r, g, b, 220)
-                        .setUv(sprite.getU(c[0]), sprite.getV(c[1])).setOverlay(overlay).setLight(lit)
-                        .setNormal(last, 0f, pass == 0 ? 1f : -1f, 0f);
-            }
+        // Each face is wound counter-clockwise seen from outside: {x, y, z} per corner.
+        quad(vc, last, sprite, r, g, bl, alpha, lit, overlay, 0, 1, 0, new float[][]{{a, y1, a}, {a, y1, b}, {b, y1, b}, {b, y1, a}});
+        quad(vc, last, sprite, r, g, bl, alpha, lit, overlay, 0, -1, 0, new float[][]{{a, y0, a}, {b, y0, a}, {b, y0, b}, {a, y0, b}});
+        quad(vc, last, sprite, r, g, bl, alpha, lit, overlay, 0, 0, -1, new float[][]{{b, y0, a}, {a, y0, a}, {a, y1, a}, {b, y1, a}});
+        quad(vc, last, sprite, r, g, bl, alpha, lit, overlay, 0, 0, 1, new float[][]{{a, y0, b}, {b, y0, b}, {b, y1, b}, {a, y1, b}});
+        quad(vc, last, sprite, r, g, bl, alpha, lit, overlay, -1, 0, 0, new float[][]{{a, y0, a}, {a, y0, b}, {a, y1, b}, {a, y1, a}});
+        quad(vc, last, sprite, r, g, bl, alpha, lit, overlay, 1, 0, 0, new float[][]{{b, y0, b}, {b, y0, a}, {b, y1, a}, {b, y1, b}});
+    }
+
+    private static void quad(com.mojang.blaze3d.vertex.VertexConsumer vc, PoseStack.Pose last, net.minecraft.client.renderer.texture.TextureAtlasSprite sprite,
+                             int r, int g, int b, int alpha, int light, int overlay, float nx, float ny, float nz, float[][] corners) {
+        for (float[] c : corners) {
+            // Texture coordinates follow the position along the face, so the texture is not stretched on the sides.
+            float u = nx != 0 ? c[2] : c[0];
+            float v = ny != 0 ? c[2] : c[1];
+            vc.addVertex(last, c[0], c[1], c[2]).setColor(r, g, b, alpha)
+                    .setUv(sprite.getU(u), sprite.getV(v)).setOverlay(overlay).setLight(light)
+                    .setNormal(last, nx, ny, nz);
         }
     }
 

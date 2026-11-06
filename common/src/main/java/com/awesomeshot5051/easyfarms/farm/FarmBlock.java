@@ -174,6 +174,7 @@ public class FarmBlock extends Block implements EntityBlock {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof FarmBlockEntity farm) {
             farm.dropContents();
+            farm.releaseChunk();
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

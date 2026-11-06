@@ -638,6 +638,19 @@ public class FarmBlockEntity extends BlockEntity {
         return accepted;
     }
 
+    /** Fractional energy not yet taken (Efficiency cards make the per-tick cost less than a whole ME). */
+    private double energyDebt;
+
+    /** Drains {@code amount} ME, carrying fractions over to later ticks so a cost of 0.25 ME/tick still adds up. */
+    public void drainEnergy(double amount) {
+        energyDebt += Math.max(0, amount);
+        long whole = (long) energyDebt;
+        if (whole > 0) {
+            energyDebt -= whole;
+            extractEnergy(whole);
+        }
+    }
+
     public long extractEnergy(long amount) {
         long taken = Math.min(Math.max(0, amount), energy);
         if (taken > 0) {
@@ -836,12 +849,34 @@ public class FarmBlockEntity extends BlockEntity {
         return operatingTicks;
     }
 
+    /** Whether this farm has told FarmChunkLoaders that it holds its chunk. */
+    private boolean loadingChunk;
+
+    /** Server side: keep the chunk loaded while a Chunk Loader card works in this farm. */
+    private void updateChunkLoading() {
+        boolean want = false;
+        for (UpgradeEffect e : effects()) want |= e.loadsChunk();
+        if (want != loadingChunk) {
+            loadingChunk = want;
+            FarmChunkLoaders.update((ServerLevel) level, worldPosition, want);
+        }
+    }
+
+    /** The farm block was removed from the world (not just unloaded): let go of its chunk. */
+    public void releaseChunk() {
+        if (level instanceof ServerLevel server) {
+            loadingChunk = false;
+            FarmChunkLoaders.update(server, worldPosition, false);
+        }
+    }
+
     public void tick() {
         if (level == null) return;
         if (level.isClientSide) {
             clientTick();
             return;
         }
+        updateChunkLoading();
         if (catalystDirty) {
             catalystDirty = false;
             catalystSync = false;

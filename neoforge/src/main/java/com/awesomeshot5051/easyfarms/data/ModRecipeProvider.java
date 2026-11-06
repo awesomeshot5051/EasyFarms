@@ -73,6 +73,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('I', Items.IRON_INGOT).define('C', Items.CHEST)
                 .unlockedBy("has_chest", has(Items.CHEST))
                 .save(out, id("capacity_upgrade"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.EFFICIENCY_UPGRADE.get())
+                .pattern("GRG").pattern("RPR").pattern("GRG")
+                .define('G', Items.GOLD_INGOT).define('R', Items.REDSTONE).define('P', ModItems.POWERED_UPGRADE.get())
+                .unlockedBy("has_powered_upgrade", has(ModItems.POWERED_UPGRADE.get()))
+                .save(out, id("efficiency_upgrade"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CHUNK_LOADER_UPGRADE.get())
+                .pattern("OEO").pattern("EDE").pattern("OEO")
+                .define('O', Items.OBSIDIAN).define('E', Items.ENDER_PEARL).define('D', Items.ENDER_EYE)
+                .unlockedBy("has_ender_eye", has(Items.ENDER_EYE))
+                .save(out, id("chunk_loader_upgrade"));
 
         // Cards (same recipes as the old mods).
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SPEED_UPGRADE.get())

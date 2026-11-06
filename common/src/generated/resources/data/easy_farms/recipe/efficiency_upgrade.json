@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "P": {
+      "item": "easy_farms:powered_upgrade"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "GRG",
+    "RPR",
+    "GRG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "easy_farms:efficiency_upgrade"
+  }
+}
