@@ -77,6 +77,26 @@ public interface UpgradeEffect {
         return 0;
     }
 
+    /** True if this card destroys items that do not fit the output slots, so the farm never stalls on a full output (Void card). */
+    default boolean voidsOverflow() {
+        return false;
+    }
+
+    /** True if this card makes the farm drop the recipe's experience (Experience card on Mob farms). */
+    default boolean grantsExperience(FarmBlockEntity farm) {
+        return false;
+    }
+
+    /** True if this card lets the farm hold a per-recipe output filter (Filter card). */
+    default boolean filtersOutputs() {
+        return false;
+    }
+
+    /** True if this card lets the farm push its outputs to neighbouring containers (Auto-Export card). */
+    default boolean exportsOutputs() {
+        return false;
+    }
+
     /** True if this card keeps the farm's chunk loaded (Chunk Loader card). */
     default boolean loadsChunk() {
         return false;

@@ -41,5 +41,6 @@
       "item": "minecraft:iron_axe"
     }
   ],
-  "type": "easy_farms:mob_farm"
+  "type": "easy_farms:mob_farm",
+  "xp": 5
 }

@@ -1,0 +1,15 @@
+{
+  "name": "Void Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:void_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)Items that do not fit the output slots are $(item)destroyed$() instead of making the farm stop, so a full output never stalls it. Nothing is dropped on the ground either. Switch it off in the config (voidCardEnabled)."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:void_upgrade"
+    }
+  ]
+}

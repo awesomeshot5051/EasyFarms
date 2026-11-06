@@ -1,0 +1,15 @@
+{
+  "name": "Filter Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:filter_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)Adds an arrow on the farm screen that opens the $(item)Filter screen$(): every item the farm's current recipe can output (with the Smelter and Inscriber changes applied). Click an item to $(item)block$() it; the farm throws blocked items away. Each recipe keeps its own list, so changing the inputs shows that recipe's items."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:filter_upgrade"
+    }
+  ]
+}

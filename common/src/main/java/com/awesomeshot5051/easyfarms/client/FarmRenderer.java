@@ -65,16 +65,14 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
     private void renderTank(FarmBlockEntity farm, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
         var id = farm.fluidId();
         if (id == null || farm.fluidAmount() <= 0) return;
-        var fluid = BuiltInRegistries.FLUID.get(id);
-        if (fluid == net.minecraft.world.level.material.Fluids.EMPTY) return;
-        var state = fluid.defaultFluidState().createLegacyBlock();
-        var sprite = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(state);
+        if (!FluidTint.known(id)) return;
+        var sprite = FluidTint.sprite(id);
         float level = Math.min(1f, farm.fluidAmount() / (float) Math.max(1, farm.fluidCapacity()));
         float y0 = 1f / 16f, y1 = y0 + level * (14f / 16f);
         float a = 1f / 16f + 0.001f, b = 15f / 16f - 0.001f;   // just inside the glass so the faces don't z-fight with it
-        int tint = FluidTint.of(fluid);
+        int tint = FluidTint.tint(id);
         int r = tint >> 16 & 255, g = tint >> 8 & 255, bl = tint & 255;
-        boolean glows = state.getLightEmission() > 0;
+        boolean glows = FluidTint.glows(id);
         int lit = glows ? 15728880 : light;
         int alpha = glows ? 255 : 200;
         var vc = buffer.getBuffer(RenderType.translucent());

@@ -79,6 +79,22 @@ public class NeoForgePlatform implements IPlatform {
     }
 
     @Override
+    public net.minecraft.world.item.ItemStack insertItem(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
+                                                         net.minecraft.core.Direction side, net.minecraft.world.item.ItemStack stack) {
+        var handler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, pos, side);
+        return handler == null ? stack : net.neoforged.neoforge.items.ItemHandlerHelper.insertItemStacked(handler, stack, false);
+    }
+
+    @Override
+    public int insertFluid(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side,
+                           ResourceLocation fluid, int millibuckets) {
+        var handler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK, pos, side);
+        var type = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(fluid);
+        if (handler == null || type == net.minecraft.world.level.material.Fluids.EMPTY) return 0;
+        return handler.fill(new net.neoforged.neoforge.fluids.FluidStack(type, millibuckets), net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+    }
+
+    @Override
     public boolean isModLoaded(String modId) {
         return ModList.get().isLoaded(modId);
     }

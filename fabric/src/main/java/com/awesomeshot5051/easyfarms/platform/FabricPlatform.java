@@ -53,6 +53,31 @@ public class FabricPlatform implements IPlatform {
     }
 
     @Override
+    public net.minecraft.world.item.ItemStack insertItem(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
+                                                         net.minecraft.core.Direction side, net.minecraft.world.item.ItemStack stack) {
+        var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(level, pos, side);
+        if (storage == null) return stack;
+        try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+            long inserted = storage.insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(stack), stack.getCount(), tx);
+            tx.commit();
+            return stack.copyWithCount(stack.getCount() - (int) inserted);
+        }
+    }
+
+    @Override
+    public int insertFluid(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side,
+                           ResourceLocation fluid, int millibuckets) {
+        var storage = net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.SIDED.find(level, pos, side);
+        var type = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(fluid);
+        if (storage == null || type == net.minecraft.world.level.material.Fluids.EMPTY) return 0;
+        try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+            long inserted = storage.insert(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(type), millibuckets * 81L, tx);
+            tx.commit();
+            return (int) (inserted / 81L);
+        }
+    }
+
+    @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
     }

@@ -34,6 +34,7 @@ public class EasyFarmsEmiPlugin implements EmiPlugin {
             registry.addCategory(category);
             registry.addWorkstation(category, icon);
         }
+        registry.addRecipeHandler(com.awesomeshot5051.easyfarms.gui.ModMenus.FARM.get(), new FarmEmiHandler());
         for (FarmKind kind : FarmKind.values()) {
             for (RecipeHolder<FarmRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipes.TYPES_BY_KIND.get(kind).get())) {
                 if (!holder.value().secret() || com.awesomeshot5051.easyfarms.trigger.SecretRecipes.isDiscovered(net.minecraft.client.Minecraft.getInstance().player, holder.id())) registry.addRecipe(new FarmEmiRecipe(categories.get(kind), holder));

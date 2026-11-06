@@ -84,7 +84,7 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         }
         // The tool slot (empty for recipes that need none).
         if (recipe.tool().isPresent()) {
-            builder.addSlot(RecipeIngredientRole.CATALYST, 4 + 3 * SLOT + 6, INPUT_Y)
+            builder.addSlot(RecipeIngredientRole.INPUT, 4 + 3 * SLOT + 6, INPUT_Y)
                     .addIngredients(Ingredient.of(recipe.tool().get()))
                     .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.tool")));
         }
@@ -96,6 +96,7 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         }
         int i = 0;
         for (DropEntry drop : recipe.drops()) {
+            if (BuiltInRegistries.ITEM.get(drop.item()) == net.minecraft.world.item.Items.AIR) continue;   // loot-table entries have no fixed item
             int col = i % 7, row = i / 7;
             ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(drop.item()), Math.max(1, drop.max()));
             builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT)

@@ -58,7 +58,9 @@ public enum FarmJadeProvider implements IBlockComponentProvider, IServerDataProv
     static int fluidColor(String id) {
         if (id.equals("minecraft:water")) return 0xFF3F76E4;
         if (id.equals("minecraft:lava") || id.isEmpty()) return 0xFFE8761A;
-        var fluid = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(ResourceLocation.parse(id));
+        ResourceLocation key = ResourceLocation.parse(id);
+        if (!net.minecraft.core.registries.BuiltInRegistries.FLUID.containsKey(key)) return 0xFF000000 | com.awesomeshot5051.easyfarms.client.FluidTint.tint(key);
+        var fluid = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(key);
         return 0xFF000000 | fluid.defaultFluidState().createLegacyBlock().getBlock().defaultMapColor().col;
     }
 

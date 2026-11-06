@@ -41,6 +41,14 @@ public interface IPlatform {
 
     boolean isModLoaded(String modId);
 
+    /** Offers a stack to the item container at {@code pos}, reached from {@code side}. Returns what did not fit (the whole stack if there is no container). */
+    net.minecraft.world.item.ItemStack insertItem(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
+                                                  net.minecraft.core.Direction side, net.minecraft.world.item.ItemStack stack);
+
+    /** Offers a fluid to the tank at {@code pos}, reached from {@code side}. Returns the millibuckets it took. */
+    int insertFluid(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side,
+                    ResourceLocation fluid, int millibuckets);
+
     /** Directory that holds config files, e.g. {@code config/}. */
     Path configDir();
 

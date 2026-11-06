@@ -1,0 +1,8 @@
+{
+  "fluid": "easy_farms:honey",
+  "empty": "minecraft:glass_bottle",
+  "filled": "minecraft:honey_bottle",
+  "amount": 250,
+  "texture": "easy_farms:block/honey_still",
+  "tint": 16777215
+}

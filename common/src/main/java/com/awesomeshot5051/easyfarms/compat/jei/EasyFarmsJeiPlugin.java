@@ -128,6 +128,12 @@ public class EasyFarmsJeiPlugin implements IModPlugin {
         registration.addExtraItemStacks(cards);
     }
 
+    /** The "+" button: move a recipe's items into the open farm (JEI also shows what is missing). */
+    @Override
+    public void registerRecipeTransferHandlers(mezz.jei.api.registration.IRecipeTransferRegistration registration) {
+        for (FarmKind kind : FarmKind.values()) registration.addRecipeTransferHandler(new FarmTransferInfo(kind, TYPES.get(kind)));
+    }
+
     /**
      * Every datapack card is the same item (easy_farms:upgrade_card) told apart by its easy_farms:card component. Without
      * this JEI treats them as duplicates and lists only one.

@@ -30,11 +30,13 @@ public class FarmMenu extends AbstractContainerMenu {
     private final BlockPos pos;
     private final FarmBlockEntity farm;
     private final ContainerData data;
+    private final net.minecraft.world.level.Level level;
 
     public FarmMenu(int id, Inventory inventory, BlockPos pos, FarmBlockEntity farm) {
         super(ModMenus.FARM.get(), id);
         this.pos = pos;
         this.farm = farm;
+        this.level = inventory.player.level();
         // The client only gets the position: the kind comes from the block there.
         this.kind = farm != null ? farm.kind()
                 : inventory.player.level().getBlockState(pos).getBlock() instanceof FarmBlock block ? block.kind() : FarmKind.RESOURCE;
@@ -91,6 +93,9 @@ public class FarmMenu extends AbstractContainerMenu {
                     case 13 -> Math.min(32767, farm.fluidCapacity());
                     case 14 -> farm.fluidId() == null ? -1 : net.minecraft.core.registries.BuiltInRegistries.FLUID.getId(
                             net.minecraft.core.registries.BuiltInRegistries.FLUID.get(farm.fluidId()));
+                    case 15 -> (farm.hasFilterCard() ? 1 : 0) | (farm.hasExportCard() ? 2 : 0) | (farm.showsXp() ? 4 : 0);
+                    case 16 -> farm.packedSideModes();
+                    case 17 -> Math.min(32767, farm.xp());
                     default -> farm.environmentOk() ? 1 : 0;
                 };
             }
@@ -101,10 +106,26 @@ public class FarmMenu extends AbstractContainerMenu {
 
             @Override
             public int getCount() {
-                return 15;
+                return 18;
             }
-        } : new SimpleContainerData(15);
+        } : new SimpleContainerData(18);
         addDataSlots(data);
+    }
+
+    /**
+     * The menu slots a recipe's ingredients go into, in the order of the recipe viewers' input list: the recipe's inputs
+     * (slots 0-2), then the tool slot when the recipe uses a tool. Used by the JEI / EMI "move items" button.
+     */
+    public java.util.List<Slot> recipeSlots(com.awesomeshot5051.easyfarms.recipe.FarmRecipe recipe) {
+        java.util.List<Slot> list = new java.util.ArrayList<>();
+        for (int i = 0; i < recipe.inputs().size(); i++) list.add(slots.get(i));
+        if (recipe.tool().isPresent()) list.add(slots.get(TOOL_SLOT));
+        return list;
+    }
+
+    /** The player's inventory and hotbar slots (what a recipe viewer takes items from). */
+    public java.util.List<Slot> inventorySlots() {
+        return new java.util.ArrayList<>(slots.subList(firstPlayer, slots.size()));
     }
 
     public FarmKind kind() {
@@ -131,6 +152,11 @@ public class FarmMenu extends AbstractContainerMenu {
 
     public int fluidCapacity() {
         return Math.max(1, data.get(13));
+    }
+
+    /** The fluid in the tank (a game fluid or a virtual one such as honey), or null when empty. Read from the farm's client copy. */
+    public net.minecraft.resources.ResourceLocation fluidKey() {
+        return level != null && level.getBlockEntity(pos) instanceof FarmBlockEntity be ? be.fluidId() : null;
     }
 
     /** The fluid in the tank, or null when empty. */
@@ -167,6 +193,31 @@ public class FarmMenu extends AbstractContainerMenu {
         return data.get(4) == 1;
     }
 
+    /** True while a Filter card is installed (its button is shown). */
+    public boolean hasFilterCard() {
+        return (data.get(15) & 1) != 0;
+    }
+
+    /** True while an Auto-Export card is installed (the side panel is available). */
+    public boolean hasExportCard() {
+        return (data.get(15) & 2) != 0;
+    }
+
+    /** True while an Experience card is installed (the collect button is shown). */
+    public boolean hasExperienceCard() {
+        return (data.get(15) & 4) != 0;
+    }
+
+    /** What a relative face does (0 front, 1 back, 2 left, 3 right, 4 top, 5 bottom): both / input / output / off. */
+    public int sideMode(int face) {
+        return (data.get(16) >> (face * 2)) & 3;
+    }
+
+    /** Experience waiting in the farm (shown capped at 32767). */
+    public int xp() {
+        return data.get(17);
+    }
+
     /** True while an installed card needs a catalyst: the Catalysts button is shown. */
     public boolean hasCatalystCards() {
         return data.get(7) != 0;
@@ -181,6 +232,18 @@ public class FarmMenu extends AbstractContainerMenu {
         }
         if (button == 1 && farm != null && farm.catalystMask() != 0 && player instanceof ServerPlayer server) {
             MenuOpener.openCatalysts(server, pos, farm, Component.translatable("gui.easy_farms.catalysts"));
+            return true;
+        }
+        if (button == 2 && farm != null && farm.hasFilterCard() && player instanceof ServerPlayer server) {
+            MenuOpener.openFilter(server, pos, farm, Component.translatable("gui.easy_farms.filter"));
+            return true;
+        }
+        if (button == 3 && farm != null && farm.showsXp()) {
+            farm.collectXp(player);
+            return true;
+        }
+        if (button >= 4 && button < 10 && farm != null && farm.hasExportCard()) {
+            farm.cycleSideMode(button - 4);
             return true;
         }
         return false;

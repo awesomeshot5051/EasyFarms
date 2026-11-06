@@ -1,0 +1,15 @@
+{
+  "name": "Experience Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:experience_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): Mob.$(br2)Mob farms drop the $(item)experience$() of their recipe (the recipe's $(thing)xp$() field). It builds up in the farm; press the $(item)xp$() button on the farm screen to collect it. Resource Farms with a $(item)Smelter$() card give furnace experience for every smelted item, without this card."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:experience_upgrade"
+    }
+  ]
+}

@@ -22,7 +22,12 @@ public final class FarmFluidStorage extends SnapshotParticipant<FarmFluidStorage
 
     @Override
     public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        return 0;
+        if (resource.isBlank()) return 0;
+        var id = BuiltInRegistries.FLUID.getKey(resource.getFluid());
+        int accepted = farm.insertFluid(id, (int) Math.min(Integer.MAX_VALUE, maxAmount / 81L), true);
+        if (accepted <= 0) return 0;
+        updateSnapshots(transaction);
+        return farm.insertFluid(id, accepted, false) * 81L;
     }
 
     @Override
@@ -42,7 +47,7 @@ public final class FarmFluidStorage extends SnapshotParticipant<FarmFluidStorage
     @Override
     public FluidVariant getResource() {
         var id = farm.fluidId();
-        return id == null ? FluidVariant.blank() : FluidVariant.of(BuiltInRegistries.FLUID.get(id));
+        return id == null || !BuiltInRegistries.FLUID.containsKey(id) ? FluidVariant.blank() : FluidVariant.of(BuiltInRegistries.FLUID.get(id));
     }
 
     @Override

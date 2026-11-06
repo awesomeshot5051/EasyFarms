@@ -43,6 +43,23 @@ public class ModMenus {
                 });
     }
 
+    /** What the server sends along when it opens the Filter screen: where the farm is and the items to show. */
+    public record FilterOpening(BlockPos pos, java.util.List<net.minecraft.resources.ResourceLocation> items) {
+        public static final StreamCodec<RegistryFriendlyByteBuf, FilterOpening> CODEC = StreamCodec.of(
+                (buf, v) -> {
+                    buf.writeBlockPos(v.pos());
+                    buf.writeVarInt(v.items().size());
+                    for (var id : v.items()) buf.writeResourceLocation(id);
+                },
+                buf -> {
+                    BlockPos pos = buf.readBlockPos();
+                    int n = buf.readVarInt();
+                    java.util.List<net.minecraft.resources.ResourceLocation> items = new java.util.ArrayList<>();
+                    for (int i = 0; i < n; i++) items.add(buf.readResourceLocation());
+                    return new FilterOpening(pos, items);
+                });
+    }
+
     public static final Supplier<MenuType<FarmMenu>> FARM = Services.PLATFORM.register(Registries.MENU, "farm",
             () -> Services.PLATFORM.createMenuType((id, inv, pos) -> new FarmMenu(id, inv, pos, null), FARM_CODEC));
     public static final Supplier<MenuType<FarmUpgradeMenu>> FARM_UPGRADES = Services.PLATFORM.register(Registries.MENU, "farm_upgrades",
@@ -50,6 +67,9 @@ public class ModMenus {
 
     public static final Supplier<MenuType<FarmCatalystMenu>> FARM_CATALYSTS = Services.PLATFORM.register(Registries.MENU, "farm_catalysts",
             () -> Services.PLATFORM.createMenuType((id, inv, data) -> new FarmCatalystMenu(id, inv, data.pos(), null, data.owners()), CatalystOpening.CODEC));
+
+    public static final Supplier<MenuType<FarmFilterMenu>> FARM_FILTER = Services.PLATFORM.register(Registries.MENU, "farm_filter",
+            () -> Services.PLATFORM.createMenuType((id, inv, data) -> new FarmFilterMenu(id, inv, data.pos(), null, data.items()), FilterOpening.CODEC));
 
     public static void init() {
         // class load registers the menus

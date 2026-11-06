@@ -1,0 +1,8 @@
+{
+  "fluid": "easy_farms:milk",
+  "empty": "minecraft:bucket",
+  "filled": "minecraft:milk_bucket",
+  "amount": 1000,
+  "texture": "easy_farms:block/milk_still",
+  "tint": 16777215
+}

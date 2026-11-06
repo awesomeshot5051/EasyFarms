@@ -17,27 +17,31 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Guardian$()$(br)In: Cod$(br)Out: Cod x1-3 (60%), Prismarine Crystals x1-3 (60%)$(br)$(7)Tool: sword; Looting: Cod x4-8; Fire Aspect: Cooked Cod$()$(br2)$(thing)Illusioner$()$(br)In: Crossbow$(br)Out: Crossbow (92%), Diamond x1-3$(br)$(7)Tool: sword; Looting: Diamond x4-8$()"
+      "text": "$(thing)Cod$()$(br)In: Fishing Rod + Water Bucket$(br)Out: loot table minecraft:gameplay/fishing$(br)$(7)No tool needed$()$(br2)$(thing)Guardian$()$(br)In: Cod$(br)Out: Cod x1-3 (60%), Prismarine Crystals x1-3 (60%)$(br)$(7)Tool: sword; Looting: Cod x4-8; Fire Aspect: Cooked Cod$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Phantom$()$(br)In: 2 Phantom Membrane$(br)Out: Phantom Membrane x1-3$(br)$(7)Tool: sword; Looting: Phantom Membrane x4-8$()$(br2)$(thing)Pillager$()$(br)In: Emerald + Ominous Bottle$(br)Out: Emerald x0, Crossbow (12%)$(br)$(7)Tool: sword; Looting: Emerald x0-5$()"
+      "text": "$(thing)Illusioner$()$(br)In: Crossbow$(br)Out: Crossbow (92%), Diamond x1-3$(br)$(7)Tool: sword; Looting: Diamond x4-8$()$(br2)$(thing)Phantom$()$(br)In: 2 Phantom Membrane$(br)Out: Phantom Membrane x1-3$(br)$(7)Tool: sword; Looting: Phantom Membrane x4-8$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Ravager$()$(br)In: Saddle$(br)Out: Saddle x1-3$(br)$(7)Tool: sword; Looting: Saddle x4-8$()$(br2)$(thing)Shulker$()$(br)In: Shulker Box + Shulker Shell$(br)Out: Shulker Shell x1-3$(br)$(7)Tool: sword; Looting: Shulker Shell x4-8; Needs in the End$()"
+      "text": "$(thing)Pillager$()$(br)In: Emerald + Ominous Bottle$(br)Out: Emerald x0, Crossbow (12%)$(br)$(7)Tool: sword; Looting: Emerald x0-5$()$(br2)$(thing)Ravager$()$(br)In: Saddle$(br)Out: Saddle x1-3$(br)$(7)Tool: sword; Looting: Saddle x4-8$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Skeleton$()$(br)In: Skeleton Skull + Bone$(br)Out: Bone x0-2, Arrow x0-2, Bow (92%)$(br)$(7)Tool: sword; Looting: Bone x4-8$()$(br2)$(thing)Spider$()$(br)In: String + Spider Eye$(br)Out: String x0-2, Spider Eye (67%)$(br)$(7)Tool: sword; Looting: String x4-8$()"
+      "text": "$(thing)Shulker$()$(br)In: Shulker Box + Shulker Shell$(br)Out: Shulker Shell x1-3$(br)$(7)Tool: sword; Looting: Shulker Shell x4-8; Needs in the End$()$(br2)$(thing)Skeleton$()$(br)In: Skeleton Skull + Bone$(br)Out: Bone x0-2, Arrow x0-2, Bow (92%)$(br)$(7)Tool: sword; Looting: Bone x4-8$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Vindicator$()$(br)In: Iron Shovel or Iron Axe + Emerald or Enchanted Book$(br)Out: Emerald x0-1 (50%), Iron Axe$(br)$(7)Tool: sword; Looting: Emerald x0-4$()$(br2)$(thing)Warden$()$(br)In: 2 Sculk Catalyst$(br)Out: Sculk Catalyst x1-3$(br)$(7)Tool: sword; Looting: Sculk Catalyst x4-8$()"
+      "text": "$(thing)Spider$()$(br)In: String + Spider Eye$(br)Out: String x0-2, Spider Eye (67%)$(br)$(7)Tool: sword; Looting: String x4-8$()$(br2)$(thing)Vindicator$()$(br)In: Iron Shovel or Iron Axe + Emerald or Enchanted Book$(br)Out: Emerald x0-1 (50%), Iron Axe$(br)$(7)Tool: sword; Looting: Emerald x0-4$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Witch$()$(br)In: Glass Bottle + Redstone$(br)Out: Redstone x0-3, Stick x0-3, Glowstone Dust x0-3, Spider Eye x0-3, Gunpowder x0-3, Sugar x0-3$(br)$(7)Tool: sword; Looting: Redstone x4-8$()$(br2)$(thing)Zombie$()$(br)In: Rotten Flesh + Zombie Head$(br)Out: Rotten Flesh x1-3$(br)$(7)Tool: sword; Looting: Rotten Flesh x4-8$()"
+      "text": "$(thing)Warden$()$(br)In: 2 Sculk Catalyst$(br)Out: Sculk Catalyst x1-3$(br)$(7)Tool: sword; Looting: Sculk Catalyst x4-8$()$(br2)$(thing)Witch$()$(br)In: Glass Bottle + Redstone$(br)Out: Redstone x0-3, Stick x0-3, Glowstone Dust x0-3, Spider Eye x0-3, Gunpowder x0-3, Sugar x0-3$(br)$(7)Tool: sword; Looting: Redstone x4-8$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Zombie$()$(br)In: Rotten Flesh + Zombie Head$(br)Out: Rotten Flesh x1-3$(br)$(7)Tool: sword; Looting: Rotten Flesh x4-8$()"
     }
   ]
 }

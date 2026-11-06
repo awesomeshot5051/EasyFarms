@@ -38,12 +38,14 @@ import java.util.Optional;
  * @param environment where the farm must be (dimension, block under it) when it has no Nether upgrade
  * @param inscriber   what the Inscriber card changes: an optional press that must be installed, and the drops that replace the normal ones
  * @param secret      hidden from recipe viewers (JEI, EMI); the Wither farm is one
+ * @param xp          experience dropped per cycle (0 = none; Mob farms only give it with the Experience card)
+ * @param fluidInput  fluid taken from the farm's tank each cycle (the farm needs it, e.g. from a Liquid Farm through a pipe)
  * @param dyeable     the farm can be dyed (by hand or dispenser); drops and visual whose id starts with "white_" take the dye colour
  */
 public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<TagKey<Item>> tool, int minTierRank,
                          Visual visual, int baseTicks, int visualTicks, boolean smeltable, boolean nether,
                          Optional<Inscriber> inscriber, boolean dyeable, boolean secret, Optional<Environment> environment,
-                         List<DropEntry> drops, Optional<FluidOutput> fluid) implements Recipe<FarmRecipeInput> {
+                         List<DropEntry> drops, Optional<FluidOutput> fluid, float xp, Optional<FluidInput> fluidInput) implements Recipe<FarmRecipeInput> {
 
     /**
      * AE2-style inscribing: with the Inscriber card (and the press in the Upgrades screen, when one is named) the drops
@@ -98,6 +100,19 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
         ).apply(i, FluidOutput::new));
     }
 
+    /**
+     * A fluid a recipe uses up from the farm's tank every cycle.
+     *
+     * @param fluid  fluid id, e.g. minecraft:water
+     * @param amount millibuckets used per cycle
+     */
+    public record FluidInput(ResourceLocation fluid, int amount) {
+        public static final Codec<FluidInput> CODEC = RecordCodecBuilder.create(i -> i.group(
+                ResourceLocation.CODEC.fieldOf("fluid").forGetter(FluidInput::fluid),
+                Codec.intRange(1, 1000000).optionalFieldOf("amount", 1).forGetter(FluidInput::amount)
+        ).apply(i, FluidInput::new));
+    }
+
     /** What the block shows: "block" (ore/soil with a swinging tool), "plant" (growing), or "mob". */
     public record Visual(String type, ResourceLocation target) {
         public static final Codec<Visual> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -113,7 +128,7 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
     /** A copy with a different drop table (recipe viewers show what an upgrade card turns the drops into). */
     public FarmRecipe withDrops(List<DropEntry> newDrops) {
         return new FarmRecipe(kind, inputs, tool, minTierRank, visual, baseTicks, visualTicks, smeltable, nether,
-                inscriber, dyeable, secret, environment, newDrops, fluid);
+                inscriber, dyeable, secret, environment, newDrops, fluid, xp, fluidInput);
     }
 
     public boolean toolless() {
@@ -223,9 +238,11 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
                     Codec.BOOL.optionalFieldOf("secret", false).forGetter(FarmRecipe::secret),
                     Environment.CODEC.optionalFieldOf("environment").forGetter(FarmRecipe::environment),
                     DropEntry.CODEC.listOf().optionalFieldOf("drops", List.of()).forGetter(FarmRecipe::drops),
-                    FluidOutput.CODEC.optionalFieldOf("fluid").forGetter(FarmRecipe::fluid)
-            ).apply(i, (inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops, fluid) ->
-                    new FarmRecipe(kind, inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops, fluid)));
+                    FluidOutput.CODEC.optionalFieldOf("fluid").forGetter(FarmRecipe::fluid),
+                    Codec.FLOAT.optionalFieldOf("xp", 0f).forGetter(FarmRecipe::xp),
+                    FluidInput.CODEC.optionalFieldOf("fluid_input").forGetter(FarmRecipe::fluidInput)
+            ).apply(i, (inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops, fluid, xp, fluidIn) ->
+                    new FarmRecipe(kind, inputs, tool, rank, visual, base, vis, smelt, nether, ins, dye, secret, env, drops, fluid, xp, fluidIn)));
             // The network format is just the JSON codec: recipes are small and sync once per join/reload.
             this.streamCodec = ByteBufCodecs.fromCodecWithRegistries(codec.codec());
         }

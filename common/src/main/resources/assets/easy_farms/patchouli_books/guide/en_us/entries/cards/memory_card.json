@@ -1,0 +1,15 @@
+{
+  "name": "Memory Card",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:memory_card",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Sneak-click$() a farm with the card to $(item)copy$() its side settings (Auto-Export) and its filter lists. $(thing)Click$() another farm to $(item)paste$() them. Experience is never copied."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:memory_card"
+    }
+  ]
+}

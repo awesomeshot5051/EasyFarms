@@ -31,12 +31,16 @@ public class FarmEmiRecipe implements EmiRecipe {
         FarmRecipe r = holder.value();
         for (SizedIngredient in : r.inputs()) inputs.add(EmiIngredient.of(in.ingredient(), in.count()));
         this.tool = r.tool().isPresent() ? EmiIngredient.of(Ingredient.of(r.tool().get())) : EmiIngredient.of(List.of());
-        for (DropEntry d : r.drops()) outputs.add(EmiStack.of(new ItemStack(BuiltInRegistries.ITEM.get(d.item()), Math.max(1, d.max()))));
+        for (DropEntry d : r.drops()) if (BuiltInRegistries.ITEM.get(d.item()) != net.minecraft.world.item.Items.AIR) outputs.add(EmiStack.of(new ItemStack(BuiltInRegistries.ITEM.get(d.item()), Math.max(1, d.max()))));
         // A Liquid Farm makes fluid: shown as the fluid's bucket.
         r.fluid().ifPresent(f -> {
             ItemStack bucket = new ItemStack(BuiltInRegistries.FLUID.get(f.fluid()).getBucket());
             if (!bucket.isEmpty()) outputs.add(EmiStack.of(bucket));
         });
+    }
+
+    public RecipeHolder<FarmRecipe> holder() {
+        return holder;
     }
 
     @Override

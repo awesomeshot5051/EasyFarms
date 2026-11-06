@@ -1,0 +1,25 @@
+{
+  "type": "easy_farms:mob_farm",
+  "inputs": [
+    {
+      "item": "minecraft:fishing_rod",
+      "count": 1
+    },
+    {
+      "item": "minecraft:water_bucket",
+      "count": 1
+    }
+  ],
+  "visual": {
+    "type": "mob",
+    "target": "minecraft:cod"
+  },
+  "base_ticks": 600,
+  "visual_ticks": 200,
+  "drops": [
+    {
+      "loot_table": "minecraft:gameplay/fishing"
+    }
+  ],
+  "xp": 3
+}

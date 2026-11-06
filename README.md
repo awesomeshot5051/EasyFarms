@@ -1,17 +1,28 @@
 # Easy Farms
 ![projectLogo](common/src/main/resources/assets/easy_farms/icon.png)
-Three machines that farm almost everything in Minecraft: a **Resource Farm**, a **Plant Farm** and a **Mob Farm**.
+Four machines that farm almost everything in Minecraft: a **Resource Farm**, a **Plant Farm**, a **Mob Farm** and a **Liquid Farm**.
 What a farm produces is not baked into the block. You put items into it, and it matches them against data-driven
 recipes. Swap the items, get a different result.
 
-> Minecraft **1.21.1** · NeoForge **21.1.x** · Java 21 at runtime
+> Version **3.0.0** · Minecraft **1.21.1** · NeoForge **21.1.x** (and Fabric) · Java 21 at runtime
 
 > **Modpack authors and mod developers:** want to add your own ores, crops, mobs, tool tiers or upgrade cards?
 > See the [Modpack author and modder guide](READMES/modpackauthors/README.md).
 
 ---
 
-## The three farms
+## What is new in 3.0
+
+* **Five new upgrade cards:** Void, Filter, Auto-Export (with a Mekanism-style side panel), Experience, plus Efficiency and Chunk Loader.
+* **Experience:** Mob farms and smelting Resource Farms drop XP; collect it with the `xp` button.
+* **Liquid Farm:** a 16-bucket tank, Speed cards stacking to 3 (down to 15 s per bucket), a solid fluid column in the glass, and honey and milk.
+* **Memory Card** to copy and paste a farm's side and filter settings, **comparator output**, and a **difficulty preset** in the config.
+* **JEI and EMI:** the "+" button moves a recipe's items into the open farm and shows what you are missing.
+* Every upgrade card now stacks to 64.
+
+See the [changelog](Changelog.md) for everything.
+
+## The farms
 
 | Farm | What it does | Needs |
 |---|---|---|
@@ -25,7 +36,7 @@ with water or soul sand for the Plant Farm, and lava with stone for the Mob Farm
 
 ### The Liquid Farm
 
-A fourth machine that makes **fluids** instead of items. Put a **water bucket + cauldron + pointed dripstone** in the input slots for water, or swap the water bucket for a **lava bucket** for lava. It makes **one bucket (1000 mB) every 2 minutes** (1 minute with the Speed card) into an internal tank that holds one bucket by default; each Capacity card doubles it, up to 16000 mB. When its water or lava bucket is used up (like any farm's inputs, after the lifetime) an empty bucket is left in the slot. The farm screen shows the tank as a bar in the fluid's own texture with the amount in the middle. Pipes can take fluid from any side, and an empty bucket right-clicked on it is filled. What it makes is a recipe (`liquid_farm/*.json`), so packs can add their own fluids.
+A fourth machine that makes **fluids** instead of items. Put a **water bucket + cauldron + pointed dripstone** in the input slots for water, or a **lava bucket** for lava; a **honey bottle + cauldron + honeycomb** makes **honey** and a **milk bucket + cauldron + wheat** makes **milk**. It makes one bucket (1000 mB) every 2 minutes into a **16-bucket tank** (Capacity cards double that, up to 4 of them). Right-click it with an empty bucket or glass bottle to bottle the fluid. Pipes can take water, lava and other registered fluids from any side (honey and milk are bottled by hand), and a recipe that uses a fluid (`fluid_input`) can be filled by pipes. Speed cards cut the time to 1 minute, 30 s and 15 s (up to 3).
 
 ### Crafting
 
@@ -37,8 +48,28 @@ A fourth machine that makes **fluids** instead of items. Put a **water bucket + 
 | Liquid Farm | Glass panes around a column of **bucket**, **pointed dripstone** and **cauldron** |
 | Powered Upgrade | Redstone block in the middle, redstone and copper ingots around it |
 | Capacity Upgrade | A chest ringed by iron ingots |
+| Efficiency Upgrade | Powered Upgrade in the middle, gold ingots and redstone around it |
+| Chunk Loader Upgrade | Ender eye in the middle, ender pearls and obsidian around it |
+| Void Upgrade | Diamond in the middle, ender pearls and obsidian around it |
+| Filter Upgrade | Hopper in the middle, comparators and gold ingots around it |
+| Auto-Export Upgrade | Piston in the middle, hoppers and redstone around it |
+| Experience Upgrade | Emerald in the middle, glass bottles and lapis around it |
+| Memory Card | Redstone in the middle, paper and iron nuggets around it |
 
 (Exact shapes are visible in JEI/EMI.)
+
+### More upgrade cards
+
+* **Void:** items that do not fit the output slots are destroyed, so a full output never stops the farm.
+* **Filter:** an extra screen lists what the current recipe can output; click an item to throw it away instead of keeping it.
+* **Auto-Export:** a side panel (arrow on the left of the screen) sets each face of the farm to input, output or off, like Mekanism's side configuration. Output faces push items and fluid into neighbouring containers.
+* **Experience:** Mob farms drop experience (the `xp` button collects it). Resource Farms with a Smelter card give furnace experience.
+* **Efficiency:** needs the Powered card; each card halves the energy used per tick.
+* **Chunk Loader:** keeps the farm's chunk loaded so it works while you are away.
+* **Memory Card:** sneak-click a farm to copy its side and filter settings, click another farm to paste them.
+
+Every one of these can be switched off or tuned in the config (`config/easy_farms-common.toml`), which also has a
+`difficultyPreset` (casual / balanced / hard), a `comparatorMode` for what a comparator reads, and `cycleSoundVolume` / `cycleParticles`.
 
 ---
 
@@ -206,6 +237,13 @@ outputs.
 |---|---|---|
 | `timeMultiplier` | `1.0` | Multiplies every farm's cycle time. `2.0` is twice as slow. |
 | `baseInputLifetimeDays` | `30` | Minecraft days before the tool breaks (or, for toolless recipes, the inputs are used up) at the base tier. |
+| `difficultyPreset` | `0` | `0` = use the two values above, `1` casual (twice as fast, inputs last twice as long), `2` balanced, `3` hard. |
+| `liquidBaseCapacityMb` | `16000` | Millibuckets a Liquid Farm's tank holds before Capacity cards. |
+| `xpEnabled`, `xpMultiplier` | `true`, `1.0` | Turn farm experience off, or scale it. |
+| `voidCardEnabled`, `filterCardEnabled` | `true` | Switch the Void or Filter card's effect off. |
+| `autoExportEnabled`, `autoExportIntervalTicks`, `autoExportItemsPerPush` | `true`, `20`, `16` | The Auto-Export card and how fast it pushes. |
+| `comparatorMode` | `0` | What a comparator reads: `0` cycle progress, `1` output fill, `2` tank fill. |
+| `cycleSoundVolume`, `cycleParticles` | `0.3`, `true` | The chime and particles when a cycle ends. |
 
 Tool tiers, recipes and upgrade cards are datapack data, so they can be changed without code. See the
 [modder guide](READMES/modpackauthors/README.md).

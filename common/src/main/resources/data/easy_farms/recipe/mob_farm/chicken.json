@@ -32,5 +32,6 @@
       "fire_item": "minecraft:cooked_chicken"
     }
   ],
-  "type": "easy_farms:mob_farm"
+  "type": "easy_farms:mob_farm",
+  "xp": 2
 }

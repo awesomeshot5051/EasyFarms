@@ -1,0 +1,15 @@
+{
+  "item": "easy_farms:void_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob",
+    "liquid"
+  ],
+  "requires": "void",
+  "effects": [
+    {
+      "type": "easy_farms:void_overflow"
+    }
+  ]
+}

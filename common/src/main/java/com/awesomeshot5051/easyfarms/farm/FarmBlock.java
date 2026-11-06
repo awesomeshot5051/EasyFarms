@@ -105,6 +105,18 @@ public class FarmBlock extends Block implements EntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos, Player player,
                                               InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof FarmBlockEntity farm)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (kind == FarmKind.LIQUID && farm.fluidId() != null && !held.isEmpty()) {
+            // A container from the fluid_container data (glass bottle -> honey bottle, bucket -> milk bucket...).
+            var container = com.awesomeshot5051.easyfarms.tier.FluidContainer.find(level.registryAccess(), held, farm.fluidId());
+            if (container != null && farm.fluidAmount() >= container.amount() && !container.filledStack().isEmpty()) {
+                if (!level.isClientSide) {
+                    farm.extractFluid(container.amount(), false);
+                    player.setItemInHand(hand, net.minecraft.world.item.ItemUtils.createFilledResult(held, player, container.filledStack()));
+                    level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BOTTLE_FILL, net.minecraft.sounds.SoundSource.BLOCKS, 1F, 1F);
+                }
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            }
+        }
         if (kind == FarmKind.LIQUID && held.is(net.minecraft.world.item.Items.BUCKET)) {
             // Empty bucket on a Liquid Farm: take a full bucket out of the tank (needs 1000 mB, i.e. Capacity upgrades).
             var fluidId = farm.fluidId();
@@ -116,6 +128,24 @@ public class FarmBlock extends Block implements EntityBlock {
                 farm.extractFluid(1000, false);
                 player.setItemInHand(hand, net.minecraft.world.item.ItemUtils.createFilledResult(held, player, filled));
                 level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BUCKET_FILL, net.minecraft.sounds.SoundSource.BLOCKS, 1F, 1F);
+            }
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (held.is(com.awesomeshot5051.easyfarms.registry.ModItems.MEMORY_CARD.get())) {
+            // Sneak: copy this farm's side and filter settings onto the card. Plain click: paste them onto this farm.
+            if (!level.isClientSide) {
+                if (player.isShiftKeyDown()) {
+                    held.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(farm.exportSettings()));
+                    player.displayClientMessage(Component.translatable("message.easy_farms.memory_copied"), true);
+                } else {
+                    var data = held.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                    if (data == null) {
+                        player.displayClientMessage(Component.translatable("message.easy_farms.memory_empty"), true);
+                    } else {
+                        farm.importSettings(data.copyTag());
+                        player.displayClientMessage(Component.translatable("message.easy_farms.memory_pasted"), true);
+                    }
+                }
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -177,5 +207,15 @@ public class FarmBlock extends Block implements EntityBlock {
             farm.releaseChunk();
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        return level.getBlockEntity(pos) instanceof FarmBlockEntity farm ? farm.comparatorSignal() : 0;
     }
 }

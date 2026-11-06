@@ -1,0 +1,12 @@
+{
+  "item": "easy_farms:experience_upgrade",
+  "kinds": [
+    "mob"
+  ],
+  "requires": "experience",
+  "effects": [
+    {
+      "type": "easy_farms:experience"
+    }
+  ]
+}

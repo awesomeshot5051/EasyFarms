@@ -63,6 +63,7 @@ public final class EasyFarms {
                     .displayItems((params, out) -> {
                         FARM_BLOCKS.values().forEach(b -> out.accept(b.get()));
                         ModItems.UPGRADES.forEach(u -> out.accept(u.get()));
+                        out.accept(ModItems.MEMORY_CARD.get());
                         // Datapack cards (generic upgrade_card items): one per farm_upgrade that names a card id.
                         params.holders().lookup(FarmUpgrade.REGISTRY_KEY).ifPresent(lookup ->
                                 lookup.listElements().map(h -> h.value())
@@ -87,5 +88,6 @@ public final class EasyFarms {
         // Synced to clients: the farm GUI and recipes look tiers up on both sides.
         Services.PLATFORM.registerSyncedDatapackRegistry(FarmTier.REGISTRY_KEY, FarmTier.CODEC);
         Services.PLATFORM.registerSyncedDatapackRegistry(FarmUpgrade.REGISTRY_KEY, FarmUpgrade.CODEC);
+        Services.PLATFORM.registerSyncedDatapackRegistry(com.awesomeshot5051.easyfarms.tier.FluidContainer.REGISTRY_KEY, com.awesomeshot5051.easyfarms.tier.FluidContainer.CODEC);
     }
 }

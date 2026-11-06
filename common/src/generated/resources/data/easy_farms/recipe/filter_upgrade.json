@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:comparator"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    }
+  },
+  "pattern": [
+    "GCG",
+    "CHC",
+    "GCG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "easy_farms:filter_upgrade"
+  }
+}
