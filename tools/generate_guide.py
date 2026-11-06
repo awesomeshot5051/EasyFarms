@@ -310,7 +310,7 @@ def build_basics():
         "Config file: $(item)config/easy_farms-common.toml$()",
         "$(thing)timeMultiplier$() (1.0): multiplies every farm's cycle time. 2.0 is twice as slow.",
         "$(thing)baseInputLifetimeDays$() (30): Minecraft days before the tool breaks (or, for toolless recipes, the inputs are used up) at the base tier.",
-        "$(thing)liquidBaseCapacityMb$() (1000): how much a Liquid Farm tank holds before Capacity cards.",
+        "$(thing)liquidBaseCapacityMb$() (16000): how much a Liquid Farm tank holds before Capacity cards.",
         "Tool tiers, recipes and upgrade cards are datapack data, so a modpack can change them without code.",
     ]))
 
@@ -333,7 +333,7 @@ def build_farms():
         text_page("Inputs follow the original Mob Farms mod: for example porkchops for pigs, raw beef for cows. See $(l:easy_farms:mob_recipes/passive)Mob Farm Recipes$() for every mob."),
     ])
     entry("farms", "liquid_farm", "Liquid Farm", f"{NS}:liquid_farm", [
-        text_page("The $(item)Liquid Farm$() makes $(item)water$() or $(item)lava$() into an internal tank. It needs no tool.$(br2)It makes $(item)one bucket (1000 mB)$() every $(item)2 minutes$(), or every minute with the Speed Upgrade. The tank holds one bucket; each Capacity Upgrade doubles that, up to 16000 mB.$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 bucket, 1 pointed dripstone, 1 cauldron."),
+        text_page("The $(item)Liquid Farm$() makes $(item)water$() or $(item)lava$() into an internal tank. It needs no tool.$(br2)It makes $(item)one bucket (1000 mB)$() every $(item)2 minutes$(), or every minute with the Speed Upgrade. The tank holds 16 buckets; each Capacity Upgrade doubles that, up to 4 of them (256 buckets).$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 bucket, 1 pointed dripstone, 1 cauldron."),
         recipe_pages(f"{NS}:liquid_farm", "Glass panes around a column of bucket, pointed dripstone and cauldron."),
         text_page("$(thing)Water$(): water bucket + cauldron + pointed dripstone.$(br2)$(thing)Lava$(): lava bucket + cauldron + pointed dripstone.$(br2)The tank shows as a bar in the farm screen and in Jade. Pipes take fluid from any side, and an empty bucket right-clicked on the farm is filled.$(br2)When the farm's input lifetime ends, the empty bucket is left in its slot."),
     ])
@@ -373,7 +373,7 @@ def build_cards():
         recipe_pages(f"{NS}:powered_upgrade"),
     ])
     entry("cards", "capacity", "Capacity Upgrade", f"{NS}:capacity_upgrade", [
-        text_page("$(thing)Farms$(): all.$(br2)Each card $(item)doubles$(): the stack size of the output slots (16 to 32, 64 to 128, items that do not stack hold 16), the ME buffer of a Powered farm, and the tank of a Liquid Farm.$(br2)Cards stack up to $(item)4$() in a Powered or Liquid farm (16000 ME, 16000 mB). A plain farm takes one."),
+        text_page("$(thing)Farms$(): all.$(br2)Each card $(item)doubles$(): the stack size of the output slots (16 to 32, 64 to 128, items that do not stack hold 16), the ME buffer of a Powered farm, and the tank of a Liquid Farm.$(br2)Cards stack up to $(item)4$() in a Powered or Liquid farm (16000 ME, 256000 mB). A plain farm takes one."),
         recipe_pages(f"{NS}:capacity_upgrade"),
     ])
     entry("cards", "inscriber", "Inscriber Upgrade", f"{NS}:inscriber_upgrade", [

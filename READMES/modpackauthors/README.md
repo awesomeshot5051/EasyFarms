@@ -116,7 +116,7 @@ Liquid recipes have no `drops`; they add a fluid to the tank every cycle. The vi
 }
 ```
 
-`fluid.amount` is millibuckets per cycle. The tank holds `liquidBaseCapacityMb` (config, default 1000 = one bucket) times the Capacity cards.
+`fluid.amount` is millibuckets per cycle. The tank holds `liquidBaseCapacityMb` (config, default 16000 = 16 buckets) times the Capacity cards.
 
 ### Recipe fields
 

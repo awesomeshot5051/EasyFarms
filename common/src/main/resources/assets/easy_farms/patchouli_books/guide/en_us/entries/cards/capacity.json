@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(thing)Farms$(): all.$(br2)Each card $(item)doubles$(): the stack size of the output slots (16 to 32, 64 to 128, items that do not stack hold 16), the ME buffer of a Powered farm, and the tank of a Liquid Farm.$(br2)Cards stack up to $(item)4$() in a Powered or Liquid farm (16000 ME, 16000 mB). A plain farm takes one."
+      "text": "$(thing)Farms$(): all.$(br2)Each card $(item)doubles$(): the stack size of the output slots (16 to 32, 64 to 128, items that do not stack hold 16), the ME buffer of a Powered farm, and the tank of a Liquid Farm.$(br2)Cards stack up to $(item)4$() in a Powered or Liquid farm (16000 ME, 256000 mB). A plain farm takes one."
     },
     {
       "type": "patchouli:crafting",

@@ -7,14 +7,14 @@ Versions are listed newest first, each with its commit and date.
 
 ### Liquid Farm, Powered and Capacity upgrades
 - New **Liquid Farm** (`easy_farms:liquid_farm` recipes): makes one bucket (1000 mB) of a fluid every 2 minutes (1 minute with
-  the Speed card) into a one-bucket tank (water and lava included; recipes can add any fluid). GUI tank bar, Jade/TOP bar,
+  the Speed card) into a 16-bucket tank (water and lava included; recipes can add any fluid). GUI tank bar, Jade/TOP bar,
   pipes can extract on NeoForge and Fabric, and an empty bucket takes a full bucket. When its bucket input is used up an empty
   bucket is left behind. Crafted from glass panes around a bucket, pointed dripstone and a cauldron.
 - New **Powered Upgrade** (`easy_farms:powered` effect): the farm runs on FE or any energy mod's power at diamond speed (1000 ME
   buffer, needs 100 ME). Red energy bar in the GUI and in Jade/TOP. It is refused, and its tooltip says "FE or other energy
   generation mod required to use", unless an energy mod from the effect's `energy_mods` list is loaded; the base mod needs none.
 - New **Capacity Upgrade** (`easy_farms:capacity` effect, `max_count` / `stack_requires` / `stack_exempt_kinds` on
-  `farm_upgrade`): doubles output stack size, ME buffer and liquid tank (up to 16000 mB) per card, stacking up to 4.
+  `farm_upgrade`): doubles output stack size, ME buffer and liquid tank (16000 mB base, up to 256000 mB) per card, stacking up to 4.
 - `cycle_time` takes `kind_divisors`. Config: `liquidBaseCapacityMb`. `farm_upgrade` kinds accept `liquid`.
 - Guide book: Liquid Farm, Powered and Capacity entries.
 
