@@ -19,6 +19,10 @@ public class ModItems {
     public static final Supplier<Item> POWERED_UPGRADE = card("powered_upgrade");
     /** Doubles item stacks, the energy buffer and the liquid tank per card; stacks (see its farm_upgrade). */
     public static final Supplier<Item> CAPACITY_UPGRADE = Services.PLATFORM.registerItem("capacity_upgrade", p -> new Item(p.stacksTo(64)));
+    /** Cuts the energy a Powered farm uses per tick; needs the Powered card (see its farm_upgrade). */
+    public static final Supplier<Item> EFFICIENCY_UPGRADE = Services.PLATFORM.registerItem("efficiency_upgrade", p -> new Item(p.stacksTo(64)));
+    /** Keeps the farm's chunk loaded so it works while nobody is near. */
+    public static final Supplier<Item> CHUNK_LOADER_UPGRADE = card("chunk_loader_upgrade");
     /** New in EasyFarms: with this installed, the recipe's input items are never used up. */
     public static final Supplier<Item> INFINITY_UPGRADE = card("infinity_upgrade");
 
@@ -29,7 +33,7 @@ public class ModItems {
     public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.registerItem("upgrade_card", p -> new UpgradeCardItem(p.stacksTo(1)));
 
     public static final List<Supplier<Item>> UPGRADES = List.of(
-            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE);
+            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE, EFFICIENCY_UPGRADE, CHUNK_LOADER_UPGRADE);
 
     private static Supplier<Item> card(String name) {
         return Services.PLATFORM.registerItem(name, p -> new Item(p.stacksTo(1)));

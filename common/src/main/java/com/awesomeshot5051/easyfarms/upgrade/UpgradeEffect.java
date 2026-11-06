@@ -77,6 +77,16 @@ public interface UpgradeEffect {
         return 0;
     }
 
+    /** True if this card keeps the farm's chunk loaded (Chunk Loader card). */
+    default boolean loadsChunk() {
+        return false;
+    }
+
+    /** Multiplies the energy a Powered farm uses per working tick (Efficiency card; below 1 = cheaper). */
+    default double energyUseMultiplier() {
+        return 1;
+    }
+
     /** Multiplies the energy capacity (Capacity card). */
     default double energyCapacityMultiplier() {
         return 1;

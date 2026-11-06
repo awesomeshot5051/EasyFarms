@@ -66,8 +66,9 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
             state.type = "tank";
             state.fluidSprite = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState()).stillMaterial().sprite();
             state.fluidLevel = Math.min(1f, farm.fluidAmount() / (float) Math.max(1, farm.fluidCapacity()));
-            state.fluidTint = 0xDC000000 | FluidTint.of(fluid);
-            state.fluidLight = fluid.defaultFluidState().createLegacyBlock().getLightEmission() > 0 ? 15728880 : state.lightCoords;
+            boolean glows = fluid.defaultFluidState().createLegacyBlock().getLightEmission() > 0;
+            state.fluidTint = (glows ? 0xFF000000 : 0xC8000000) | FluidTint.of(fluid);   // lava and the like opaque, water see-through
+            state.fluidLight = glows ? 15728880 : state.lightCoords;
             return;
         }
         FarmRecipe.Visual visual = farm.getVisual();
@@ -131,6 +132,18 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
         return block;
     }
 
+    private static void quad(com.mojang.blaze3d.vertex.VertexConsumer vc, PoseStack.Pose last, net.minecraft.client.renderer.texture.TextureAtlasSprite sprite,
+                             int color, int light, float nx, float ny, float nz, float[][] corners) {
+        for (float[] c : corners) {
+            // Texture coordinates follow the position along the face, so the texture is not stretched on the sides.
+            float u = nx != 0 ? c[2] : c[0];
+            float v = ny != 0 ? c[2] : c[1];
+            vc.addVertex(last, c[0], c[1], c[2]).setColor(color)
+                    .setUv(sprite.getU(u), sprite.getV(v)).setOverlay(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY).setLight(light)
+                    .setNormal(last, nx, ny, nz);
+        }
+    }
+
     @Override
     public void submit(FarmRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.type == null) return;
@@ -153,20 +166,18 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
             case "tank" -> {
                 var sprite = state.fluidSprite;
                 if (sprite == null) return;
-                float y = 1f / 16f + state.fluidLevel * (13f / 16f);
-                float x0 = 1f / 16f, x1 = 15f / 16f;
+                // A solid column of the fluid inside the glass, rising with the tank level.
+                float y0 = 1f / 16f, y1 = y0 + state.fluidLevel * (14f / 16f);
+                float a = 1f / 16f + 0.001f, b = 15f / 16f - 0.001f;   // just inside the glass so the faces don't z-fight with it
                 int color = state.fluidTint, light = state.fluidLight;
                 collector.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.translucentMovingBlock(), (last, vc) -> {
-                    float[][] corners = {{x0, x0}, {x0, x1}, {x1, x1}, {x1, x0}};
-                    // Both windings, so the surface is visible from above and below whatever the culling does.
-                    for (int pass = 0; pass < 2; pass++) {
-                        for (int i = 0; i < 4; i++) {
-                            float[] c = corners[pass == 0 ? i : 3 - i];
-                            vc.addVertex(last, c[0], y, c[1]).setColor(color)
-                                    .setUv(sprite.getU(c[0]), sprite.getV(c[1])).setOverlay(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY).setLight(light)
-                                    .setNormal(last, 0f, pass == 0 ? 1f : -1f, 0f);
-                        }
-                    }
+                    // Each face is wound counter-clockwise seen from outside: {x, y, z} per corner.
+                    quad(vc, last, sprite, color, light, 0, 1, 0, new float[][]{{a, y1, a}, {a, y1, b}, {b, y1, b}, {b, y1, a}});
+                    quad(vc, last, sprite, color, light, 0, -1, 0, new float[][]{{a, y0, a}, {b, y0, a}, {b, y0, b}, {a, y0, b}});
+                    quad(vc, last, sprite, color, light, 0, 0, -1, new float[][]{{b, y0, a}, {a, y0, a}, {a, y1, a}, {b, y1, a}});
+                    quad(vc, last, sprite, color, light, 0, 0, 1, new float[][]{{a, y0, b}, {b, y0, b}, {b, y1, b}, {a, y1, b}});
+                    quad(vc, last, sprite, color, light, -1, 0, 0, new float[][]{{a, y0, a}, {a, y0, b}, {a, y1, b}, {a, y1, a}});
+                    quad(vc, last, sprite, color, light, 1, 0, 0, new float[][]{{b, y0, b}, {b, y0, a}, {b, y1, a}, {b, y1, b}});
                 });
             }
             case "plant" -> {

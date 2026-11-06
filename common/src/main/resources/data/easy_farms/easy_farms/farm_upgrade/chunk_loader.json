@@ -1,0 +1,15 @@
+{
+  "item": "easy_farms:chunk_loader_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob",
+    "liquid"
+  ],
+  "requires": "chunk_loader",
+  "effects": [
+    {
+      "type": "easy_farms:chunk_loader"
+    }
+  ]
+}

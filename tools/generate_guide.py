@@ -333,7 +333,7 @@ def build_farms():
         text_page("Inputs follow the original Mob Farms mod: for example porkchops for pigs, raw beef for cows. See $(l:easy_farms:mob_recipes/passive)Mob Farm Recipes$() for every mob."),
     ])
     entry("farms", "liquid_farm", "Liquid Farm", f"{NS}:liquid_farm", [
-        text_page("The $(item)Liquid Farm$() makes $(item)water$() or $(item)lava$() into an internal tank. It needs no tool.$(br2)It makes $(item)one bucket (1000 mB)$() every $(item)2 minutes$(), or every minute with the Speed Upgrade. The tank holds 16 buckets; each Capacity Upgrade doubles that, up to 4 of them (256 buckets).$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 bucket, 1 pointed dripstone, 1 cauldron."),
+        text_page("The $(item)Liquid Farm$() makes $(item)water$() or $(item)lava$() into an internal tank. It needs no tool.$(br2)It makes $(item)one bucket (1000 mB)$() every $(item)2 minutes$(). Speed Upgrades (up to 3) cut that to 1 minute, 30 seconds and 15 seconds. The tank holds 16 buckets; each Capacity Upgrade doubles that, up to 4 of them (256 buckets).$(br2)$(thing)Ingredients$(): 6 glass panes (any), 1 bucket, 1 pointed dripstone, 1 cauldron."),
         recipe_pages(f"{NS}:liquid_farm", "Glass panes around a column of bucket, pointed dripstone and cauldron."),
         text_page("$(thing)Water$(): water bucket + cauldron + pointed dripstone.$(br2)$(thing)Lava$(): lava bucket + cauldron + pointed dripstone.$(br2)The tank shows as a bar in the farm screen and in Jade. Pipes take fluid from any side, and an empty bucket right-clicked on the farm is filled.$(br2)When the farm's input lifetime ends, the empty bucket is left in its slot."),
     ])
@@ -357,7 +357,7 @@ def build_cards():
         recipe_pages(f"{NS}:smelter_upgrade"),
     ])
     entry("cards", "speed", "Speed Upgrade", f"{NS}:speed_upgrade", [
-        text_page("$(thing)Farms$(): Plant, Mob, Liquid.$(br2)Recipes that need $(item)no tool$() run $(item)8 times faster$(). The Liquid Farm runs $(item)2 times$() faster.$(br2)$(thing)Ingredients$(): 7 redstone dust, 1 flint and steel, 1 nether quartz."),
+        text_page("$(thing)Farms$(): Plant, Mob, Liquid.$(br2)Recipes that need $(item)no tool$() run $(item)8 times faster$(). On the Liquid Farm each card doubles the speed and up to $(item)3$() stack: 1 minute, 30 s, 15 s per bucket.$(br2)$(thing)Ingredients$(): 7 redstone dust, 1 flint and steel, 1 nether quartz."),
         recipe_pages(f"{NS}:speed_upgrade"),
     ])
     entry("cards", "nether", "Nether Upgrade", f"{NS}:nether_upgrade", [
@@ -375,6 +375,14 @@ def build_cards():
     entry("cards", "capacity", "Capacity Upgrade", f"{NS}:capacity_upgrade", [
         text_page("$(thing)Farms$(): all.$(br2)Each card $(item)doubles$(): the stack size of the output slots (16 to 32, 64 to 128, items that do not stack hold 16), the ME buffer of a Powered farm, and the tank of a Liquid Farm.$(br2)Cards stack up to $(item)4$() in a Powered or Liquid farm (16000 ME, 256000 mB). A plain farm takes one."),
         recipe_pages(f"{NS}:capacity_upgrade"),
+    ])
+    entry("cards", "efficiency", "Efficiency Upgrade", f"{NS}:efficiency_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)Needs the $(item)Powered Upgrade$() in the same farm. Each card $(item)halves$() the energy the farm uses per tick; up to $(item)3$() stack (down to 1/8, so 0.25 ME per tick instead of 2)."),
+        recipe_pages(f"{NS}:efficiency_upgrade"),
+    ])
+    entry("cards", "chunk_loader", "Chunk Loader Upgrade", f"{NS}:chunk_loader_upgrade", [
+        text_page("$(thing)Farms$(): all.$(br2)A farm only works while its chunk is loaded. This card keeps the $(item)chunk the farm stands in$() loaded, so the farm keeps working when you are far away or logged out.$(br2)It uses vanilla forced chunks (they show in $(thing)/forceload list$()). Breaking the farm or removing the card releases the chunk, unless /forceload holds it too. Several farms in one chunk share it."),
+        recipe_pages(f"{NS}:chunk_loader_upgrade"),
     ])
     entry("cards", "inscriber", "Inscriber Upgrade", f"{NS}:inscriber_upgrade", [
         text_page("$(thing)Farms$(): Resource. Needs $(item)Applied Energistics 2$().$(br2)Does the AE2 Inscriber's job inside a farm. It is crafted with, and turns back into, an AE2 Inscriber.$(br2)$(thing)Grinding$(): with the card, a Sky Stone farm makes sky dust and a Certus Quartz farm makes certus quartz dust."),

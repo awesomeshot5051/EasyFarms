@@ -25,10 +25,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.INFINITY_UPGRADE.get(), "Infinity Upgrade");
         add(ModItems.POWERED_UPGRADE.get(), "Powered Upgrade");
         add(ModItems.CAPACITY_UPGRADE.get(), "Capacity Upgrade");
+        add(ModItems.EFFICIENCY_UPGRADE.get(), "Efficiency Upgrade");
+        add(ModItems.CHUNK_LOADER_UPGRADE.get(), "Chunk Loader Upgrade");
         add("farm_kind.easy_farms.liquid", "Liquid Farm");
         add("tooltip.easy_farms.energy_mod_required", "FE or other energy generation mod required to use");
         add("gui.easy_farms.requires.power", "Runs the farm on energy (ME): diamond speed, needs at least 100 ME");
         add("gui.easy_farms.requires.capacity", "x2 per card: output stacks, ME buffer (Powered) and liquid tank");
+        add("gui.easy_farms.requires.efficiency", "Needs the Powered card: halves the energy used per tick, per card");
+        add("gui.easy_farms.requires.chunk_loader", "Keeps the farm's chunk loaded so it works while you are away");
         add("gui.easy_farms.energy", "%s / %s ME");
         add("gui.easy_farms.energy_short", "%s / %s ME");
         add("gui.easy_farms.fluid_amount", "%s mB");

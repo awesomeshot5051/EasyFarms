@@ -1,0 +1,15 @@
+{
+  "name": "Efficiency Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:efficiency_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)Needs the $(item)Powered Upgrade$() in the same farm. Each card $(item)halves$() the energy the farm uses per tick; up to $(item)3$() stack (down to 1/8, so 0.25 ME per tick instead of 2)."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:efficiency_upgrade"
+    }
+  ]
+}

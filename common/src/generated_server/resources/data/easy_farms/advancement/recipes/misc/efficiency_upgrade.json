@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_powered_upgrade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "easy_farms:powered_upgrade"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "easy_farms:efficiency_upgrade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_powered_upgrade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "easy_farms:efficiency_upgrade"
+    ]
+  }
+}

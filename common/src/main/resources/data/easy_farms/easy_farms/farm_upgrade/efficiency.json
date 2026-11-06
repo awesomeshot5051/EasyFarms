@@ -1,0 +1,24 @@
+{
+  "item": "easy_farms:efficiency_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob",
+    "liquid"
+  ],
+  "requires": "efficiency",
+  "max_count": 3,
+  "restrictions": [
+    {
+      "requires": [
+        "easy_farms:powered"
+      ]
+    }
+  ],
+  "effects": [
+    {
+      "type": "easy_farms:efficiency",
+      "energy_use_multiplier": 0.5
+    }
+  ]
+}

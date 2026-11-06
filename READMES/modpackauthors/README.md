@@ -342,7 +342,7 @@ What happens:
 ### Stacking cards
 
 `farm_upgrade` files accept `max_count` (default 1): how many of the card one farm holds, stacked in one slot. `stack_requires` lists upgrade ids that
-must be installed to stack beyond 1, and `stack_exempt_kinds` lists farm kinds (`resource`, `plant`, `mob`, `liquid`) that stack without them.
+must be installed to stack beyond 1, and `stack_exempt_kinds` lists farm kinds (`resource`, `plant`, `mob`, `liquid`) that stack without them. `kind_max_counts` (e.g. `{"liquid": 3}`) overrides `max_count` for the listed kinds.
 The Capacity card uses `"max_count": 4, "stack_requires": ["easy_farms:powered"], "stack_exempt_kinds": ["liquid"]`.
 
 ### Built-in effects
@@ -358,7 +358,9 @@ The Capacity card uses `"max_count": 4, "stack_requires": ["easy_farms:powered"]
 | `easy_farms:inscribe` | none | The Inscriber card: recipes with an `inscriber` object drop its drops instead. |
 | `easy_farms:drop_multiplier` | `multiplier` | Multiplies the item counts of each cycle. A fractional part is a chance of one more. |
 | `easy_farms:convert_drops` | `rules` | Turns the finished drops into other items. See below. |
-| `easy_farms:powered` | `capacity` (1000), `min_energy` (100), `energy_per_tick` (2), `tier` (`easy_farms:diamond`), `toolless_divisor` (4), `energy_mods` (a list of mod ids) | The farm runs on energy (needs an energy API: FE on NeoForge, Team Reborn Energy on Fabric). `tier` is a farm_tier whose speed replaces the tool's if faster; toolless recipes are divided by `toolless_divisor`. Stops below `min_energy`, drains `energy_per_tick` while working. The card is refused (and says "FE or other energy generation mod required to use") unless one of the `energy_mods` is loaded; replace the list to add your pack's energy mod, or give `[]` to always allow it. |
+| `easy_farms:powered` | `capacity` (1000), `min_energy` (100), `energy_per_tick` (2), `tier` (`easy_farms:diamond`), `toolless_divisor` (4) | The farm runs on energy (needs an energy API: FE on NeoForge, Team Reborn Energy on Fabric). `tier` is a farm_tier whose speed replaces the tool's if faster; toolless recipes are divided by `toolless_divisor`. Stops below `min_energy`, drains `energy_per_tick` while working. The card's tooltip always says "FE or other energy generation mod required to use" as a hint (no mod list is checked, so any energy mod works); on Fabric the card is refused (tooltip in red) only if Team Reborn Energy is missing. |
+| `easy_farms:efficiency` | `energy_use_multiplier` (0.5) | Per installed card: multiplies the energy the Powered card drains per working tick (fractions carry over between ticks). The Efficiency card requires the Powered card through a `requires` restriction and stacks to 3 (`max_count`). |
+| `easy_farms:chunk_loader` | none | Keeps the farm's chunk loaded through vanilla forced chunks (saved in the dimension's `easy_farms_chunk_loaders` data). A chunk already forced by /forceload is never released by it. |
 | `easy_farms:capacity` | `energy_multiplier` (2), `fluid_multiplier` (2), `item_multiplier` (2), `unstackable_base` (8) | Per installed card: multiplies the ME buffer, the liquid tank and the output stack size. Unstackable items get `unstackable_base x multiplier`. |
 
 These are enough to build new cards **with no code**: a datapack plus an item (for example one added with a

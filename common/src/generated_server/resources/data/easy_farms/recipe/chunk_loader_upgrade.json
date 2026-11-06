@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": "minecraft:ender_eye",
+    "E": "minecraft:ender_pearl",
+    "O": "minecraft:obsidian"
+  },
+  "pattern": [
+    "OEO",
+    "EDE",
+    "OEO"
+  ],
+  "result": {
+    "id": "easy_farms:chunk_loader_upgrade"
+  }
+}

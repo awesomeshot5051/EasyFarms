@@ -412,21 +412,13 @@ public final class UpgradeEffects {
      * {@code tier} is a farm_tier id whose speed replaces the tool's. Recipes without a tool ignore tiers, so they are
      * divided by {@code toolless_divisor} instead (like the Speed card).
      */
-    public record Powered(long capacity, long minEnergy, long energyPerTick, Identifier tier, double toollessDivisor,
-                          List<String> energyMods) implements UpgradeEffect {
-        /** Mods that make energy; the card needs one of them. A pack replaces the list in the card's JSON (empty = always allowed). */
-        public static final List<String> DEFAULT_ENERGY_MODS = List.of("mekanism", "mekanismgenerators", "thermal", "thermal_expansion",
-                "immersiveengineering", "enderio", "powah", "industrialforegoing", "bigreactors", "draconicevolution", "pneumaticcraft",
-                "createaddition", "create_new_age", "flux_networks", "ad_astra", "techreborn", "modern_industrialization", "indrev",
-                "energizedpower", "galacticraft", "extremereactors", "fluxnetworks", "ender_io", "mekanism_extras", "generatorgalore", "solarflux");
-
+    public record Powered(long capacity, long minEnergy, long energyPerTick, Identifier tier, double toollessDivisor) implements UpgradeEffect {
         public static final MapCodec<Powered> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Codec.LONG.optionalFieldOf("capacity", 1000L).forGetter(Powered::capacity),
                 Codec.LONG.optionalFieldOf("min_energy", 100L).forGetter(Powered::minEnergy),
                 Codec.LONG.optionalFieldOf("energy_per_tick", 2L).forGetter(Powered::energyPerTick),
                 Identifier.CODEC.optionalFieldOf("tier", Identifier.fromNamespaceAndPath(EasyFarms.MODID, "diamond")).forGetter(Powered::tier),
-                Codec.DOUBLE.optionalFieldOf("toolless_divisor", 4.0).forGetter(Powered::toollessDivisor),
-                Codec.STRING.listOf().optionalFieldOf("energy_mods", DEFAULT_ENERGY_MODS).forGetter(Powered::energyMods)
+                Codec.DOUBLE.optionalFieldOf("toolless_divisor", 4.0).forGetter(Powered::toollessDivisor)
         ).apply(i, Powered::new));
 
         @Override
@@ -436,16 +428,13 @@ public final class UpgradeEffects {
 
         @Override
         public boolean available() {
-            if (!Services.PLATFORM.energyAvailable()) return false;
-            if (energyMods.isEmpty()) return true;
-            for (String mod : energyMods) if (Services.PLATFORM.isModLoaded(mod)) return true;
-            return false;
+            return Services.PLATFORM.energyAvailable();   // only the energy API itself (always there on NeoForge)
         }
 
+        /** Always shown as a hint: any mod that supplies energy will do, and there is no reliable way to detect one. */
         @Override
         public net.minecraft.network.chat.Component unavailableReason() {
-            return Services.PLATFORM.energyAvailable() && available() ? null
-                    : net.minecraft.network.chat.Component.translatable("tooltip.easy_farms.energy_mod_required");
+            return net.minecraft.network.chat.Component.translatable("tooltip.easy_farms.energy_mod_required");
         }
 
         @Override
@@ -460,7 +449,9 @@ public final class UpgradeEffects {
 
         @Override
         public void onWorkTick(FarmBlockEntity farm) {
-            farm.extractEnergy(energyPerTick);
+            double cost = energyPerTick;
+            for (UpgradeEffect e : farm.effects()) cost *= e.energyUseMultiplier();
+            farm.drainEnergy(cost);
         }
 
         @Override
@@ -518,6 +509,35 @@ public final class UpgradeEffects {
         }
     }
 
+    /** The Efficiency card: each installed card multiplies the energy a Powered farm uses per working tick. */
+    public record Efficiency(double energyUseMultiplier) implements UpgradeEffect {
+        public static final MapCodec<Efficiency> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.DOUBLE.optionalFieldOf("energy_use_multiplier", 0.5).forGetter(Efficiency::energyUseMultiplier)
+        ).apply(i, Efficiency::new));
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+    }
+
+    /** The Chunk Loader card: the farm keeps its own chunk loaded, so it works while nobody is nearby. */
+    public record ChunkLoader() implements UpgradeEffect {
+        public static final MapCodec<ChunkLoader> CODEC = MapCodec.unit(new ChunkLoader());
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean loadsChunk() {
+            return true;
+        }
+    }
+
+    public static final Supplier<MapCodec<ChunkLoader>> CHUNK_LOADER = Services.PLATFORM.register(KEY, "chunk_loader", () -> ChunkLoader.CODEC);
+    public static final Supplier<MapCodec<Efficiency>> EFFICIENCY = Services.PLATFORM.register(KEY, "efficiency", () -> Efficiency.CODEC);
     public static final Supplier<MapCodec<Powered>> POWERED = Services.PLATFORM.register(KEY, "powered", () -> Powered.CODEC);
     public static final Supplier<MapCodec<Capacity>> CAPACITY = Services.PLATFORM.register(KEY, "capacity", () -> Capacity.CODEC);
     public static final Supplier<MapCodec<ConvertDrops>> CONVERT_DROPS = Services.PLATFORM.register(KEY, "convert_drops", () -> ConvertDrops.CODEC);

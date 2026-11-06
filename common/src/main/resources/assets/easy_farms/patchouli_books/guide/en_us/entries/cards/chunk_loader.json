@@ -1,0 +1,15 @@
+{
+  "name": "Chunk Loader Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:chunk_loader_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): all.$(br2)A farm only works while its chunk is loaded. This card keeps the $(item)chunk the farm stands in$() loaded, so the farm keeps working when you are far away or logged out.$(br2)It uses vanilla forced chunks (they show in $(thing)/forceload list$()). Breaking the farm or removing the card releases the chunk, unless /forceload holds it too. Several farms in one chunk share it."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:chunk_loader_upgrade"
+    }
+  ]
+}
