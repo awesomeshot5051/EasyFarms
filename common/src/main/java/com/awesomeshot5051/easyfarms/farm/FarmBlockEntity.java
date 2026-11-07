@@ -255,6 +255,9 @@ public class FarmBlockEntity extends BlockEntity {
     private int xp;
     /** Filter card: the outputs blocked for each recipe id (kept per recipe, so changing the inputs shows that recipe's own list). */
     private final java.util.Map<net.minecraft.resources.ResourceLocation, java.util.Set<net.minecraft.resources.ResourceLocation>> blockedOutputs = new java.util.HashMap<>();
+    /** Crafting card: the items the farm crafts its outputs into (in order), set on the card's screen. */
+    private final List<net.minecraft.resources.ResourceLocation> craftTargets = new ArrayList<>();
+    public static final int CRAFT_TARGETS = 6;
     /** Auto-Export card: what each face does, indexed by relative face (front, back, left, right, top, bottom). */
     private final byte[] sideModes = new byte[6];
     public static final int SIDE_BOTH = 0, SIDE_INPUT = 1, SIDE_OUTPUT = 2, SIDE_OFF = 3;
@@ -463,7 +466,7 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     private FarmRecipe.Visual resolvedVisual(FarmRecipe r) {
-        return r.dyeable() ? new FarmRecipe.Visual(r.visual().type(), DyeColors.recolor(r.visual().target(), color)) : r.visual();
+        return r.dyeable() ? new FarmRecipe.Visual(r.visual().type(), DyeColors.recolor(r.visual().target(), color), r.visual().input(), r.visual().result()) : r.visual();
     }
 
     public DyeColor getColor() {
@@ -579,6 +582,13 @@ public class FarmBlockEntity extends BlockEntity {
             }
         }
         return false;
+    }
+
+    /** Progress 0..1 through the end-of-cycle visual window (0 before it starts). */
+    public float visualProgress() {
+        double window = clientVisualTicksOr();
+        if (window <= 0) return 0;
+        return (float) Math.max(0, Math.min(1, (getTimer() - visualStart()) / window));
     }
 
     public double visualStart() {
@@ -751,6 +761,11 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     // ---- enchantments on the tool ----
+
+    /** Fortune level on the farm's tool (0 if none). */
+    public int fortuneLevel() {
+        return enchantLevel(Enchantments.FORTUNE);
+    }
 
     private int enchantLevel(ResourceKey<Enchantment> key) {
         if (level == null) return 0;
@@ -1007,6 +1022,28 @@ public class FarmBlockEntity extends BlockEntity {
         return anyEffect(UpgradeEffect::filtersOutputs);
     }
 
+    /** True if a Crafting card is installed (its targets screen is available). */
+    public boolean hasCraftingCard() {
+        return anyEffect(UpgradeEffect::craftsOutputs);
+    }
+
+    /** The items the Crafting card crafts into, in the order they are tried. */
+    public List<net.minecraft.resources.ResourceLocation> craftTargets() {
+        return java.util.Collections.unmodifiableList(craftTargets);
+    }
+
+    /** Sets the Crafting card's targets (at most {@link #CRAFT_TARGETS}, no duplicates, no air). */
+    public void setCraftTargets(List<net.minecraft.resources.ResourceLocation> targets) {
+        craftTargets.clear();
+        for (var id : targets) {
+            if (craftTargets.size() >= CRAFT_TARGETS) break;
+            if (id == null || craftTargets.contains(id)) continue;
+            if (net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id) == Items.AIR) continue;
+            craftTargets.add(id);
+        }
+        setChanged();
+    }
+
     /** True if an Auto-Export card is installed (the side panel shows). */
     public boolean hasExportCard() {
         return anyEffect(UpgradeEffect::exportsOutputs);
@@ -1098,6 +1135,9 @@ public class FarmBlockEntity extends BlockEntity {
                 if (net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id) == Items.AIR) continue;
                 ids.add(id);
             }
+        }
+        if (hasCraftingCard()) {
+            for (var id : craftTargets) if (!ids.contains(id)) ids.add(id);
         }
         return ids;
     }
@@ -1210,8 +1250,6 @@ public class FarmBlockEntity extends BlockEntity {
         }
         if (r.xp() > 0 && hasExperienceCard()) addXp(r.xp());
         addXp(smeltXp);
-        double volume = Config.WORK_SOUND_VOLUME.get();
-        if (volume > 0) server.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.BLOCKS, (float) volume, 1.2F);
         if (Config.CYCLE_PARTICLES.get()) server.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, worldPosition.getX() + 0.5, worldPosition.getY() + 1.05, worldPosition.getZ() + 0.5, 3, 0.25, 0.05, 0.25, 0.0);
         setChanged();
     }
@@ -1380,6 +1418,8 @@ public class FarmBlockEntity extends BlockEntity {
             FarmRecipe.Visual visual = resolvedVisual(r);
             tag.putString("VisualType", visual.type());
             tag.putString("VisualTarget", visual.target().toString());
+            visual.input().ifPresent(id -> tag.putString("VisualInput", id.toString()));
+            visual.result().ifPresent(id -> tag.putString("VisualResult", id.toString()));
             tag.putDouble("CycleTicks", cycleTicks());
             tag.putInt("VisualTicks", (int) Math.round(visualWindow()));
         }
@@ -1421,7 +1461,9 @@ public class FarmBlockEntity extends BlockEntity {
         operatingTicks = tag.getLong("OperatingTicks");
         color = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
         if (tag.contains("VisualType")) {
-            clientVisual = new FarmRecipe.Visual(tag.getString("VisualType"), net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualTarget")));
+            clientVisual = new FarmRecipe.Visual(tag.getString("VisualType"), net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualTarget")),
+                    tag.contains("VisualInput") ? java.util.Optional.of(net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualInput"))) : java.util.Optional.empty(),
+                    tag.contains("VisualResult") ? java.util.Optional.of(net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualResult"))) : java.util.Optional.empty());
             clientCycleTicks = Math.max(1, tag.getDouble("CycleTicks"));
             clientVisualTicks = tag.getInt("VisualTicks");
         } else {
@@ -1444,12 +1486,20 @@ public class FarmBlockEntity extends BlockEntity {
             list.add(c);
         }
         tag.put("Blocked", list);
+        net.minecraft.nbt.ListTag craft = new net.minecraft.nbt.ListTag();
+        for (var id : craftTargets) craft.add(net.minecraft.nbt.StringTag.valueOf(id.toString()));
+        tag.put("Craft", craft);
     }
 
     private void readSettings(CompoundTag tag) {
         xp = tag.getInt("Xp");
         byte[] modes = tag.getByteArray("SideModes");
         for (int i = 0; i < 6; i++) sideModes[i] = i < modes.length ? (byte) (modes[i] & 3) : SIDE_BOTH;
+        craftTargets.clear();
+        for (net.minecraft.nbt.Tag t : tag.getList("Craft", net.minecraft.nbt.Tag.TAG_STRING)) {
+            var id = net.minecraft.resources.ResourceLocation.tryParse(t.getAsString());
+            if (id != null && craftTargets.size() < CRAFT_TARGETS) craftTargets.add(id);
+        }
         blockedOutputs.clear();
         for (net.minecraft.nbt.Tag t : tag.getList("Blocked", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
             CompoundTag c = (CompoundTag) t;

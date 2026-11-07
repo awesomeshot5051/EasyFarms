@@ -23,7 +23,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     private static final int TANK_X = 52, TANK_Y = 51, TANK_W = 72, TANK_H = 16;
     private static final int ENERGY_COLOR = 0xFFD02828;
 
-    private ArrowButton catalystButton, filterButton, sideButton;
+    private ArrowButton catalystButton, filterButton, sideButton, craftingButton;
     private net.minecraft.client.gui.components.Button xpButton;
     /** Auto-Export card: the side panel (a pop-out left of the screen) is open. */
     private boolean sidePanelOpen;
@@ -59,10 +59,14 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         // Left edge, only with an Auto-Export card: opens the side panel that sets what each face of the farm does.
         sideButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 5, Component.translatable("gui.easy_farms.sides"),
                 b -> sidePanelOpen = !sidePanelOpen));
+        // Left edge, under the sides button, only with a Crafting card: the screen that sets what the farm crafts.
+        craftingButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 21, Component.translatable("gui.easy_farms.crafting"),
+                b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 10)));
         updateCardWidgets();
     }
 
     private void updateCardWidgets() {
+        if (craftingButton != null) craftingButton.visible = menu.hasCraftingCard();
         if (catalystButton != null) catalystButton.visible = menu.hasCatalystCards();
         if (filterButton != null) filterButton.visible = menu.hasFilterCard();
         if (xpButton != null) {

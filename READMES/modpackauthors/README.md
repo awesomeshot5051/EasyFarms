@@ -23,7 +23,7 @@ and their effects. This guide covers all of it.
 * A `fluid_container` registry for bottling a Liquid Farm's tank and for virtual fluids (see [Fluid containers](#fluid-containers-fluid_container)).
 * New effects: `efficiency`, `chunk_loader`, `void_overflow`, `output_filter`, `auto_export`, `experience` (see [Built-in effects](#built-in-effects)).
 * `farm_upgrade` field `kind_max_counts` (per farm kind stack limit) and `Powered` no longer takes `energy_mods`.
-* New config values (`xpEnabled`, `xpMultiplier`, `voidCardEnabled`, `filterCardEnabled`, `autoExport*`, `difficultyPreset`, `comparatorMode`, `cycleSoundVolume`, `cycleParticles`).
+* New config values (`xpEnabled`, `xpMultiplier`, `voidCardEnabled`, `filterCardEnabled`, `autoExport*`, `difficultyPreset`, `comparatorMode`, `cycleParticles`).
 * All upgrade cards stack to 64; JEI and EMI can move a recipe's items into an open farm.
 
 ## Where files go
@@ -135,7 +135,7 @@ Liquid recipes have no `drops`; they add a fluid to the tank every cycle. The vi
 | `inputs` | yes | 1 to 3 inputs. Each is an ingredient (`item`, or `tag`) plus an optional `count` (default 1). |
 | `tool` | no | An **item tag** the tool must be in, for example `minecraft:pickaxes`, `minecraft:swords`, `minecraft:hoes`. Omit it for a recipe that needs no tool ("toolless"). |
 | `min_tier_rank` | no (0) | The lowest tier rank the tool must have (see [tiers](#tool-tiers)). |
-| `visual` | yes | What the glass case shows. `type` is `block`, `plant` or `mob`; `target` is the block or entity id. |
+| `visual` | yes | What the glass case shows. `type` is `block`, `plant`, `mob` or `goo`; `target` is the block or entity id. `goo` also takes optional `input` and `result` block ids: the target block sits beside the input block, which shrinks into the result block over `visual_ticks`. |
 | `base_ticks` | yes | Ticks one cycle takes at the slowest tier. The tool tier divides this. |
 | `visual_ticks` | no (80) | The length of the animation at the end of a cycle. |
 | `smeltable` | no (false) | Drops can use their `smelt_item` form when a card with the `smelt` effect is installed. |
@@ -378,6 +378,7 @@ The Capacity card uses `"max_count": 4, "stack_requires": ["easy_farms:powered"]
 | `easy_farms:chunk_loader` | none | Keeps the farm's chunk loaded through vanilla forced chunks (saved in the dimension's `easy_farms_chunk_loaders` data). A chunk already forced by /forceload is never released by it. |
 | `easy_farms:void_overflow` | none | Destroys items that do not fit the output slots (config `voidCardEnabled`). |
 | `easy_farms:output_filter` | none | A per-recipe list of blocked outputs, edited on the Filter screen (config `filterCardEnabled`). |
+| `easy_farms:auto_craft` | `grids` (optional list of `crafting_grid` ids; default: every grid), `max_crafts` (64) | The Crafting card: crafts the farm's targets (set on its screen) from the drops and output slots, using the first grid that can. See [Crafting grids](#crafting-grids). Config `craftingCardEnabled`. |
 | `easy_farms:auto_export` | none | Side panel: each face is both / input / output / off. Output faces push items and tank fluid to neighbours every `autoExportIntervalTicks` (config `autoExport*`). |
 | `easy_farms:experience` | none | The farm drops the recipe's `xp`. Put the card on the kinds you want in its `kinds` list (default: mob). |
 | `easy_farms:capacity` | `energy_multiplier` (2), `fluid_multiplier` (2), `item_multiplier` (2), `unstackable_base` (8) | Per installed card: multiplies the ME buffer, the liquid tank and the output stack size. Unstackable items get `unstackable_base x multiplier`. |
@@ -407,8 +408,8 @@ processing (crushing, pressing, casing, alloying...) becomes a card with no code
 |---|---|---|
 | `from` | required | An item id, or `#namespace:tag` for an item tag. |
 | `per` | 1 | How many `from` items make one conversion. Leftovers are kept as they were. |
-| `with` | none | Extra ingredients the rule needs together with `from`, each `{ "from": item or #tag, "per": n, "source": "drops" or "catalyst" }`. One conversion uses up `per` of `from` and of every extra; as many conversions happen as the scarcest ingredient allows. `source: "drops"` (default) takes the extra from the same cycle's drops. `source: "catalyst"` takes it from the card's catalyst slot, see below. |
-| `to` | required | One output or a list. An output is an item id, or `{ "item", "count" (1), "chance" (1.0) }`; the chance is rolled once per conversion. |
+| `with` | none | Extra ingredients the rule needs together with `from`, each `{ "from": item or #tag, "per": n, "source": "drops" or "catalyst", "consume_chance": 0..1 }`. `consume_chance` (default 1) is the chance that each conversion actually uses the ingredient up (it must still be present); the Infinity card still keeps catalysts. One conversion uses up `per` of `from` and of every extra; as many conversions happen as the scarcest ingredient allows. `source: "drops"` (default) takes the extra from the same cycle's drops. `source: "catalyst"` takes it from the card's catalyst slot, see below. |
+| `to` | required | One output or a list. An output is an item id, or `{ "item", "count" (1), "chance" (1.0), "fortune_bonus" (0) }`; the chance is rolled once per conversion. `fortune_bonus` adds a random 0 to `fortune_bonus x Fortune level` extra items per conversion when the farm's tool has Fortune. |
 
 A drop stack is handled by the first rule that matches it. A rule whose output items do not exist (the other mod is
 not installed) is skipped, so the drops stay unchanged. Cards run in slot order, so conversions can be chained: a
@@ -445,6 +446,57 @@ slots and drops their contents; catalysts stay put when other cards come and go,
 way it faces (a farm facing west is fed from its east side). That side only accepts catalysts, each into the slot that takes it; the
 other sides still use the input and output slots. Catalysts are never taken back out by automation. The **Infinity upgrade** keeps the
 catalysts as well as the tool and inputs: they must still be present, but are not used up.
+
+### Crafting grids
+
+The Crafting card crafts with **grids**, and grids are data: `data/<ns>/easy_farms/crafting_grid/*.json`. The mod ships
+`easy_farms:crafting_3x3` (the crafting table). A pack or another mod adds a grid with one file, and the card uses it with no
+other change (a card whose effect lists `grids` only uses those).
+
+```json
+{
+  "type": "easy_farms:vanilla",
+  "width": 5,
+  "height": 5,
+  "recipe_type": "mymod:big_crafting",
+  "requires_mod": "mymod",
+  "priority": 10,
+  "name": "Big Crafter"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `type` | A registered grid type (default `easy_farms:vanilla`). |
+| `width`, `height` | Grid size. A shaped recipe larger than the grid never crafts. |
+| `recipe_type` | Optional: the recipe type the `vanilla` grid type reads (default `minecraft:crafting`). Its recipes must be crafting recipes. |
+| `requires_mod` | Optional: the grid is ignored unless that mod is loaded. |
+| `priority` | Higher is tried first; ties go to the smaller grid. |
+
+`easy_farms:vanilla` places each recipe by its own ingredient layout and confirms it with the real `matches` / `assemble`, so
+shaped, shapeless and mod-added crafting recipes all work. Recipe leftovers (empty buckets and the like) go to the outputs.
+
+For a machine that does not use crafting recipes at all (Create's mechanical crafter, say), register your own
+`CraftingGridType` in the registry `easy_farms:crafting_grid_type` and point a grid file at it:
+
+```java
+public final class MechanicalGrid implements CraftingGridType {
+    @Override
+    public Optional<Crafted> craft(ServerLevel level, CraftingGrid grid, ItemStack target, List<ItemStack> available, int maxCrafts) {
+        // look up your recipes, check them against `available` (do not modify it), and return what was made and what it cost
+    }
+
+    @Override
+    public boolean canCraft(ServerLevel level, CraftingGrid grid, ItemStack target) {
+        return false; // true if any recipe makes `target`: the targets screen shows red otherwise
+    }
+}
+
+public static final DeferredRegister<CraftingGridType> GRIDS = DeferredRegister.create(CraftingGridTypes.KEY, "mymod");
+public static final DeferredHolder<CraftingGridType, MechanicalGrid> MECHANICAL = GRIDS.register("mechanical", MechanicalGrid::new);
+```
+
+The registry is synced to clients like the effect registry, so server and clients need the same mod.
 
 ### Writing your own effect (Java)
 

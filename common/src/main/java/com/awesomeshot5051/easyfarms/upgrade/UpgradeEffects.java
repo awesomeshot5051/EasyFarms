@@ -165,27 +165,55 @@ public final class UpgradeEffects {
      * slot order, so an earlier card sees the drops first.
      */
     public record ConvertDrops(List<Rule> rules) implements UpgradeEffect {
-        /** One result of a conversion. {@code count} items are made per conversion, each conversion with this {@code chance}. */
-        public record Output(ResourceLocation item, int count, float chance) {
+        /**
+         * One result of a conversion. {@code count} items are made per conversion, each conversion with this {@code chance}.
+         * {@code fortune_bonus} (default 0) adds up to {@code fortune_bonus * Fortune level} extra items per conversion
+         * (a random 0..max) when the farm's tool has Fortune.
+         */
+        public record Output(ResourceLocation item, int count, float chance, int fortuneBonus) {
             private static final Codec<Output> FULL = RecordCodecBuilder.create(i -> i.group(
                     ResourceLocation.CODEC.fieldOf("item").forGetter(Output::item),
                     Codec.INT.optionalFieldOf("count", 1).forGetter(Output::count),
-                    Codec.FLOAT.optionalFieldOf("chance", 1F).forGetter(Output::chance)
+                    Codec.FLOAT.optionalFieldOf("chance", 1F).forGetter(Output::chance),
+                    Codec.intRange(0, 64).optionalFieldOf("fortune_bonus", 0).forGetter(Output::fortuneBonus)
             ).apply(i, Output::new));
-            public static final Codec<Output> CODEC = Codec.withAlternative(FULL, ResourceLocation.CODEC.xmap(id -> new Output(id, 1, 1F), Output::item));
+            public static final Codec<Output> CODEC = Codec.withAlternative(FULL, ResourceLocation.CODEC.xmap(id -> new Output(id, 1, 1F, 0), Output::item));
+
+            /** Items made by {@code conversions} conversions: chance is rolled per conversion, Fortune adds a random bonus. */
+            int roll(ServerLevel level, int conversions, int fortune) {
+                int made = 0;
+                for (int c = 0; c < conversions; c++) {
+                    if (chance >= 1F || level.getRandom().nextFloat() < chance) {
+                        made += count;
+                        if (fortuneBonus > 0 && fortune > 0) made += level.getRandom().nextInt(fortuneBonus * fortune + 1);
+                    }
+                }
+                return made;
+            }
         }
 
         /**
          * An extra ingredient a conversion uses up, next to the rule's own {@code from}. {@code source} is {@code "drops"}
          * (default: taken from the same cycle's drops) or {@code "catalyst"} (taken from the card's catalyst slot, which the
          * player fills in the farm's Catalysts screen; such a card makes that screen's button appear).
+         * {@code consume_chance} (0..1, default 1) is the chance that each conversion actually uses up this ingredient;
+         * it must still be present for the conversion to happen.
          */
-        public record Extra(String from, int per, boolean catalyst) {
+        public record Extra(String from, int per, boolean catalyst, float consumeChance) {
             public static final Codec<Extra> CODEC = RecordCodecBuilder.create(i -> i.group(
                     Codec.STRING.fieldOf("from").forGetter(Extra::from),
                     Codec.intRange(1, 64).optionalFieldOf("per", 1).forGetter(Extra::per),
-                    Codec.STRING.optionalFieldOf("source", "drops").forGetter(e -> e.catalyst() ? "catalyst" : "drops")
-            ).apply(i, (from, per, source) -> new Extra(from, per, "catalyst".equals(source))));
+                    Codec.STRING.optionalFieldOf("source", "drops").forGetter(e -> e.catalyst() ? "catalyst" : "drops"),
+                    Codec.floatRange(0F, 1F).optionalFieldOf("consume_chance", 1F).forGetter(Extra::consumeChance)
+            ).apply(i, (from, per, source, chance) -> new Extra(from, per, "catalyst".equals(source), chance)));
+
+            /** How many of {@code conversions} conversions use this ingredient up. */
+            int used(ServerLevel level, int conversions) {
+                if (consumeChance >= 1F) return conversions;
+                int n = 0;
+                for (int c = 0; c < conversions; c++) if (level.getRandom().nextFloat() < consumeChance) n++;
+                return n;
+            }
         }
 
         /**
@@ -254,10 +282,7 @@ public final class UpgradeEffects {
                 for (Output out : rule.to()) {
                     var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(out.item());
                     if (item.isEmpty()) continue;
-                    int made = 0;
-                    for (int c = 0; c < conversions; c++) {
-                        if (out.chance() >= 1F || level.getRandom().nextFloat() < out.chance()) made += out.count();
-                    }
+                    int made = out.roll(level, conversions, farm.fortuneLevel());
                     if (made > 0) add(result, new ItemStack(item.get(), made));
                 }
             }
@@ -284,17 +309,14 @@ public final class UpgradeEffects {
                 for (Extra extra : rule.with()) {
                     // The Infinity card keeps catalysts as well as the tool: they are needed but not used up.
                     if (extra.catalyst()) {
-                        if (!farm.hasInfiniteInputs()) takeFrom(farm.catalysts(), extra.from(), conversions * extra.per());
+                        if (!farm.hasInfiniteInputs()) takeFrom(farm.catalysts(), extra.from(), extra.used(level, conversions) * extra.per());
                     }
-                    else takeFrom(drops, extra.from(), conversions * extra.per());
+                    else takeFrom(drops, extra.from(), extra.used(level, conversions) * extra.per());
                 }
                 for (Output out : rule.to()) {
                     var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(out.item());
                     if (item.isEmpty()) continue;
-                    int count = 0;
-                    for (int c = 0; c < conversions; c++) {
-                        if (out.chance() >= 1F || level.getRandom().nextFloat() < out.chance()) count += out.count();
-                    }
+                    int count = out.roll(level, conversions, farm.fortuneLevel());
                     if (count > 0) add(made, new ItemStack(item.get(), count));
                 }
             }
@@ -582,6 +604,36 @@ public final class UpgradeEffects {
         }
     }
 
+    /**
+     * The Crafting card: the farm crafts its target items (set on the card's own screen) from its drops and outputs. Which grids it
+     * may use comes from the {@code easy_farms:crafting_grid} datapack registry, so another mod's grid joins the card with a JSON file.
+     * <pre>{"type": "easy_farms:auto_craft"}                                  // every grid
+     * {"type": "easy_farms:auto_craft", "grids": ["easy_farms:crafting_3x3"]} // only these grids</pre>
+     * {@code max_crafts} caps how many times one target is crafted per cycle (default 64).
+     */
+    public record AutoCraft(List<ResourceLocation> grids, int maxCrafts) implements UpgradeEffect {
+        public static final MapCodec<AutoCraft> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                ResourceLocation.CODEC.listOf().optionalFieldOf("grids", List.of()).forGetter(AutoCraft::grids),
+                Codec.intRange(1, 1024).optionalFieldOf("max_crafts", 64).forGetter(AutoCraft::maxCrafts)
+        ).apply(i, AutoCraft::new));
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean craftsOutputs() {
+            return Config.CRAFTING_ENABLED.get();
+        }
+
+        @Override
+        public void modifyDrops(FarmBlockEntity farm, ServerLevel level, FarmRecipe r, List<ItemStack> drops) {
+            if (!Config.CRAFTING_ENABLED.get()) return;
+            com.awesomeshot5051.easyfarms.crafting.AutoCrafter.run(farm, level, grids, maxCrafts, drops);
+        }
+    }
+
     /** The Auto-Export card: outputs are pushed to neighbouring containers, and each side of the farm can be input, output or off. */
     public record AutoExport() implements UpgradeEffect {
         public static final MapCodec<AutoExport> CODEC = MapCodec.unit(new AutoExport());
@@ -600,6 +652,7 @@ public final class UpgradeEffects {
     public static final Supplier<MapCodec<VoidOverflow>> VOID_OVERFLOW = Services.PLATFORM.register(KEY, "void_overflow", () -> VoidOverflow.CODEC);
     public static final Supplier<MapCodec<Experience>> EXPERIENCE = Services.PLATFORM.register(KEY, "experience", () -> Experience.CODEC);
     public static final Supplier<MapCodec<OutputFilter>> OUTPUT_FILTER = Services.PLATFORM.register(KEY, "output_filter", () -> OutputFilter.CODEC);
+    public static final Supplier<MapCodec<AutoCraft>> AUTO_CRAFT = Services.PLATFORM.register(KEY, "auto_craft", () -> AutoCraft.CODEC);
     public static final Supplier<MapCodec<AutoExport>> AUTO_EXPORT = Services.PLATFORM.register(KEY, "auto_export", () -> AutoExport.CODEC);
     public static final Supplier<MapCodec<ChunkLoader>> CHUNK_LOADER = Services.PLATFORM.register(KEY, "chunk_loader", () -> ChunkLoader.CODEC);
     public static final Supplier<MapCodec<Efficiency>> EFFICIENCY = Services.PLATFORM.register(KEY, "efficiency", () -> Efficiency.CODEC);

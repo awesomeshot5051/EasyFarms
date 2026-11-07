@@ -69,7 +69,7 @@ A fourth machine that makes **fluids** instead of items. Put a **water bucket + 
 * **Memory Card:** sneak-click a farm to copy its side and filter settings, click another farm to paste them.
 
 Every one of these can be switched off or tuned in the config (`config/easy_farms-common.toml`), which also has a
-`difficultyPreset` (casual / balanced / hard), a `comparatorMode` for what a comparator reads, and `cycleSoundVolume` / `cycleParticles`.
+`difficultyPreset` (casual / balanced / hard), a `comparatorMode` for what a comparator reads, and `cycleParticles`.
 
 ---
 
@@ -243,7 +243,7 @@ outputs.
 | `voidCardEnabled`, `filterCardEnabled` | `true` | Switch the Void or Filter card's effect off. |
 | `autoExportEnabled`, `autoExportIntervalTicks`, `autoExportItemsPerPush` | `true`, `20`, `16` | The Auto-Export card and how fast it pushes. |
 | `comparatorMode` | `0` | What a comparator reads: `0` cycle progress, `1` output fill, `2` tank fill. |
-| `cycleSoundVolume`, `cycleParticles` | `0.3`, `true` | The chime and particles when a cycle ends. |
+| `cycleParticles` | `true` | The particles when a cycle ends. |
 
 Tool tiers, recipes and upgrade cards are datapack data, so they can be changed without code. See the
 [modder guide](READMES/modpackauthors/README.md).

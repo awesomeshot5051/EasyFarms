@@ -3,6 +3,29 @@
 This is the changelog for the `master` branch (Minecraft 1.21.1, NeoForge 21.1.265), written from the commit history.
 Versions are listed newest first, each with its commit and date.
 
+## 3.1.0
+
+### New datapack options
+- `convert_drops` ingredients (`with`) take `consume_chance` (0..1, default 1): the chance each conversion uses the ingredient up. The card tooltip shows it.
+- `convert_drops` outputs (`to`) take `fortune_bonus`: up to `fortune_bonus x Fortune level` extra items per conversion when the tool has Fortune.
+- New `goo` recipe visual (`target` + optional `input` and `result` blocks): the input block shrinks into the result block at the end of a cycle.
+- The Experience card now fits Resource and Plant farms as well as Mob farms.
+
+### Removed
+- All of the mod's own sounds: the pickaxe and shovel swing sounds, the chime at the end of a cycle, and the `cycleSoundVolume`
+  config. (Vanilla feedback sounds, such as filling a bucket or a tool breaking, are unchanged.)
+
+### New upgrade card
+- **Crafting Upgrade** (`easy_farms:auto_craft` effect): the farm crafts its own outputs into other items. An arrow on the left of
+  the farm screen (under the Sides one) opens a targets screen with six ghost slots: click one with an item to set what the farm
+  should make, right-click to clear. Each cycle the farm crafts every target from the new drops plus what is already in its
+  output slots (up to `max_crafts` times, default 64) and keeps the leftovers. A target with no recipe in any grid shows red.
+  Resource, Plant and Mob farms. Config `craftingCardEnabled`. Targets are saved with the farm and copied by the Memory Card.
+- **Crafting grids are data** (`easy_farms:crafting_grid` datapack registry, `data/<ns>/easy_farms/crafting_grid/*.json`): the mod
+  ships `easy_farms:crafting_3x3`; a pack or another mod adds a grid (size, `recipe_type`, `requires_mod`, `priority`) with one
+  file and the card uses it, with no other change. Mods with their own machines register a `CraftingGridType` in the new
+  `easy_farms:crafting_grid_type` registry (the built-in `easy_farms:vanilla` type reads crafting-table recipes).
+
 ## 3.0.0
 
 A large feature update: five new upgrade cards, a Mekanism-style side configuration, experience, honey and milk, JEI/EMI "move

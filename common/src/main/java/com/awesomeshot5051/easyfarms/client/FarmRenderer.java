@@ -28,6 +28,7 @@ import java.util.Map;
  * "block"  - the ore/soil block with a tool swinging at it (resource farms)
  * "plant"  - the plant growing during the last visual_ticks of the cycle (plant farms)
  * "mob"    - the mob shown at 0.3 scale during the last visual_ticks of the cycle (mob farms)
+ * "goo"    - a goo block beside an input block that shrinks into a result block during the last visual_ticks
  */
 public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
@@ -50,6 +51,7 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
         long timer = farm.getTimer();
         switch (visual.type()) {
             case "block" -> renderMined(farm, visual, facing, timer, pose, buffer, light, overlay);
+            case "goo" -> renderGoo(farm, visual, pose, buffer, light, overlay);
             case "plant" -> {
                 if (timer >= farm.visualStart()) renderPlant(visual, facing, pose, buffer, light, overlay);
             }
@@ -109,8 +111,26 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity> {
 
         // The tool in the tool slot is the one that swings.
         if (!farm.isPaused() && !farm.getTool().isEmpty()) {
-            ToolSwing.render(farm.getLevel(), farm.getBlockPos(), pose, buffer, light, overlay, farm.getTool(), facing, timer);
+            ToolSwing.render(farm.getLevel(), pose, buffer, light, overlay, farm.getTool(), facing, timer);
         }
+    }
+
+    /** The goo on the left; on the right the input block shrinks away while the result block grows in its place. */
+    private void renderGoo(FarmBlockEntity farm, FarmRecipe.Visual visual, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+        float p = farm.visualProgress();
+        gooBlock(visual.target(), 0.25f, 0.4f, pose, buffer, light, overlay);
+        visual.input().ifPresent(id -> gooBlock(id, 0.75f, 0.4f * (1f - p), pose, buffer, light, overlay));
+        visual.result().ifPresent(id -> gooBlock(id, 0.75f, 0.4f * p, pose, buffer, light, overlay));
+    }
+
+    /** A block of the given size standing on the glass floor, centred at x (0..1) in the middle of the case. */
+    private void gooBlock(net.minecraft.resources.ResourceLocation id, float x, float size, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+        if (size < 0.02f) return;
+        pose.pushPose();
+        pose.translate(x - size / 2f, 1f / 16f, 0.5f - size / 2f);
+        pose.scale(size, size, size);
+        Services.client().renderSingleBlock(context.getBlockRenderDispatcher(), BuiltInRegistries.BLOCK.get(id).defaultBlockState(), pose, buffer, light, overlay, RenderType.solid());
+        pose.popPose();
     }
 
     private void renderPlant(FarmRecipe.Visual visual, Direction facing, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {

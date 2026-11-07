@@ -131,6 +131,8 @@ public final class Config {
             "The Void card destroys items that do not fit the output slots. Turn off to disable the card's effect.");
     public static final Value<Boolean> FILTER_ENABLED = new Value<>("filterCardEnabled", true, false, true, Boolean::parseBoolean,
             "The Filter card discards the outputs you block. Turn off to disable the card's effect.");
+    public static final Value<Boolean> CRAFTING_ENABLED = new Value<>("craftingCardEnabled", true, false, true, Boolean::parseBoolean,
+            "The Crafting card crafts the farm's outputs into the targets you set. Turn off to disable the card's effect.");
     public static final Value<Boolean> AUTO_EXPORT_ENABLED = new Value<>("autoExportEnabled", true, false, true, Boolean::parseBoolean,
             "The Auto-Export card pushes outputs into neighbouring containers and applies its per-side settings.");
     public static final Value<Integer> AUTO_EXPORT_INTERVAL = new Value<>("autoExportIntervalTicks", 20, 1, 1200, Integer::parseInt,
@@ -143,8 +145,6 @@ public final class Config {
             "1 = casual (farms twice as fast, inputs last twice as long), 2 = balanced, 3 = hard (twice as slow, inputs last half as long).");
     public static final Value<Integer> COMPARATOR_MODE = new Value<>("comparatorMode", 0, 0, 2, Integer::parseInt,
             "What a comparator reads from a farm: 0 = cycle progress, 1 = how full the output slots are, 2 = how full the Liquid Farm tank is.");
-    public static final Value<Double> WORK_SOUND_VOLUME = new Value<>("cycleSoundVolume", 0.3, 0.0, 1.0, Double::parseDouble,
-            "Volume of the soft chime a farm plays when it finishes a cycle (0 = silent).");
     public static final Value<Boolean> CYCLE_PARTICLES = new Value<>("cycleParticles", true, false, true, Boolean::parseBoolean,
             "A few particles above a farm each time it finishes a cycle.");
 

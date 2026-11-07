@@ -27,6 +27,8 @@ public class ModItems {
     public static final Supplier<Item> FILTER_UPGRADE = card("filter_upgrade");
     public static final Supplier<Item> AUTO_EXPORT_UPGRADE = card("auto_export_upgrade");
     public static final Supplier<Item> EXPERIENCE_UPGRADE = card("experience_upgrade");
+    /** Crafts the farm's outputs into the targets set on its screen, using the crafting grids from datapacks and mods. */
+    public static final Supplier<Item> CRAFTING_UPGRADE = card("crafting_upgrade");
     /** Copies a farm's side and filter settings (sneak-click) and pastes them onto another farm (click). */
     public static final Supplier<Item> MEMORY_CARD = Services.PLATFORM.register(Registries.ITEM, "memory_card", () -> new Item(new Item.Properties().stacksTo(1)));
     /** New in EasyFarms: with this installed, the recipe's input items are never used up. */
@@ -39,7 +41,7 @@ public class ModItems {
     public static final Supplier<Item> UPGRADE_CARD = Services.PLATFORM.register(Registries.ITEM, "upgrade_card", () -> new UpgradeCardItem(new Item.Properties().stacksTo(64)));
 
     public static final List<Supplier<Item>> UPGRADES = List.of(
-            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE, EFFICIENCY_UPGRADE, CHUNK_LOADER_UPGRADE, VOID_UPGRADE, FILTER_UPGRADE, AUTO_EXPORT_UPGRADE, EXPERIENCE_UPGRADE);
+            REDSTONE_UPGRADE, SMELTER_UPGRADE, SPEED_UPGRADE, NETHER_UPGRADE, INSCRIBER_UPGRADE, INFINITY_UPGRADE, POWERED_UPGRADE, CAPACITY_UPGRADE, EFFICIENCY_UPGRADE, CHUNK_LOADER_UPGRADE, VOID_UPGRADE, FILTER_UPGRADE, AUTO_EXPORT_UPGRADE, EXPERIENCE_UPGRADE, CRAFTING_UPGRADE);
 
     private static Supplier<Item> card(String name) {
         return Services.PLATFORM.register(Registries.ITEM, name, () -> new Item(new Item.Properties().stacksTo(64)));

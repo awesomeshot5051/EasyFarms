@@ -36,6 +36,18 @@ public final class CardTooltips {
             List<Component> names = catalyst.stream().map(com.awesomeshot5051.easyfarms.upgrade.UpgradeRules::itemName).toList();
             tooltip.add(Component.translatable("tooltip.easy_farms.card_catalyst", ComponentUtils.formatList(names, Component.literal(", "))).withStyle(ChatFormatting.AQUA));
         }
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (var effect : upgrade.effects()) {
+            if (!(effect instanceof com.awesomeshot5051.easyfarms.upgrade.UpgradeEffects.ConvertDrops convert)) continue;
+            for (var rule : convert.rules()) {
+                for (var extra : rule.with()) {
+                    if (!extra.catalyst() || extra.consumeChance() >= 1F || !seen.add(extra.from())) continue;
+                    tooltip.add(Component.translatable("tooltip.easy_farms.card_catalyst_chance",
+                            com.awesomeshot5051.easyfarms.upgrade.UpgradeRules.itemName(extra.from()),
+                            Math.round(extra.consumeChance() * 100F)).withStyle(ChatFormatting.DARK_AQUA));
+                }
+            }
+        }
         addRestrictions(upgrade, level.registryAccess(), tooltip);
     }
 

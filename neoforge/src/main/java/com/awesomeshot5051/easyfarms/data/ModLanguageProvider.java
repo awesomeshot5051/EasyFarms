@@ -31,10 +31,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.FILTER_UPGRADE.get(), "Filter Upgrade");
         add(ModItems.AUTO_EXPORT_UPGRADE.get(), "Auto-Export Upgrade");
         add(ModItems.EXPERIENCE_UPGRADE.get(), "Experience Upgrade");
+        add(ModItems.CRAFTING_UPGRADE.get(), "Crafting Upgrade");
         add("gui.easy_farms.requires.void", "Destroys items that do not fit the output slots, so the farm never stalls");
         add("gui.easy_farms.requires.filter", "Adds a Filter screen: block the outputs you do not want, per recipe");
         add("gui.easy_farms.requires.auto_export", "Adds a side panel: set each face to input, output or off; outputs are pushed out");
         add("gui.easy_farms.requires.experience", "Mob farms drop experience (collect it with the xp button)");
+        add("gui.easy_farms.requires.crafting", "Adds a Crafting screen: the farm crafts its outputs into the items you choose");
+        add("gui.easy_farms.crafting", "Crafting");
+        add("gui.easy_farms.crafting_hint", "Click a slot with an item to set what to craft, right-click to clear. Red = no recipe.");
+        add("gui.easy_farms.crafting_ok", "Crafted from the farm's outputs");
+        add("gui.easy_farms.crafting_no_recipe", "No usable crafting grid has a recipe for this");
         add("gui.easy_farms.filter", "Filter");
         add("gui.easy_farms.filter_empty", "No inputs yet: nothing to filter");
         add("gui.easy_farms.filter_hint", "Click an item to block or allow it");
@@ -57,6 +63,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("easy_farms.configuration.xpMultiplier", "Experience Multiplier");
         add("easy_farms.configuration.voidCardEnabled", "Void Card Enabled");
         add("easy_farms.configuration.filterCardEnabled", "Filter Card Enabled");
+        add("easy_farms.configuration.craftingCardEnabled", "Crafting Card Enabled");
         add("easy_farms.configuration.autoExportEnabled", "Auto-Export Enabled");
         add("easy_farms.configuration.autoExportIntervalTicks", "Auto-Export Interval (ticks)");
         add("easy_farms.configuration.autoExportItemsPerPush", "Auto-Export Items per Push");
@@ -68,7 +75,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.easy_farms.memory_empty", "Sneak-click a farm first to copy its settings");
         add("easy_farms.configuration.difficultyPreset", "Difficulty Preset");
         add("easy_farms.configuration.comparatorMode", "Comparator Mode");
-        add("easy_farms.configuration.cycleSoundVolume", "Cycle Sound Volume");
         add("easy_farms.configuration.cycleParticles", "Cycle Particles");
         add(ModItems.MEMORY_CARD.get(), "Memory Card");
         add("gui.easy_farms.jei.loot_table", "From the loot table %s");
@@ -142,6 +148,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.easy_farms.catalyst_slot", "Catalyst for %s");
         add("gui.easy_farms.catalyst_accepts", "Accepts: %s");
         add("tooltip.easy_farms.card_catalyst", "Needs a catalyst: %s (put it in the farm's Catalysts screen)");
+        add("tooltip.easy_farms.card_catalyst_chance", "%s is only used up %s%% of the time");
         add("gui.easy_farms.restriction.no_catalyst_slots", "Not enough catalyst slots (the farm has %s in all)");
         add("gui.easy_farms.restriction.requires_block_below", "Needs one of these under the farm: %s");
         add("gui.easy_farms.restriction.requires", "Requires: %s");

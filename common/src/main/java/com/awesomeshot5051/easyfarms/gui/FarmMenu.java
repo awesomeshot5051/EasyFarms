@@ -93,7 +93,7 @@ public class FarmMenu extends AbstractContainerMenu {
                     case 13 -> Math.min(32767, farm.fluidCapacity());
                     case 14 -> farm.fluidId() == null ? -1 : net.minecraft.core.registries.BuiltInRegistries.FLUID.getId(
                             net.minecraft.core.registries.BuiltInRegistries.FLUID.get(farm.fluidId()));
-                    case 15 -> (farm.hasFilterCard() ? 1 : 0) | (farm.hasExportCard() ? 2 : 0) | (farm.showsXp() ? 4 : 0);
+                    case 15 -> (farm.hasFilterCard() ? 1 : 0) | (farm.hasExportCard() ? 2 : 0) | (farm.showsXp() ? 4 : 0) | (farm.hasCraftingCard() ? 8 : 0);
                     case 16 -> farm.packedSideModes();
                     case 17 -> Math.min(32767, farm.xp());
                     default -> farm.environmentOk() ? 1 : 0;
@@ -203,6 +203,11 @@ public class FarmMenu extends AbstractContainerMenu {
         return (data.get(15) & 2) != 0;
     }
 
+    /** True while a Crafting card is installed (its button is shown). */
+    public boolean hasCraftingCard() {
+        return (data.get(15) & 8) != 0;
+    }
+
     /** True while an Experience card is installed (the collect button is shown). */
     public boolean hasExperienceCard() {
         return (data.get(15) & 4) != 0;
@@ -240,6 +245,10 @@ public class FarmMenu extends AbstractContainerMenu {
         }
         if (button == 3 && farm != null && farm.showsXp()) {
             farm.collectXp(player);
+            return true;
+        }
+        if (button == 10 && farm != null && farm.hasCraftingCard() && player instanceof ServerPlayer server) {
+            MenuOpener.openCrafting(server, pos, farm, Component.translatable("gui.easy_farms.crafting"));
             return true;
         }
         if (button >= 4 && button < 10 && farm != null && farm.hasExportCard()) {

@@ -113,15 +113,28 @@ public record FarmRecipe(FarmKind kind, List<SizedIngredient> inputs, Optional<T
         ).apply(i, FluidInput::new));
     }
 
-    /** What the block shows: "block" (ore/soil with a swinging tool), "plant" (growing), or "mob". */
-    public record Visual(String type, ResourceLocation target) {
+    /**
+     * What the block shows: "block" (ore/soil with a swinging tool), "plant" (growing), "mob", or "goo".
+     * "goo" shows the {@code target} block (the goo) beside an {@code input} block that shrinks away while a
+     * {@code result} block grows in its place over the visual window; {@code input} and {@code result} are optional
+     * block ids used only by "goo".
+     */
+    public record Visual(String type, ResourceLocation target, Optional<ResourceLocation> input, Optional<ResourceLocation> result) {
+        public Visual(String type, ResourceLocation target) {
+            this(type, target, Optional.empty(), Optional.empty());
+        }
+
         public static final Codec<Visual> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.STRING.fieldOf("type").forGetter(Visual::type),
-                ResourceLocation.CODEC.fieldOf("target").forGetter(Visual::target)
+                ResourceLocation.CODEC.fieldOf("target").forGetter(Visual::target),
+                ResourceLocation.CODEC.optionalFieldOf("input").forGetter(Visual::input),
+                ResourceLocation.CODEC.optionalFieldOf("result").forGetter(Visual::result)
         ).apply(i, Visual::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Visual> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8, Visual::type,
                 ResourceLocation.STREAM_CODEC, Visual::target,
+                ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Visual::input,
+                ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), Visual::result,
                 Visual::new);
     }
 
