@@ -23,7 +23,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     private static final int TANK_X = 52, TANK_Y = 51, TANK_W = 72, TANK_H = 16;
     private static final int ENERGY_COLOR = 0xFFD02828;
 
-    private ArrowButton catalystButton, filterButton, sideButton, craftingButton;
+    private ArrowButton catalystButton, filterButton, sideButton, craftingButton, variantButton;
     private net.minecraft.client.gui.components.Button xpButton;
     /** Auto-Export card: the side panel (a pop-out left of the screen) is open. */
     private boolean sidePanelOpen;
@@ -31,6 +31,12 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     /** Cell (column, row) of each relative face in the side panel's unfolded cross. */
     private static final int[][] FACE_CELLS = {{1, 1}, {3, 1}, {0, 1}, {2, 1}, {1, 0}, {1, 2}};
     private static final int PANEL_W = 80, PANEL_H = 74, CELL = 18;
+    /** Chisel card: the variant pop-out to the left of the screen (a grid of the variants of the chosen output). */
+    private static final int VAR_COLS = 6, VAR_ROWS = 5, VAR_W = VAR_COLS * CELL + 10, VAR_H = 34 + VAR_ROWS * CELL + 6;
+    private boolean variantPanelOpen;
+    private int variantSourceIndex, variantScroll;
+    private List<net.minecraft.world.item.Item> variantList = List.of();
+    private List<Identifier> variantSources = List.of();
 
     public FarmScreen(FarmMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, 164);
@@ -56,14 +62,27 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
                 .bounds(leftPos + imageWidth - 22, topPos + 53, 18, 14).build());
         // Left edge, only with an Auto-Export card: opens the side panel that sets what each face of the farm does.
         sideButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 5, Component.translatable("gui.easy_farms.sides"),
-                b -> sidePanelOpen = !sidePanelOpen));
+                b -> {
+                    sidePanelOpen = !sidePanelOpen;
+                    if (sidePanelOpen) variantPanelOpen = false;
+                }));
         // Left edge, under the sides button, only with a Crafting card: the screen that sets what the farm crafts.
         craftingButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 21, Component.translatable("gui.easy_farms.crafting"),
                 b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 10)));
+        // Left edge, under the crafting button, only with a Chisel card: the pop-out listing the variants of the output.
+        variantButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 37, Component.translatable("gui.easy_farms.variants"),
+                b -> {
+                    variantPanelOpen = !variantPanelOpen;
+                    // The Sides panel is on the same edge: only one is open at a time.
+                    if (variantPanelOpen) sidePanelOpen = false;
+                }));
         updateCardWidgets();
     }
 
     private void updateCardWidgets() {
+        if (variantButton != null) variantButton.visible = menu.hasVariantCard();
+        if (!menu.hasVariantCard()) variantPanelOpen = false;
+        refreshVariants();
         if (craftingButton != null) craftingButton.visible = menu.hasCraftingCard();
         if (catalystButton != null) catalystButton.visible = menu.hasCatalystCards();
         if (filterButton != null) filterButton.visible = menu.hasFilterCard();
@@ -79,6 +98,98 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     protected void containerTick() {
         super.containerTick();
         updateCardWidgets();
+    }
+
+    /** Rebuilds the variant list of the selected output (cheap: only the farm's one or two outputs). */
+    private void refreshVariants() {
+        variantSources = menu.hasVariantCard() ? menu.variantSources() : List.of();
+        if (variantSourceIndex >= variantSources.size()) variantSourceIndex = 0;
+        if (variantPanelOpen && !variantSources.isEmpty()) {
+            variantList = com.awesomeshot5051.easyfarms.farm.VariantGroups.variants(
+                    net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(variantSources.get(variantSourceIndex)));
+        } else {
+            variantList = List.of();
+        }
+        int maxScroll = Math.max(0, (variantList.size() + VAR_COLS - 1) / VAR_COLS - VAR_ROWS);
+        variantScroll = Math.max(0, Math.min(variantScroll, maxScroll));
+    }
+
+    /** On the left, beside the arrow that opens it (and clear of JEI, which sits on the right). */
+    private int variantPanelX() {
+        return leftPos - 16 - VAR_W;
+    }
+
+    private int variantPanelY() {
+        return topPos + 5;
+    }
+
+    /** -1 when the mouse is not over a source tab of the open pop-out. */
+    private int variantTabAt(double mouseX, double mouseY) {
+        if (!variantPanelOpen) return -1;
+        for (int i = 0; i < variantSources.size() && i < VAR_COLS; i++) {
+            int x = variantPanelX() + 5 + i * CELL, y = variantPanelY() + 14;
+            if (mouseX >= x && mouseX < x + CELL - 2 && mouseY >= y && mouseY < y + CELL - 2) return i;
+        }
+        return -1;
+    }
+
+    /** Index into {@link #variantList} under the mouse, or -1. */
+    private int variantAt(double mouseX, double mouseY) {
+        if (!variantPanelOpen) return -1;
+        int gx = variantPanelX() + 5, gy = variantPanelY() + 34;
+        if (mouseX < gx || mouseY < gy) return -1;
+        int col = (int) ((mouseX - gx) / CELL), row = (int) ((mouseY - gy) / CELL);
+        if (col >= VAR_COLS || row >= VAR_ROWS || (mouseX - gx) % CELL >= CELL - 2 || (mouseY - gy) % CELL >= CELL - 2) return -1;
+        int index = (row + variantScroll) * VAR_COLS + col;
+        return index < variantList.size() ? index : -1;
+    }
+
+    private void drawVariantPanel(GuiGraphicsExtractor g) {
+        int x = variantPanelX(), y = variantPanelY();
+        g.fill(x, y, x + VAR_W, y + VAR_H, 0xFF373737);
+        g.fill(x + 1, y + 1, x + VAR_W - 1, y + VAR_H - 1, 0xFFC6C6C6);
+        g.text(font, Component.translatable("gui.easy_farms.variants"), x + 5, y + 4, 0xFF404040, false);
+        for (int i = 0; i < variantSources.size() && i < VAR_COLS; i++) {
+            int cx = x + 5 + i * CELL, cy = y + 14;
+            g.fill(cx, cy, cx + CELL - 2, cy + CELL - 2, i == variantSourceIndex ? 0xFF5FA05F : 0xFF373737);
+            g.fill(cx + 1, cy + 1, cx + CELL - 3, cy + CELL - 3, 0xFF8B8B8B);
+            g.item(new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(variantSources.get(i))), cx + 1, cy + 1);
+        }
+        if (variantSources.isEmpty()) {
+            g.text(font, Component.translatable("gui.easy_farms.variants_none"), x + 5, y + 20, 0xFF404040, false);
+            return;
+        }
+        var chosen = menu.variantChoice(variantSources.get(variantSourceIndex));
+        for (int row = 0; row < VAR_ROWS; row++) {
+            for (int col = 0; col < VAR_COLS; col++) {
+                int index = (row + variantScroll) * VAR_COLS + col;
+                int cx = x + 5 + col * CELL, cy = y + 34 + row * CELL;
+                boolean has = index < variantList.size();
+                boolean picked = has && net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(variantList.get(index)).equals(chosen);
+                g.fill(cx, cy, cx + CELL - 2, cy + CELL - 2, picked ? 0xFF5FA05F : 0xFF373737);
+                g.fill(cx + 1, cy + 1, cx + CELL - 3, cy + CELL - 3, 0xFF8B8B8B);
+                if (has) g.item(new net.minecraft.world.item.ItemStack(variantList.get(index)), cx + 1, cy + 1);
+            }
+        }
+        int rows = (variantList.size() + VAR_COLS - 1) / VAR_COLS;
+        if (rows > VAR_ROWS) {
+            // Scroll bar on the right edge of the grid.
+            int barX = x + VAR_W - 4, barTop = y + 34, barH = VAR_ROWS * CELL - 2;
+            int thumbH = Math.max(6, barH * VAR_ROWS / rows);
+            int thumbY = barTop + (barH - thumbH) * variantScroll / (rows - VAR_ROWS);
+            g.fill(barX, barTop, barX + 2, barTop + barH, 0xFF8B8B8B);
+            g.fill(barX, thumbY, barX + 2, thumbY + thumbH, 0xFF373737);
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (variantPanelOpen && mouseX >= variantPanelX() && mouseX < variantPanelX() + VAR_W && mouseY >= variantPanelY() && mouseY < variantPanelY() + VAR_H) {
+            variantScroll -= (int) Math.signum(scrollY);
+            refreshVariants();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     private int panelX() {
@@ -136,6 +247,19 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
 
     @Override
     public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        int tab = variantTabAt(event.x(), event.y());
+        if (tab >= 0) {
+            variantSourceIndex = tab;
+            variantScroll = 0;
+            refreshVariants();
+            return true;
+        }
+        int variant = variantAt(event.x(), event.y());
+        if (variant >= 0) {
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId,
+                    FarmMenu.VARIANT_BUTTON + variantSourceIndex * FarmMenu.VARIANT_STRIDE + variant);
+            return true;
+        }
         int face = faceAt(event.x(), event.y());
         if (face >= 0) {
             minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 4 + face);
@@ -157,6 +281,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         if (menu.kind() == FarmKind.LIQUID) drawTank(g);
         if (menu.powered()) drawEnergy(g);
         if (sidePanelOpen) drawSidePanel(g);
+        if (variantPanelOpen) drawVariantPanel(g);
     }
 
     /** Red fill rising from the bottom; no colour at all when empty. The value is written along the bar. */
@@ -220,6 +345,14 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
+        int hoveredVariant = variantAt(mouseX, mouseY);
+        if (hoveredVariant >= 0) {
+            g.setTooltipForNextFrame(font, new net.minecraft.world.item.ItemStack(variantList.get(hoveredVariant)), mouseX, mouseY);
+        }
+        int hoveredTab = variantTabAt(mouseX, mouseY);
+        if (hoveredTab >= 0) {
+            g.setTooltipForNextFrame(font, new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(variantSources.get(hoveredTab))), mouseX, mouseY);
+        }
         int hoveredFace = faceAt(mouseX, mouseY);
         if (hoveredFace >= 0) {
             g.setComponentTooltipForNextFrame(font, List.of(Component.translatable("gui.easy_farms.face." + FACE_KEYS[hoveredFace]),

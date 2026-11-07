@@ -52,8 +52,10 @@ public final class UpgradeEffects {
     }
 
     /** Drops with a smelted form use it. */
-    public record Smelt() implements UpgradeEffect {
-        public static final MapCodec<Smelt> CODEC = MapCodec.unit(new Smelt());
+    public record Smelt(boolean xp) implements UpgradeEffect {
+        public static final MapCodec<Smelt> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.BOOL.optionalFieldOf("xp", true).forGetter(Smelt::xp)
+        ).apply(i, Smelt::new));
 
         @Override
         public MapCodec<? extends UpgradeEffect> codec() {
@@ -63,6 +65,20 @@ public final class UpgradeEffects {
         @Override
         public boolean smelts(FarmRecipe r) {
             return r.smeltable();
+        }
+
+        @Override
+        public boolean smeltGivesXp() {
+            return xp;
+        }
+
+        /** Recipe viewers: a smeltable recipe's drops come out in their smelted form. */
+        @Override
+        public List<com.awesomeshot5051.easyfarms.farm.DropEntry> previewDrops(FarmRecipe recipe, List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops) {
+            if (!recipe.smeltable()) return drops;
+            List<com.awesomeshot5051.easyfarms.farm.DropEntry> out = new ArrayList<>();
+            for (var drop : drops) out.add(drop.smeltItem().map(drop::withItem).orElse(drop));
+            return out;
         }
     }
 
@@ -634,6 +650,51 @@ public final class UpgradeEffects {
         }
     }
 
+    /**
+     * The Chisel card: the farm's GUI shows a pop-out listing every variant of the block it makes, and the player picks the one the
+     * farm outputs. Variants come from item tags under {@code variants/} (see {@code VariantGroups}), so any chisel-style mod works.
+     */
+    public record VariantSelect() implements UpgradeEffect {
+        public static final MapCodec<VariantSelect> CODEC = MapCodec.unit(new VariantSelect());
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean selectsVariants() {
+            return true;
+        }
+    }
+
+    /**
+     * An Auto Importer card: the farm pushes its outputs straight into a storage network instead of waiting for a pipe. The network is
+     * {@code ae2}, {@code refinedstorage} or {@code dimstorage}. The farm joins the network next to a cable, or is linked to it with a
+     * bound item (frequency for Dim Storage). Nothing happens while the matching mod is missing.
+     * <pre>{"type": "easy_farms:network_import", "network": "ae2"}</pre>
+     */
+    public record NetworkImport(String network) implements UpgradeEffect {
+        public static final MapCodec<NetworkImport> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.STRING.fieldOf("network").forGetter(NetworkImport::network)
+        ).apply(i, NetworkImport::new));
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean importsToNetwork() {
+            return true;
+        }
+
+        @Override
+        public String networkId() {
+            return network;
+        }
+    }
+
     /** The Auto-Export card: outputs are pushed to neighbouring containers, and each side of the farm can be input, output or off. */
     public record AutoExport() implements UpgradeEffect {
         public static final MapCodec<AutoExport> CODEC = MapCodec.unit(new AutoExport());
@@ -654,6 +715,8 @@ public final class UpgradeEffects {
     public static final Supplier<MapCodec<OutputFilter>> OUTPUT_FILTER = Services.PLATFORM.register(KEY, "output_filter", () -> OutputFilter.CODEC);
     public static final Supplier<MapCodec<AutoCraft>> AUTO_CRAFT = Services.PLATFORM.register(KEY, "auto_craft", () -> AutoCraft.CODEC);
     public static final Supplier<MapCodec<AutoExport>> AUTO_EXPORT = Services.PLATFORM.register(KEY, "auto_export", () -> AutoExport.CODEC);
+    public static final Supplier<MapCodec<VariantSelect>> VARIANT_SELECT = Services.PLATFORM.register(KEY, "variant_select", () -> VariantSelect.CODEC);
+    public static final Supplier<MapCodec<NetworkImport>> NETWORK_IMPORT = Services.PLATFORM.register(KEY, "network_import", () -> NetworkImport.CODEC);
     public static final Supplier<MapCodec<ChunkLoader>> CHUNK_LOADER = Services.PLATFORM.register(KEY, "chunk_loader", () -> ChunkLoader.CODEC);
     public static final Supplier<MapCodec<Efficiency>> EFFICIENCY = Services.PLATFORM.register(KEY, "efficiency", () -> Efficiency.CODEC);
     public static final Supplier<MapCodec<Powered>> POWERED = Services.PLATFORM.register(KEY, "powered", () -> Powered.CODEC);

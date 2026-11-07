@@ -23,6 +23,11 @@ dependencies {
     compileOnly "maven.modrinth:the-one-probe:${top_version}"
     localRuntime "maven.modrinth:the-one-probe:${top_version}"
 
+    // Auto Importer cards: compile against each storage mod's API (only used while that mod is loaded).
+    compileOnly("maven.modrinth:ae2:${ae2_version}") { transitive = false }
+    compileOnly("maven.modrinth:refined-storage:${refined_storage_neoforge_version}") { transitive = false }
+    compileOnly("maven.modrinth:dimstorage:${dimstorage_version}") { transitive = false }
+
     // Patchouli: the Easy Farms guide book is plain data, so it is only needed at runtime to see it.
     localRuntime "maven.modrinth:patchouli:${patchouli_neoforge_version}"
 
@@ -30,6 +35,8 @@ dependencies {
     if (project.findProperty('with_content_mods')?.toString() == 'true' && !datagen) {
         localRuntime "maven.modrinth:ae2:${ae2_version}"
         localRuntime "maven.modrinth:refined-storage:${refined_storage_neoforge_version}"
+        localRuntime "maven.modrinth:dimstorage:${dimstorage_version}"
+        localRuntime "maven.modrinth:edivadlib:${edivadlib_version}"
         // ExtendedAE 26.1-1.0.3 (alpha) crashes the creative inventory ("Small Entro Bud has already been added to the tab").
         // Re-enable it, and Glodium which only it needs, once it is fixed:
         // localRuntime "maven.modrinth:extended-ae:${extendedae_version}"

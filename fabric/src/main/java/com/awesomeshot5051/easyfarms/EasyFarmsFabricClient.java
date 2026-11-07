@@ -36,6 +36,7 @@ public class EasyFarmsFabricClient implements ClientModInitializer {
         MenuScreens.register(ModMenus.FARM_CATALYSTS.get(), FarmCatalystScreen::new);
         MenuScreens.register(ModMenus.FARM_FILTER.get(), com.awesomeshot5051.easyfarms.client.FarmFilterScreen::new);
         MenuScreens.register(ModMenus.FARM_CRAFTING.get(), com.awesomeshot5051.easyfarms.client.FarmCraftingScreen::new);
+        MenuScreens.register(ModMenus.CARD_FREQUENCY.get(), com.awesomeshot5051.easyfarms.client.CardFrequencyScreen::new);
 
         Block[] farms = EasyFarms.FARM_BLOCKS.values().stream().map(Supplier::get).toArray(Block[]::new);
         BlockColorRegistry.register(List.of(ClientCommon.FLOOR_TINT), farms);

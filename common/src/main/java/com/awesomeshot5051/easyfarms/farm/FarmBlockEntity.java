@@ -266,6 +266,10 @@ public class FarmBlockEntity extends BlockEntity {
     /** Crafting card: the items the farm crafts its outputs into (in order), set on the card's screen. */
     private final List<net.minecraft.resources.Identifier> craftTargets = new ArrayList<>();
     public static final int CRAFT_TARGETS = 6;
+    /** Chisel card: for each output item, the variant of it the farm makes instead (a missing entry = the item itself). */
+    private final java.util.Map<net.minecraft.resources.Identifier, net.minecraft.resources.Identifier> variantChoice = new java.util.HashMap<>();
+    /** Client copy of {@link #variantSources()}: the server writes it into the update tag. */
+    private List<net.minecraft.resources.Identifier> clientVariantSources = List.of();
     /** Auto-Export card: what each face does, indexed by relative face (front, back, left, right, top, bottom). */
     private final byte[] sideModes = new byte[6];
     public static final int SIDE_BOTH = 0, SIDE_INPUT = 1, SIDE_OUTPUT = 2, SIDE_OFF = 3;
@@ -633,6 +637,10 @@ public class FarmBlockEntity extends BlockEntity {
                 int copies = Math.min(stackCountOf(upgrade), upgrade.allowedCount(kind, installedIds()));
                 for (int n = 0; n < Math.max(1, copies); n++) list.addAll(upgrade.effects());
             }
+            // The tool can give effects by itself (for example a mod's smelter upgrade installed on it): datapack tool_ability files.
+            for (var ability : com.awesomeshot5051.easyfarms.tier.ToolAbility.of(level.registryAccess(), kind, toolSlot.getStackInSlot(0))) {
+                list.addAll(ability.effects());
+            }
             for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade : installedUpgrades(-1)) {
                 for (var restriction : upgrade.restrictions()) effectsDependOnWorld |= !restriction.requiresBlockBelow().isEmpty();
             }
@@ -796,6 +804,7 @@ public class FarmBlockEntity extends BlockEntity {
     private void contentsChanged() {
         recipeDirty = true;
         effectCache = null;
+        syncVariantSourcesIfChanged();
         setChanged();
         updateFloor();
     }
@@ -961,6 +970,7 @@ public class FarmBlockEntity extends BlockEntity {
         int fluidCap = fluidCapacity();
         if (fluidAmount > fluidCap) fluidAmount = fluidCap;
         exportTick();
+        importTick();
         updateComparator();
         if (recipe == null || isPaused() || !hasOutputRoom() || !environmentOk() || !fluidInputOk()) return;
 
@@ -1058,7 +1068,7 @@ public class FarmBlockEntity extends BlockEntity {
             if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id) == Items.AIR) continue;
             craftTargets.add(id);
         }
-        setChanged();
+        sync();
     }
 
     /** True if an Auto-Export card is installed (the side panel shows). */
@@ -1077,7 +1087,7 @@ public class FarmBlockEntity extends BlockEntity {
      */
     public boolean showsXp() {
         if (xp > 0 || hasExperienceCard()) return true;
-        return kind == FarmKind.RESOURCE && Config.XP_ENABLED.get() && anyEffect(e -> recipe != null && e.smelts(recipe.value()));
+        return kind == FarmKind.RESOURCE && Config.XP_ENABLED.get() && anyEffect(e -> recipe != null && e.smelts(recipe.value()) && e.smeltGivesXp());
     }
 
     /** Luck for loot-table drops (fishing): the tool's Luck of the Sea level, as for a vanilla fishing rod. */
@@ -1179,6 +1189,104 @@ public class FarmBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    private long importTick;
+
+    /** Auto Importer cards: push the outputs into the storage network the card names (next to a cable, or via the card's link). */
+    private void importTick() {
+        if (!(level instanceof ServerLevel server) || !anyEffect(UpgradeEffect::importsToNetwork)) return;
+        if (++importTick < Config.AUTO_EXPORT_INTERVAL.get()) return;
+        importTick = 0;
+        java.util.Set<String> done = new java.util.HashSet<>();
+        for (UpgradeEffect effect : effects()) {
+            if (!effect.importsToNetwork() || !done.add(effect.networkId())) continue;
+            var importer = com.awesomeshot5051.easyfarms.farm.network.NetworkImporters.get(effect.networkId());
+            if (importer == null) continue;
+            int budget = Config.AUTO_EXPORT_ITEMS.get();
+            for (int i = 0; i < outputs.getSlots() && budget > 0; i++) {
+                ItemStack stack = outputs.getStackInSlot(i);
+                if (stack.isEmpty()) continue;
+                ItemStack offer = stack.copyWithCount(Math.min(budget, stack.getCount()));
+                ItemStack rest = importer.insert(server, worldPosition, importerCard(effect.networkId()), offer);
+                int moved = offer.getCount() - rest.getCount();
+                if (moved > 0) {
+                    stack.shrink(moved);
+                    budget -= moved;
+                    setChanged();
+                }
+            }
+        }
+    }
+
+    /** The installed Auto Importer card for a network (it carries the card's link or frequency); empty if there is none. */
+    private ItemStack importerCard(String network) {
+        if (level == null) return ItemStack.EMPTY;
+        for (int i = 0; i < upgrades.getSlots(); i++) {
+            ItemStack stack = upgrades.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            var upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), stack);
+            if (upgrade == null) continue;
+            for (UpgradeEffect e : upgrade.effects()) if (e.importsToNetwork() && e.networkId().equals(network)) return stack;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /** What the clients were last told {@link #variantSources()} is. */
+    private List<net.minecraft.resources.Identifier> syncedVariantSources = List.of();
+
+    /** The client copy of the picker's list rides on the block update: resend it when a card change (or a new recipe) changes it. */
+    private void syncVariantSourcesIfChanged() {
+        if (level == null || level.isClientSide()) return;
+        List<net.minecraft.resources.Identifier> now = hasVariantCard() ? variantSources() : List.of();
+        if (now.equals(syncedVariantSources)) return;
+        syncedVariantSources = now;
+        sync();
+    }
+
+    /** True if a Chisel card is installed (the variant pop-out shows). */
+    public boolean hasVariantCard() {
+        return anyEffect(UpgradeEffect::selectsVariants);
+    }
+
+    /**
+     * The items this farm's recipe makes that have variants, in a stable order (the picker lists variants of each). Server side it is
+     * read from the recipe; the client gets the list through the update tag.
+     */
+    public List<net.minecraft.resources.Identifier> variantSources() {
+        if (level != null && level.isClientSide()) return clientVariantSources;
+        List<net.minecraft.resources.Identifier> list = new ArrayList<>();
+        if (recipe == null) return list;
+        for (DropEntry entry : recipe.value().drops()) {
+            addVariantSource(list, entry.item());
+            entry.smeltItem().ifPresent(id -> addVariantSource(list, id));
+            entry.silkItem().ifPresent(id -> addVariantSource(list, id));
+        }
+        // What the Crafting card makes counts too: logs crafted into planks offer the plank variants. The crafted items join the drops
+        // before the choice is applied, so the swap sees them.
+        if (hasCraftingCard()) for (var target : craftTargets) addVariantSource(list, target);
+        return list;
+    }
+
+    private static void addVariantSource(List<net.minecraft.resources.Identifier> list, net.minecraft.resources.Identifier id) {
+        if (list.contains(id)) return;
+        Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id);
+        if (item != Items.AIR && VariantGroups.hasVariants(item)) list.add(id);
+    }
+
+    /** The variant chosen for an output item, or the item itself when none is chosen. */
+    public net.minecraft.resources.Identifier variantChoice(net.minecraft.resources.Identifier source) {
+        return variantChoice.getOrDefault(source, source);
+    }
+
+    /** Picks the {@code index}-th variant of {@code source} (0 = the item itself, which clears the choice). */
+    public void chooseVariant(net.minecraft.resources.Identifier source, int index) {
+        if (!variantSources().contains(source)) return;
+        List<Item> group = VariantGroups.variants(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(source));
+        if (index < 0 || index >= group.size()) return;
+        if (index == 0) variantChoice.remove(source);
+        else variantChoice.put(source, net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(group.get(index)));
+        sync();
+    }
+
     /** Pushes outputs (and the tank) into neighbouring containers on faces set to output. */
     private void exportTick() {
         if (!(level instanceof ServerLevel server) || !anyEffect(UpgradeEffect::exportsOutputs)) return;
@@ -1238,8 +1346,12 @@ public class FarmBlockEntity extends BlockEntity {
         }
         boolean fortune = enchantLevel(Enchantments.FORTUNE) > 0;
         boolean silk = enchantLevel(Enchantments.SILK_TOUCH) > 0;
-        boolean smelter = false;
-        for (UpgradeEffect e : effects()) smelter |= e.smelts(r);
+        boolean smelter = false, smelterXp = false;
+        for (UpgradeEffect e : effects()) {
+            boolean smelts = e.smelts(r);
+            smelter |= smelts;
+            smelterXp |= smelts && e.smeltGivesXp();
+        }
         boolean looting = kind == FarmKind.MOB && enchantLevel(Enchantments.LOOTING) > 0;
         boolean fire = enchantLevel(Enchantments.FIRE_ASPECT) > 0;
         List<ItemStack> drops = new ArrayList<>();
@@ -1248,7 +1360,7 @@ public class FarmBlockEntity extends BlockEntity {
             List<ItemStack> rolled = new ArrayList<>();
             entry.roll(server, this, fortune, looting, silk, smelter, fire, rolled);
             // A smelting Resource Farm is a furnace: it gives the furnace's experience for each smelted item.
-            if (smelter && kind == FarmKind.RESOURCE && entry.smeltItem().isPresent()) {
+            if (smelterXp && kind == FarmKind.RESOURCE && entry.smeltItem().isPresent()) {
                 int count = 0;
                 for (ItemStack s : rolled) count += s.getCount();
                 smeltXp += smeltingExperience(server, entry.item()) * count;
@@ -1259,6 +1371,14 @@ public class FarmBlockEntity extends BlockEntity {
         for (UpgradeEffect e : effects()) e.modifyDrops(this, server, r, drops);
         if (anyEffect(UpgradeEffect::filtersOutputs)) {
             drops.removeIf(d -> isOutputBlocked(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(d.getItem())));
+        }
+        if (!variantChoice.isEmpty() && anyEffect(UpgradeEffect::selectsVariants)) {
+            for (int i = 0; i < drops.size(); i++) {
+                ItemStack drop = drops.get(i);
+                var chosen = variantChoice.get(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(drop.getItem()));
+                Item variant = chosen == null ? Items.AIR : net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(chosen);
+                if (variant != Items.AIR) drops.set(i, new ItemStack(variant, drop.getCount()));
+            }
         }
         boolean voidOverflow = anyEffect(UpgradeEffect::voidsOverflow);
         for (ItemStack drop : drops) {
@@ -1439,6 +1559,7 @@ public class FarmBlockEntity extends BlockEntity {
             visual.result().ifPresent(id -> tag.putString("VisualResult", id.toString()));
             tag.putDouble("CycleTicks", cycleTicks());
             tag.putInt("VisualTicks", (int) Math.round(visualWindow()));
+            tag.store("VariantSources", net.minecraft.resources.Identifier.CODEC.listOf(), variantSources());
         }
     }
 
@@ -1477,6 +1598,7 @@ public class FarmBlockEntity extends BlockEntity {
         timer = tag.getLongOr("Timer", 0);
         operatingTicks = tag.getLongOr("OperatingTicks", 0);
         color = DyeColor.byName(tag.getStringOr("Color", "white"), DyeColor.WHITE);
+        clientVariantSources = tag.read("VariantSources", net.minecraft.resources.Identifier.CODEC.listOf()).orElse(List.of());
         var visualType = tag.getString("VisualType");
         if (visualType.isPresent()) {
             clientVisual = new FarmRecipe.Visual(visualType.get(), net.minecraft.resources.Identifier.parse(tag.getStringOr("VisualTarget", "minecraft:air")),
@@ -1491,14 +1613,16 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     /** Xp, Filter and side settings (saved to disk, carried in a Silk Touch pickup and copied by the Memory Card). */
-    private record Settings(int xp, List<Integer> sides, java.util.Map<String, List<String>> blocked, List<String> craft) {
-        static final Settings EMPTY = new Settings(0, List.of(), java.util.Map.of(), List.of());
+    private record Settings(int xp, List<Integer> sides, java.util.Map<String, List<String>> blocked, List<String> craft, java.util.Map<String, String> variants) {
+        static final Settings EMPTY = new Settings(0, List.of(), java.util.Map.of(), List.of(), java.util.Map.of());
         static final com.mojang.serialization.Codec<Settings> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(i -> i.group(
                 com.mojang.serialization.Codec.INT.optionalFieldOf("xp", 0).forGetter(Settings::xp),
                 com.mojang.serialization.Codec.INT.listOf().optionalFieldOf("sides", List.of()).forGetter(Settings::sides),
                 com.mojang.serialization.Codec.unboundedMap(com.mojang.serialization.Codec.STRING, com.mojang.serialization.Codec.STRING.listOf())
                         .optionalFieldOf("blocked", java.util.Map.of()).forGetter(Settings::blocked),
-                com.mojang.serialization.Codec.STRING.listOf().optionalFieldOf("craft", List.of()).forGetter(Settings::craft)
+                com.mojang.serialization.Codec.STRING.listOf().optionalFieldOf("craft", List.of()).forGetter(Settings::craft),
+                com.mojang.serialization.Codec.unboundedMap(com.mojang.serialization.Codec.STRING, com.mojang.serialization.Codec.STRING)
+                        .optionalFieldOf("variants", java.util.Map.of()).forGetter(Settings::variants)
         ).apply(i, Settings::new));
     }
 
@@ -1513,7 +1637,9 @@ public class FarmBlockEntity extends BlockEntity {
         }
         List<String> craft = new ArrayList<>();
         for (var id : craftTargets) craft.add(id.toString());
-        return new Settings(withXp ? xp : 0, sides, blocked, craft);
+        java.util.Map<String, String> variants = new java.util.HashMap<>();
+        for (var entry : variantChoice.entrySet()) variants.put(entry.getKey().toString(), entry.getValue().toString());
+        return new Settings(withXp ? xp : 0, sides, blocked, craft, variants);
     }
 
     private void applySettings(Settings s) {
@@ -1523,6 +1649,12 @@ public class FarmBlockEntity extends BlockEntity {
         for (String item : s.craft()) {
             var id = net.minecraft.resources.Identifier.tryParse(item);
             if (id != null && craftTargets.size() < CRAFT_TARGETS) craftTargets.add(id);
+        }
+        variantChoice.clear();
+        for (var entry : s.variants().entrySet()) {
+            var source = net.minecraft.resources.Identifier.tryParse(entry.getKey());
+            var chosen = net.minecraft.resources.Identifier.tryParse(entry.getValue());
+            if (source != null && chosen != null) variantChoice.put(source, chosen);
         }
         blockedOutputs.clear();
         for (var entry : s.blocked().entrySet()) {
@@ -1620,7 +1752,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     @Override
     public void removeComponentsFromTag(ValueOutput tag) {
-        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color", "Energy", "FluidId", "FluidAmount", "Settings"}) tag.discard(key);
+        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color", "Energy", "FluidId", "FluidAmount", "Settings", "VariantSources"}) tag.discard(key);
     }
 
     @Override

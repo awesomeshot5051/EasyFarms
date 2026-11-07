@@ -39,6 +39,19 @@ public class EasyFarmsNeoForge {
 
     private static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(FarmEvents::registerDispenserBehaviors);
+        // Auto Importer cards: each network's code is only touched when that mod is installed.
+        if (Services.PLATFORM.isModLoaded("ae2")) {
+            com.awesomeshot5051.easyfarms.farm.network.NetworkImporters.register("ae2", new com.awesomeshot5051.easyfarms.compat.ae2.Ae2Importer());
+            com.awesomeshot5051.easyfarms.compat.ae2.Ae2Importer.registerLinkable();
+        }
+        if (Services.PLATFORM.isModLoaded("dimstorage")) {
+            com.awesomeshot5051.easyfarms.farm.network.NetworkImporters.register("dimstorage",
+                    new com.awesomeshot5051.easyfarms.compat.dimstorage.DimStorageImporter());
+        }
+        if (Services.PLATFORM.isModLoaded("refinedstorage")) {
+            com.awesomeshot5051.easyfarms.farm.network.NetworkImporters.register("refinedstorage",
+                    new com.awesomeshot5051.easyfarms.compat.refinedstorage.RefinedStorageImporter());
+        }
     }
 
     /** The One Probe finds its integrations through an IMC message; only sent when it is installed. */

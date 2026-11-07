@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "ae2"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PIP",
+    " C ",
+    "PSP"
+  ],
+  "key": {
+    "P": "ae2:engineering_processor",
+    "I": "ae2:import_bus",
+    "C": "ae2:fluix_glass_cable",
+    "S": "ae2:storage_bus"
+  },
+  "result": {
+    "id": "easy_farms:upgrade_card",
+    "count": 1,
+    "components": {
+      "easy_farms:card": "easy_farms:ae2_importer"
+    }
+  }
+}

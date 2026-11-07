@@ -49,6 +49,21 @@ public record DropEntry(Identifier item, int min, int max, float chance,
             Identifier.CODEC.listOf().optionalFieldOf("preview", List.of()).forGetter(DropEntry::preview)
     ).apply(i, DropEntry::new));
 
+    /** A copy that drops {@code newItem} instead (used to preview a smelted drop in recipe viewers; the smelt alternative is dropped). */
+    public DropEntry withItem(net.minecraft.resources.Identifier newItem) {
+        return new DropEntry(newItem, min, max, chance, fortuneMin, fortuneMax, lootingMin, lootingMax,
+                silkItem, Optional.empty(), fireItem, silkOnly, lootTable, preview);
+    }
+
+    /** A copy that drops {@code newItem}, with the counts scaled by {@code out / in} (crafting {@code in} of this item into {@code out} of the new one). */
+    public DropEntry scaled(net.minecraft.resources.Identifier newItem, int out, int in) {
+        int d = Math.max(1, in);
+        return new DropEntry(newItem, Math.max(1, min * out / d), Math.max(1, max * out / d), chance,
+                fortuneMin.map(v -> Math.max(1, v * out / d)), fortuneMax.map(v -> Math.max(1, v * out / d)),
+                lootingMin.map(v -> Math.max(1, v * out / d)), lootingMax.map(v -> Math.max(1, v * out / d)),
+                Optional.empty(), Optional.empty(), Optional.empty(), silkOnly, Optional.empty(), List.of());
+    }
+
     public static DropEntry simple(Identifier item, int min, int max) {
         return new DropEntry(item, min, max, 1F, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
                 Optional.empty(), Optional.empty(), Optional.empty(), false, Optional.empty(), java.util.List.of());

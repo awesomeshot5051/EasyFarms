@@ -38,6 +38,11 @@ public interface UpgradeEffect {
         return false;
     }
 
+    /** True if smelting that this effect causes also gives the furnace's experience (a smelter card does; a smelting tool may not). */
+    default boolean smeltGivesXp() {
+        return false;
+    }
+
     /** True if this recipe may run without its required environment. */
     default boolean waivesEnvironment(FarmRecipe recipe) {
         return false;
@@ -102,6 +107,21 @@ public interface UpgradeEffect {
         return false;
     }
 
+    /** True if this card lets the farm swap its outputs for variants of them (Chisel card; the choice is made in the farm's GUI). */
+    default boolean selectsVariants() {
+        return false;
+    }
+
+    /** True if this card pushes the farm's outputs into the storage network named by {@link #networkId()} (Auto Importer cards). */
+    default boolean importsToNetwork() {
+        return false;
+    }
+
+    /** The storage network this card imports into ("ae2", "refinedstorage" or "dimstorage"); empty for other cards. */
+    default String networkId() {
+        return "";
+    }
+
     /** True if this card keeps the farm's chunk loaded (Chunk Loader card). */
     default boolean loadsChunk() {
         return false;
@@ -142,5 +162,10 @@ public interface UpgradeEffect {
      */
     default List<com.awesomeshot5051.easyfarms.farm.DropEntry> previewDrops(List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops) {
         return drops;
+    }
+
+    /** Like {@link #previewDrops(List)} for an effect that needs the recipe (smelting only applies to smeltable recipes). */
+    default List<com.awesomeshot5051.easyfarms.farm.DropEntry> previewDrops(FarmRecipe recipe, List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops) {
+        return previewDrops(drops);
     }
 }
