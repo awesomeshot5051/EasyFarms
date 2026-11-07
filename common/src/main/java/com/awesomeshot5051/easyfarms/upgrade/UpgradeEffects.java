@@ -582,6 +582,36 @@ public final class UpgradeEffects {
         }
     }
 
+    /**
+     * The Crafting card: the farm crafts its target items (set on the card's own screen) from its drops and outputs. Which grids it
+     * may use comes from the {@code easy_farms:crafting_grid} datapack registry, so another mod's grid joins the card with a JSON file.
+     * <pre>{"type": "easy_farms:auto_craft"}                                  // every grid
+     * {"type": "easy_farms:auto_craft", "grids": ["easy_farms:crafting_3x3"]} // only these grids</pre>
+     * {@code max_crafts} caps how many times one target is crafted per cycle (default 64).
+     */
+    public record AutoCraft(List<Identifier> grids, int maxCrafts) implements UpgradeEffect {
+        public static final MapCodec<AutoCraft> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Identifier.CODEC.listOf().optionalFieldOf("grids", List.of()).forGetter(AutoCraft::grids),
+                Codec.intRange(1, 1024).optionalFieldOf("max_crafts", 64).forGetter(AutoCraft::maxCrafts)
+        ).apply(i, AutoCraft::new));
+
+        @Override
+        public MapCodec<? extends UpgradeEffect> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean craftsOutputs() {
+            return Config.CRAFTING_ENABLED.get();
+        }
+
+        @Override
+        public void modifyDrops(FarmBlockEntity farm, ServerLevel level, FarmRecipe r, List<ItemStack> drops) {
+            if (!Config.CRAFTING_ENABLED.get()) return;
+            com.awesomeshot5051.easyfarms.crafting.AutoCrafter.run(farm, level, grids, maxCrafts, drops);
+        }
+    }
+
     /** The Auto-Export card: outputs are pushed to neighbouring containers, and each side of the farm can be input, output or off. */
     public record AutoExport() implements UpgradeEffect {
         public static final MapCodec<AutoExport> CODEC = MapCodec.unit(new AutoExport());
@@ -600,6 +630,7 @@ public final class UpgradeEffects {
     public static final Supplier<MapCodec<VoidOverflow>> VOID_OVERFLOW = Services.PLATFORM.register(KEY, "void_overflow", () -> VoidOverflow.CODEC);
     public static final Supplier<MapCodec<Experience>> EXPERIENCE = Services.PLATFORM.register(KEY, "experience", () -> Experience.CODEC);
     public static final Supplier<MapCodec<OutputFilter>> OUTPUT_FILTER = Services.PLATFORM.register(KEY, "output_filter", () -> OutputFilter.CODEC);
+    public static final Supplier<MapCodec<AutoCraft>> AUTO_CRAFT = Services.PLATFORM.register(KEY, "auto_craft", () -> AutoCraft.CODEC);
     public static final Supplier<MapCodec<AutoExport>> AUTO_EXPORT = Services.PLATFORM.register(KEY, "auto_export", () -> AutoExport.CODEC);
     public static final Supplier<MapCodec<ChunkLoader>> CHUNK_LOADER = Services.PLATFORM.register(KEY, "chunk_loader", () -> ChunkLoader.CODEC);
     public static final Supplier<MapCodec<Efficiency>> EFFICIENCY = Services.PLATFORM.register(KEY, "efficiency", () -> Efficiency.CODEC);

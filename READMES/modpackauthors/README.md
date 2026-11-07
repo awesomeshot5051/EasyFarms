@@ -378,6 +378,7 @@ The Capacity card uses `"max_count": 4, "stack_requires": ["easy_farms:powered"]
 | `easy_farms:chunk_loader` | none | Keeps the farm's chunk loaded through vanilla forced chunks (saved in the dimension's `easy_farms_chunk_loaders` data). A chunk already forced by /forceload is never released by it. |
 | `easy_farms:void_overflow` | none | Destroys items that do not fit the output slots (config `voidCardEnabled`). |
 | `easy_farms:output_filter` | none | A per-recipe list of blocked outputs, edited on the Filter screen (config `filterCardEnabled`). |
+| `easy_farms:auto_craft` | `grids` (optional list of `crafting_grid` ids; default: every grid), `max_crafts` (64) | The Crafting card: crafts the farm's targets (set on its screen) from the drops and output slots, using the first grid that can. See [Crafting grids](#crafting-grids). Config `craftingCardEnabled`. |
 | `easy_farms:auto_export` | none | Side panel: each face is both / input / output / off. Output faces push items and tank fluid to neighbours every `autoExportIntervalTicks` (config `autoExport*`). |
 | `easy_farms:experience` | none | The farm drops the recipe's `xp`. Put the card on the kinds you want in its `kinds` list (default: mob). |
 | `easy_farms:capacity` | `energy_multiplier` (2), `fluid_multiplier` (2), `item_multiplier` (2), `unstackable_base` (8) | Per installed card: multiplies the ME buffer, the liquid tank and the output stack size. Unstackable items get `unstackable_base x multiplier`. |
@@ -445,6 +446,57 @@ slots and drops their contents; catalysts stay put when other cards come and go,
 way it faces (a farm facing west is fed from its east side). That side only accepts catalysts, each into the slot that takes it; the
 other sides still use the input and output slots. Catalysts are never taken back out by automation. The **Infinity upgrade** keeps the
 catalysts as well as the tool and inputs: they must still be present, but are not used up.
+
+### Crafting grids
+
+The Crafting card crafts with **grids**, and grids are data: `data/<ns>/easy_farms/crafting_grid/*.json`. The mod ships
+`easy_farms:crafting_3x3` (the crafting table). A pack or another mod adds a grid with one file, and the card uses it with no
+other change (a card whose effect lists `grids` only uses those).
+
+```json
+{
+  "type": "easy_farms:vanilla",
+  "width": 5,
+  "height": 5,
+  "recipe_type": "mymod:big_crafting",
+  "requires_mod": "mymod",
+  "priority": 10,
+  "name": "Big Crafter"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `type` | A registered grid type (default `easy_farms:vanilla`). |
+| `width`, `height` | Grid size. A shaped recipe larger than the grid never crafts. |
+| `recipe_type` | Optional: the recipe type the `vanilla` grid type reads (default `minecraft:crafting`). Its recipes must be crafting recipes. |
+| `requires_mod` | Optional: the grid is ignored unless that mod is loaded. |
+| `priority` | Higher is tried first; ties go to the smaller grid. |
+
+`easy_farms:vanilla` places each recipe by its own ingredient layout and confirms it with the real `matches` / `assemble`, so
+shaped, shapeless and mod-added crafting recipes all work. Recipe leftovers (empty buckets and the like) go to the outputs.
+
+For a machine that does not use crafting recipes at all (Create's mechanical crafter, say), register your own
+`CraftingGridType` in the registry `easy_farms:crafting_grid_type` and point a grid file at it:
+
+```java
+public final class MechanicalGrid implements CraftingGridType {
+    @Override
+    public Optional<Crafted> craft(ServerLevel level, CraftingGrid grid, ItemStack target, List<ItemStack> available, int maxCrafts) {
+        // look up your recipes, check them against `available` (do not modify it), and return what was made and what it cost
+    }
+
+    @Override
+    public boolean canCraft(ServerLevel level, CraftingGrid grid, ItemStack target) {
+        return false; // true if any recipe makes `target`: the targets screen shows red otherwise
+    }
+}
+
+public static final DeferredRegister<CraftingGridType> GRIDS = DeferredRegister.create(CraftingGridTypes.KEY, "mymod");
+public static final DeferredHolder<CraftingGridType, MechanicalGrid> MECHANICAL = GRIDS.register("mechanical", MechanicalGrid::new);
+```
+
+The registry is synced to clients like the effect registry, so server and clients need the same mod.
 
 ### Writing your own effect (Java)
 

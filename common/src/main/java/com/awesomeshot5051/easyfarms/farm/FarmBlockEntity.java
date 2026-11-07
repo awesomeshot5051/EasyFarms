@@ -263,6 +263,9 @@ public class FarmBlockEntity extends BlockEntity {
     private int xp;
     /** Filter card: the outputs blocked for each recipe id (kept per recipe, so changing the inputs shows that recipe's own list). */
     private final java.util.Map<net.minecraft.resources.Identifier, java.util.Set<net.minecraft.resources.Identifier>> blockedOutputs = new java.util.HashMap<>();
+    /** Crafting card: the items the farm crafts its outputs into (in order), set on the card's screen. */
+    private final List<net.minecraft.resources.Identifier> craftTargets = new ArrayList<>();
+    public static final int CRAFT_TARGETS = 6;
     /** Auto-Export card: what each face does, indexed by relative face (front, back, left, right, top, bottom). */
     private final byte[] sideModes = new byte[6];
     public static final int SIDE_BOTH = 0, SIDE_INPUT = 1, SIDE_OUTPUT = 2, SIDE_OFF = 3;
@@ -1024,6 +1027,28 @@ public class FarmBlockEntity extends BlockEntity {
         return anyEffect(UpgradeEffect::filtersOutputs);
     }
 
+    /** True if a Crafting card is installed (its targets screen is available). */
+    public boolean hasCraftingCard() {
+        return anyEffect(UpgradeEffect::craftsOutputs);
+    }
+
+    /** The items the Crafting card crafts into, in the order they are tried. */
+    public List<net.minecraft.resources.Identifier> craftTargets() {
+        return java.util.Collections.unmodifiableList(craftTargets);
+    }
+
+    /** Sets the Crafting card's targets (at most {@link #CRAFT_TARGETS}, no duplicates, no air). */
+    public void setCraftTargets(List<net.minecraft.resources.Identifier> targets) {
+        craftTargets.clear();
+        for (var id : targets) {
+            if (craftTargets.size() >= CRAFT_TARGETS) break;
+            if (id == null || craftTargets.contains(id)) continue;
+            if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id) == Items.AIR) continue;
+            craftTargets.add(id);
+        }
+        setChanged();
+    }
+
     /** True if an Auto-Export card is installed (the side panel shows). */
     public boolean hasExportCard() {
         return anyEffect(UpgradeEffect::exportsOutputs);
@@ -1115,6 +1140,9 @@ public class FarmBlockEntity extends BlockEntity {
                 if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id) == Items.AIR) continue;
                 ids.add(id);
             }
+        }
+        if (hasCraftingCard()) {
+            for (var id : craftTargets) if (!ids.contains(id)) ids.add(id);
         }
         return ids;
     }
@@ -1449,13 +1477,14 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     /** Xp, Filter and side settings (saved to disk, carried in a Silk Touch pickup and copied by the Memory Card). */
-    private record Settings(int xp, List<Integer> sides, java.util.Map<String, List<String>> blocked) {
-        static final Settings EMPTY = new Settings(0, List.of(), java.util.Map.of());
+    private record Settings(int xp, List<Integer> sides, java.util.Map<String, List<String>> blocked, List<String> craft) {
+        static final Settings EMPTY = new Settings(0, List.of(), java.util.Map.of(), List.of());
         static final com.mojang.serialization.Codec<Settings> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(i -> i.group(
                 com.mojang.serialization.Codec.INT.optionalFieldOf("xp", 0).forGetter(Settings::xp),
                 com.mojang.serialization.Codec.INT.listOf().optionalFieldOf("sides", List.of()).forGetter(Settings::sides),
                 com.mojang.serialization.Codec.unboundedMap(com.mojang.serialization.Codec.STRING, com.mojang.serialization.Codec.STRING.listOf())
-                        .optionalFieldOf("blocked", java.util.Map.of()).forGetter(Settings::blocked)
+                        .optionalFieldOf("blocked", java.util.Map.of()).forGetter(Settings::blocked),
+                com.mojang.serialization.Codec.STRING.listOf().optionalFieldOf("craft", List.of()).forGetter(Settings::craft)
         ).apply(i, Settings::new));
     }
 
@@ -1468,12 +1497,19 @@ public class FarmBlockEntity extends BlockEntity {
             for (var id : entry.getValue()) items.add(id.toString());
             blocked.put(entry.getKey().toString(), items);
         }
-        return new Settings(withXp ? xp : 0, sides, blocked);
+        List<String> craft = new ArrayList<>();
+        for (var id : craftTargets) craft.add(id.toString());
+        return new Settings(withXp ? xp : 0, sides, blocked, craft);
     }
 
     private void applySettings(Settings s) {
         xp = s.xp();
         for (int i = 0; i < 6; i++) sideModes[i] = i < s.sides().size() ? (byte) (s.sides().get(i) & 3) : SIDE_BOTH;
+        craftTargets.clear();
+        for (String item : s.craft()) {
+            var id = net.minecraft.resources.Identifier.tryParse(item);
+            if (id != null && craftTargets.size() < CRAFT_TARGETS) craftTargets.add(id);
+        }
         blockedOutputs.clear();
         for (var entry : s.blocked().entrySet()) {
             var key = net.minecraft.resources.Identifier.tryParse(entry.getKey());

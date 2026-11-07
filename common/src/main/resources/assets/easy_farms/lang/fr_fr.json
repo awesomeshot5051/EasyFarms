@@ -40,5 +40,10 @@
   "gui.easy_farms.side_click": "Cliquez pour changer",
   "message.easy_farms.memory_copied": "Réglages de la ferme copiés",
   "message.easy_farms.memory_pasted": "Réglages de la ferme collés",
-  "message.easy_farms.memory_empty": "Cliquez d'abord en vous accroupissant sur une ferme pour copier ses réglages"
+  "message.easy_farms.memory_empty": "Cliquez d'abord en vous accroupissant sur une ferme pour copier ses réglages",
+  "item.easy_farms.crafting_upgrade": "Amélioration d'artisanat",
+  "gui.easy_farms.crafting": "Artisanat",
+  "gui.easy_farms.crafting_hint": "Cliquez sur un emplacement avec un objet pour le définir, clic droit pour effacer. Rouge = aucune recette.",
+  "gui.easy_farms.crafting_ok": "Fabriqué à partir de la production de la ferme",
+  "gui.easy_farms.crafting_no_recipe": "Aucune grille d'artisanat utilisable n'a de recette pour cela"
 }

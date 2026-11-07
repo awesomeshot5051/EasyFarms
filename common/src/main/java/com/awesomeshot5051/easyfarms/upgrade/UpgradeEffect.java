@@ -97,6 +97,11 @@ public interface UpgradeEffect {
         return false;
     }
 
+    /** True if this card lets the farm craft its outputs into target items (Crafting card). */
+    default boolean craftsOutputs() {
+        return false;
+    }
+
     /** True if this card keeps the farm's chunk loaded (Chunk Loader card). */
     default boolean loadsChunk() {
         return false;

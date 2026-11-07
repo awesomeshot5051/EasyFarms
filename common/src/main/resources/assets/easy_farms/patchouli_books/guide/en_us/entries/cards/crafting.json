@@ -1,0 +1,19 @@
+{
+  "name": "Crafting Upgrade",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:crafting_upgrade",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): resource, plant and mob.$(br2)Adds an arrow on the left of the farm screen that opens the $(item)Crafting screen$(). Click a slot with an item to choose what the farm should $(item)craft$(); right-click clears it. Every cycle the farm crafts each target from its new drops and what is already in its output slots, and keeps the leftovers. A red slot means no crafting grid has a recipe for it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Crafting uses $(item)grids$(): the crafting table 3x3 comes with the mod, and other mods or packs can add their own grids (a bigger crafter, say) with a data file; the card picks them up by itself.$(br2)Turn the card off with the $(item)craftingCardEnabled$() config."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "easy_farms:crafting_upgrade"
+    }
+  ]
+}

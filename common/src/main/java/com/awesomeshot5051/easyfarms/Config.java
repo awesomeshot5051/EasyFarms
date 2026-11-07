@@ -131,6 +131,8 @@ public final class Config {
             "The Void card destroys items that do not fit the output slots. Turn off to disable the card's effect.");
     public static final Value<Boolean> FILTER_ENABLED = new Value<>("filterCardEnabled", true, false, true, Boolean::parseBoolean,
             "The Filter card discards the outputs you block. Turn off to disable the card's effect.");
+    public static final Value<Boolean> CRAFTING_ENABLED = new Value<>("craftingCardEnabled", true, false, true, Boolean::parseBoolean,
+            "The Crafting card crafts the farm's outputs into the targets you set. Turn off to disable the card's effect.");
     public static final Value<Boolean> AUTO_EXPORT_ENABLED = new Value<>("autoExportEnabled", true, false, true, Boolean::parseBoolean,
             "The Auto-Export card pushes outputs into neighbouring containers and applies its per-side settings.");
     public static final Value<Integer> AUTO_EXPORT_INTERVAL = new Value<>("autoExportIntervalTicks", 20, 1, 1200, Integer::parseInt,

@@ -114,6 +114,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('G', Items.GOLD_INGOT).define('C', Items.COMPARATOR).define('H', Items.HOPPER)
                 .unlockedBy("has_hopper", has(Items.HOPPER))
                 .save(out, id("filter_upgrade"));
+        ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.CRAFTING_UPGRADE.get())
+                .pattern("IRI").pattern("RTR").pattern("IRI")
+                .define('I', Items.IRON_INGOT).define('R', Items.REDSTONE).define('T', Items.CRAFTING_TABLE)
+                .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
+                .save(out, id("crafting_upgrade"));
         ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ModItems.AUTO_EXPORT_UPGRADE.get())
                 .pattern("RHR").pattern("HPH").pattern("RHR")
                 .define('R', Items.REDSTONE).define('H', Items.HOPPER).define('P', Items.PISTON)

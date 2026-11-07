@@ -31,6 +31,11 @@ public final class MenuOpener {
                 (id, inv, p) -> new FarmFilterMenu(id, inv, pos, farm, shown));
     }
 
+    /** The Crafting card's targets screen. */
+    public static void openCrafting(ServerPlayer player, BlockPos pos, FarmBlockEntity farm, Component title) {
+        Services.PLATFORM.openMenu(player, title, pos, ModMenus.FARM_CODEC, (id, inv, p) -> new FarmCraftingMenu(id, inv, pos, farm));
+    }
+
     public static void openUpgrades(ServerPlayer player, BlockPos pos, FarmBlockEntity farm, Component title) {
         Services.PLATFORM.openMenu(player, title, new ModMenus.UpgradeOpening(pos, farm.kind()), ModMenus.UpgradeOpening.CODEC,
                 (id, inv, p) -> new FarmUpgradeMenu(id, inv, pos, farm));

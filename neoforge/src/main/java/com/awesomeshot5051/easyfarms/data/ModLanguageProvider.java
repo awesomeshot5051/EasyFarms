@@ -31,10 +31,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.FILTER_UPGRADE.get(), "Filter Upgrade");
         add(ModItems.AUTO_EXPORT_UPGRADE.get(), "Auto-Export Upgrade");
         add(ModItems.EXPERIENCE_UPGRADE.get(), "Experience Upgrade");
+        add(ModItems.CRAFTING_UPGRADE.get(), "Crafting Upgrade");
         add("gui.easy_farms.requires.void", "Destroys items that do not fit the output slots, so the farm never stalls");
         add("gui.easy_farms.requires.filter", "Adds a Filter screen: block the outputs you do not want, per recipe");
         add("gui.easy_farms.requires.auto_export", "Adds a side panel: set each face to input, output or off; outputs are pushed out");
         add("gui.easy_farms.requires.experience", "Mob farms drop experience (collect it with the xp button)");
+        add("gui.easy_farms.requires.crafting", "Adds a Crafting screen: the farm crafts its outputs into the items you choose");
+        add("gui.easy_farms.crafting", "Crafting");
+        add("gui.easy_farms.crafting_hint", "Click a slot with an item to set what to craft, right-click to clear. Red = no recipe.");
+        add("gui.easy_farms.crafting_ok", "Crafted from the farm's outputs");
+        add("gui.easy_farms.crafting_no_recipe", "No usable crafting grid has a recipe for this");
         add("gui.easy_farms.filter", "Filter");
         add("gui.easy_farms.filter_empty", "No inputs yet: nothing to filter");
         add("gui.easy_farms.filter_hint", "Click an item to block or allow it");
@@ -57,6 +63,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("easy_farms.configuration.xpMultiplier", "Experience Multiplier");
         add("easy_farms.configuration.voidCardEnabled", "Void Card Enabled");
         add("easy_farms.configuration.filterCardEnabled", "Filter Card Enabled");
+        add("easy_farms.configuration.craftingCardEnabled", "Crafting Card Enabled");
         add("easy_farms.configuration.autoExportEnabled", "Auto-Export Enabled");
         add("easy_farms.configuration.autoExportIntervalTicks", "Auto-Export Interval (ticks)");
         add("easy_farms.configuration.autoExportItemsPerPush", "Auto-Export Items per Push");

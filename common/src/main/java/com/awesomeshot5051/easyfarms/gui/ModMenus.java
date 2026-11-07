@@ -71,6 +71,9 @@ public class ModMenus {
     public static final Supplier<MenuType<FarmFilterMenu>> FARM_FILTER = Services.PLATFORM.register(Registries.MENU, "farm_filter",
             () -> Services.PLATFORM.createMenuType((id, inv, data) -> new FarmFilterMenu(id, inv, data.pos(), null, data.items()), FilterOpening.CODEC));
 
+    public static final Supplier<MenuType<FarmCraftingMenu>> FARM_CRAFTING = Services.PLATFORM.register(Registries.MENU, "farm_crafting",
+            () -> Services.PLATFORM.createMenuType((id, inv, pos) -> new FarmCraftingMenu(id, inv, pos, null), FARM_CODEC));
+
     public static void init() {
         // class load registers the menus
     }

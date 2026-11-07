@@ -40,5 +40,10 @@
   "gui.easy_farms.side_click": "Clic para cambiar",
   "message.easy_farms.memory_copied": "Ajustes de la granja copiados",
   "message.easy_farms.memory_pasted": "Ajustes de la granja pegados",
-  "message.easy_farms.memory_empty": "Primero haz clic agachado en una granja para copiar sus ajustes"
+  "message.easy_farms.memory_empty": "Primero haz clic agachado en una granja para copiar sus ajustes",
+  "item.easy_farms.crafting_upgrade": "Mejora de fabricación",
+  "gui.easy_farms.crafting": "Fabricación",
+  "gui.easy_farms.crafting_hint": "Haz clic en una ranura con un objeto para fijar el objetivo, clic derecho para borrar. Rojo = sin receta.",
+  "gui.easy_farms.crafting_ok": "Se fabrica con la producción de la granja",
+  "gui.easy_farms.crafting_no_recipe": "Ninguna cuadrícula de fabricación usable tiene receta para esto"
 }

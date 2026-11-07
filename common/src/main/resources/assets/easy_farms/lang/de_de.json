@@ -40,5 +40,10 @@
   "gui.easy_farms.side_click": "Klicken zum Ändern",
   "message.easy_farms.memory_copied": "Farmeinstellungen kopiert",
   "message.easy_farms.memory_pasted": "Farmeinstellungen eingefügt",
-  "message.easy_farms.memory_empty": "Zuerst mit Schleichen auf eine Farm klicken, um Einstellungen zu kopieren"
+  "message.easy_farms.memory_empty": "Zuerst mit Schleichen auf eine Farm klicken, um Einstellungen zu kopieren",
+  "item.easy_farms.crafting_upgrade": "Handwerks-Upgrade",
+  "gui.easy_farms.crafting": "Handwerk",
+  "gui.easy_farms.crafting_hint": "Klicke einen Platz mit einem Gegenstand, um das Ziel zu setzen, Rechtsklick leert ihn. Rot = kein Rezept.",
+  "gui.easy_farms.crafting_ok": "Wird aus den Ausgaben der Farm hergestellt",
+  "gui.easy_farms.crafting_no_recipe": "Kein nutzbares Handwerksraster hat ein Rezept dafür"
 }

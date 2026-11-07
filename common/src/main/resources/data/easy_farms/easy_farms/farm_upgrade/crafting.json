@@ -1,0 +1,14 @@
+{
+  "item": "easy_farms:crafting_upgrade",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob"
+  ],
+  "requires": "crafting",
+  "effects": [
+    {
+      "type": "easy_farms:auto_craft"
+    }
+  ]
+}

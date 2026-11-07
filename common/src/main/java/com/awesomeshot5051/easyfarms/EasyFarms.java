@@ -80,6 +80,7 @@ public final class EasyFarms {
         ModDataComponents.init();
         ModSounds.init();
         UpgradeEffects.init();
+        com.awesomeshot5051.easyfarms.crafting.CraftingGridTypes.init();
         ModTriggers.init();
         ModRecipes.init();
         ModMenus.init();
@@ -89,6 +90,7 @@ public final class EasyFarms {
                 com.awesomeshot5051.easyfarms.client.LootPreviewClient::receive);
         Services.PLATFORM.registerSyncedDatapackRegistry(FarmTier.REGISTRY_KEY, FarmTier.CODEC);
         Services.PLATFORM.registerSyncedDatapackRegistry(FarmUpgrade.REGISTRY_KEY, FarmUpgrade.CODEC);
+        Services.PLATFORM.registerSyncedDatapackRegistry(com.awesomeshot5051.easyfarms.crafting.CraftingGrid.REGISTRY_KEY, com.awesomeshot5051.easyfarms.crafting.CraftingGrid.CODEC);
         Services.PLATFORM.registerSyncedDatapackRegistry(com.awesomeshot5051.easyfarms.tier.FluidContainer.REGISTRY_KEY, com.awesomeshot5051.easyfarms.tier.FluidContainer.CODEC);
     }
 }
