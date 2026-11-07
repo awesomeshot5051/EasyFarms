@@ -31,7 +31,7 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
     /** Cell (column, row) of each relative face in the side panel's unfolded cross. */
     private static final int[][] FACE_CELLS = {{1, 1}, {3, 1}, {0, 1}, {2, 1}, {1, 0}, {1, 2}};
     private static final int PANEL_W = 80, PANEL_H = 74, CELL = 18;
-    /** Chisel card: the variant pop-out to the right of the screen (a grid of the variants of the chosen output). */
+    /** Chisel card: the variant pop-out to the left of the screen (a grid of the variants of the chosen output). */
     private static final int VAR_COLS = 6, VAR_ROWS = 5, VAR_W = VAR_COLS * CELL + 10, VAR_H = 34 + VAR_ROWS * CELL + 6;
     private boolean variantPanelOpen;
     private int variantSourceIndex, variantScroll;
@@ -64,13 +64,20 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
                 .bounds(leftPos + imageWidth - 22, topPos + 53, 18, 14).build());
         // Left edge, only with an Auto-Export card: opens the side panel that sets what each face of the farm does.
         sideButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 5, Component.translatable("gui.easy_farms.sides"),
-                b -> sidePanelOpen = !sidePanelOpen));
+                b -> {
+                    sidePanelOpen = !sidePanelOpen;
+                    if (sidePanelOpen) variantPanelOpen = false;
+                }));
         // Left edge, under the sides button, only with a Crafting card: the screen that sets what the farm crafts.
         craftingButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 21, Component.translatable("gui.easy_farms.crafting"),
                 b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 10)));
         // Left edge, under the crafting button, only with a Chisel card: the pop-out listing the variants of the output.
         variantButton = addRenderableWidget(new ArrowButton(leftPos - 16, topPos + 37, Component.translatable("gui.easy_farms.variants"),
-                b -> variantPanelOpen = !variantPanelOpen));
+                b -> {
+                    variantPanelOpen = !variantPanelOpen;
+                    // The Sides panel is on the same edge: only one is open at a time.
+                    if (variantPanelOpen) sidePanelOpen = false;
+                }));
         updateCardWidgets();
     }
 
@@ -109,8 +116,9 @@ public class FarmScreen extends AbstractContainerScreen<FarmMenu> {
         variantScroll = Math.max(0, Math.min(variantScroll, maxScroll));
     }
 
+    /** On the left, beside the arrow that opens it (and clear of JEI, which sits on the right). */
     private int variantPanelX() {
-        return leftPos + imageWidth + 2;
+        return leftPos - 16 - VAR_W;
     }
 
     private int variantPanelY() {

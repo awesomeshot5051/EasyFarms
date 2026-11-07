@@ -1,0 +1,8 @@
+#!/bin/sh
+# Keeps the generated version table in README.md current (see tools/sync_readmes.py). Never blocks a commit.
+[ -n "$EASYFARMS_README_SYNC" ] && exit 0
+cd "$(git rev-parse --show-toplevel)" || exit 0
+if git diff --cached --name-only | grep -qE '^(README\.md|gradle\.properties)$'; then
+  python3 tools/sync_readmes.py --update && git add README.md || echo "warning: could not update the README version table" >&2
+fi
+exit 0

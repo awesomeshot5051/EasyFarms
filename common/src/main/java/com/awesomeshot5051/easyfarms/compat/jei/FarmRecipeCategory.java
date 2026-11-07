@@ -83,15 +83,24 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
             x += SLOT;
         }
         // The tool slot (empty for recipes that need none).
+        var toolAbility = EasyFarmsJeiPlugin.TOOL_ABILITY_RECIPES.get(holder.id());
         if (recipe.tool().isPresent()) {
-            builder.addSlot(RecipeIngredientRole.INPUT, 4 + 3 * SLOT + 6, INPUT_Y)
-                    .addIngredients(Ingredient.of(recipe.tool().get()))
-                    .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.tool")));
+            var slot = builder.addSlot(RecipeIngredientRole.INPUT, 4 + 3 * SLOT + 6, INPUT_Y);
+            // A recipe derived from a tool ability shows the upgraded tools instead of every plain tool.
+            if (toolAbility != null) slot.addItemStacks(EasyFarmsJeiPlugin.abilityTools(toolAbility, recipe.tool().get()));
+            else slot.addIngredients(Ingredient.of(recipe.tool().get()));
+            slot.addRichTooltipCallback((s, tooltip) -> tooltip.add(Component.translatable(toolAbility != null ? "gui.easy_farms.jei.tool_ability" : "gui.easy_farms.jei.tool")));
         }
         // A recipe derived from a card shows the card it needs.
         var card = EasyFarmsJeiPlugin.CARD_RECIPES.get(holder.id());
         if (card != null) {
             builder.addSlot(RecipeIngredientRole.CATALYST, 4, HEIGHT - SLOT - 4).addItemStack(card.stack())
+                    .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.card_needed")));
+        }
+        // A second card (the Crafting card turns the drops into the item that has variants).
+        var craftCard = EasyFarmsJeiPlugin.CRAFT_CARDS.get(holder.id());
+        if (craftCard != null) {
+            builder.addSlot(RecipeIngredientRole.CATALYST, 4 + SLOT + 2, HEIGHT - SLOT - 4).addItemStack(craftCard.stack())
                     .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("gui.easy_farms.jei.card_needed")));
         }
         int i = 0;
@@ -126,6 +135,23 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
                 continue;
             }
             if (BuiltInRegistries.ITEM.get(drop.item()) == net.minecraft.world.item.Items.AIR) continue;
+            if (EasyFarmsJeiPlugin.VARIANT_RECIPES.contains(holder.id())) {
+                // The Chisel card: one slot that cycles through every variant of the block, so looking up any variant finds this recipe.
+                List<Item> variants = com.awesomeshot5051.easyfarms.farm.VariantGroups.variants(BuiltInRegistries.ITEM.get(drop.item()));
+                if (!variants.isEmpty()) {
+                    List<ItemStack> stacks = new ArrayList<>();
+                    for (Item variant : variants) stacks.add(new ItemStack(variant, Math.max(1, drop.max())));
+                    int vcol = i % 9, vrow = i / 9;
+                    builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + vcol * SLOT, OUTPUT_Y + vrow * SLOT)
+                            .addItemStacks(stacks)
+                            .addRichTooltipCallback((slot, tooltip) -> {
+                                tooltip.add(Component.translatable("gui.easy_farms.jei.variants", variants.size()).withStyle(net.minecraft.ChatFormatting.AQUA));
+                                describe(drop, tooltip);
+                            });
+                    i++;
+                    continue;
+                }
+            }
             int col = i % 9, row = i / 9;
             ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(drop.item()), Math.max(1, drop.max()));
             builder.addSlot(RecipeIngredientRole.OUTPUT, 4 + col * SLOT, OUTPUT_Y + row * SLOT)
@@ -207,8 +233,18 @@ public class FarmRecipeCategory implements IRecipeCategory<RecipeHolder<FarmReci
         });
         if (r.minTierRank() > 0) gray.accept(Component.translatable("gui.easy_farms.jei.min_tier", r.minTierRank()));
         var card = EasyFarmsJeiPlugin.CARD_RECIPES.get(holder.id());
-        if (card != null) {
+        var craftCard = EasyFarmsJeiPlugin.CRAFT_CARDS.get(holder.id());
+        if (card != null && craftCard != null) {
+            g.drawString(font, Component.translatable("gui.easy_farms.jei.with_cards", craftCard.stack().getHoverName(), card.stack().getHoverName()),
+                    48, HEIGHT - SLOT, 0xFF404040, false);
+        } else if (card != null) {
             g.drawString(font, Component.translatable("gui.easy_farms.jei.with_card", card.stack().getHoverName()), 26, HEIGHT - SLOT, 0xFF404040, false);
+        }
+        var ability = EasyFarmsJeiPlugin.TOOL_ABILITY_RECIPES.get(holder.id());
+        if (ability != null) {
+            Component what = ability.name().orElseGet(() -> Component.translatable("gui.easy_farms.jei.tool_ability_unnamed"));
+            g.drawString(font, Component.translatable("gui.easy_farms.jei.with_tool", what), 4, HEIGHT - SLOT, 0xFF404040, false);
+            if (ability.effects().stream().anyMatch(e -> e.smelts(r) && !e.smeltGivesXp())) gray.accept(Component.translatable("gui.easy_farms.jei.no_smelt_xp"));
         }
         int y = 14;
         for (int i = 0; i < lines.size(); i++) {

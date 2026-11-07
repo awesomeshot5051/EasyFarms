@@ -1,0 +1,8 @@
+#!/bin/sh
+# After a commit that touches the README files, copy them to the other version branches (see tools/sync_readmes.py).
+[ -n "$EASYFARMS_README_SYNC" ] && exit 0
+cd "$(git rev-parse --show-toplevel)" || exit 0
+if git diff-tree --no-commit-id --name-only -r HEAD | grep -qE '^(README\.md|READMES/)'; then
+  python3 tools/sync_readmes.py --sync || echo "warning: README sync failed" >&2
+fi
+exit 0

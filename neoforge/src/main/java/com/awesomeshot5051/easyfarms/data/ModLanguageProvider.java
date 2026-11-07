@@ -39,6 +39,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.easy_farms.requires.crafting", "Adds a Crafting screen: the farm crafts its outputs into the items you choose");
         add("gui.easy_farms.crafting", "Crafting");
         add("gui.easy_farms.variants", "Variants");
+        add("gui.easy_farms.jei.variants", "Any of %s variants: pick one in the farm's Variants pop-out");
+        add("gui.easy_farms.jei.tool_ability", "A tool with this upgrade installed");
+        add("gui.easy_farms.jei.tool_ability_unnamed", "tool upgrade");
+        add("gui.easy_farms.jei.with_tool", "With: %s");
+        add("gui.easy_farms.jei.no_smelt_xp", "No experience from smelting");
+        add("gui.easy_farms.jei.with_cards", "With: %s + %s");
         add("item.easy_farms.upgrade_card.not_network", "That block is not part of this storage network");
         add("item.easy_farms.upgrade_card.unlinked", "Link cleared");
         add("gui.easy_farms.frequency_channel", "Channel: %s");

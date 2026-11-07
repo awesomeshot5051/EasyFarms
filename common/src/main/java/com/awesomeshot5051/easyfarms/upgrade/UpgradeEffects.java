@@ -52,8 +52,10 @@ public final class UpgradeEffects {
     }
 
     /** Drops with a smelted form use it. */
-    public record Smelt() implements UpgradeEffect {
-        public static final MapCodec<Smelt> CODEC = MapCodec.unit(new Smelt());
+    public record Smelt(boolean xp) implements UpgradeEffect {
+        public static final MapCodec<Smelt> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.BOOL.optionalFieldOf("xp", true).forGetter(Smelt::xp)
+        ).apply(i, Smelt::new));
 
         @Override
         public MapCodec<? extends UpgradeEffect> codec() {
@@ -63,6 +65,20 @@ public final class UpgradeEffects {
         @Override
         public boolean smelts(FarmRecipe r) {
             return r.smeltable();
+        }
+
+        @Override
+        public boolean smeltGivesXp() {
+            return xp;
+        }
+
+        /** Recipe viewers: a smeltable recipe's drops come out in their smelted form. */
+        @Override
+        public List<com.awesomeshot5051.easyfarms.farm.DropEntry> previewDrops(FarmRecipe recipe, List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops) {
+            if (!recipe.smeltable()) return drops;
+            List<com.awesomeshot5051.easyfarms.farm.DropEntry> out = new ArrayList<>();
+            for (var drop : drops) out.add(drop.smeltItem().map(drop::withItem).orElse(drop));
+            return out;
         }
     }
 

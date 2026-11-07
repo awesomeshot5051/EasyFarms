@@ -38,6 +38,11 @@ public interface UpgradeEffect {
         return false;
     }
 
+    /** True if smelting that this effect causes also gives the furnace's experience (a smelter card does; a smelting tool may not). */
+    default boolean smeltGivesXp() {
+        return false;
+    }
+
     /** True if this recipe may run without its required environment. */
     default boolean waivesEnvironment(FarmRecipe recipe) {
         return false;
@@ -157,5 +162,10 @@ public interface UpgradeEffect {
      */
     default List<com.awesomeshot5051.easyfarms.farm.DropEntry> previewDrops(List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops) {
         return drops;
+    }
+
+    /** Like {@link #previewDrops(List)} for an effect that needs the recipe (smelting only applies to smeltable recipes). */
+    default List<com.awesomeshot5051.easyfarms.farm.DropEntry> previewDrops(FarmRecipe recipe, List<com.awesomeshot5051.easyfarms.farm.DropEntry> drops) {
+        return previewDrops(drops);
     }
 }

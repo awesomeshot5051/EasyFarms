@@ -619,6 +619,10 @@ public class FarmBlockEntity extends BlockEntity {
                 int copies = Math.min(stackCountOf(upgrade), upgrade.allowedCount(kind, installedIds()));
                 for (int n = 0; n < Math.max(1, copies); n++) list.addAll(upgrade.effects());
             }
+            // The tool can give effects by itself (for example a mod's smelter upgrade installed on it): datapack tool_ability files.
+            for (var ability : com.awesomeshot5051.easyfarms.tier.ToolAbility.of(level.registryAccess(), kind, toolSlot.getStackInSlot(0))) {
+                list.addAll(ability.effects());
+            }
             for (com.awesomeshot5051.easyfarms.tier.FarmUpgrade upgrade : installedUpgrades(-1)) {
                 for (var restriction : upgrade.restrictions()) effectsDependOnWorld |= !restriction.requiresBlockBelow().isEmpty();
             }
@@ -782,6 +786,7 @@ public class FarmBlockEntity extends BlockEntity {
     private void contentsChanged() {
         recipeDirty = true;
         effectCache = null;
+        syncVariantSourcesIfChanged();
         setChanged();
         updateFloor();
     }
@@ -1046,7 +1051,7 @@ public class FarmBlockEntity extends BlockEntity {
             if (net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id) == Items.AIR) continue;
             craftTargets.add(id);
         }
-        setChanged();
+        sync();
     }
 
     /** True if an Auto-Export card is installed (the side panel shows). */
@@ -1065,7 +1070,7 @@ public class FarmBlockEntity extends BlockEntity {
      */
     public boolean showsXp() {
         if (xp > 0 || hasExperienceCard()) return true;
-        return kind == FarmKind.RESOURCE && Config.XP_ENABLED.get() && anyEffect(e -> recipe != null && e.smelts(recipe.value()));
+        return kind == FarmKind.RESOURCE && Config.XP_ENABLED.get() && anyEffect(e -> recipe != null && e.smelts(recipe.value()) && e.smeltGivesXp());
     }
 
     /** Luck for loot-table drops (fishing): the tool's Luck of the Sea level, as for a vanilla fishing rod. */
@@ -1208,6 +1213,18 @@ public class FarmBlockEntity extends BlockEntity {
         return ItemStack.EMPTY;
     }
 
+    /** What the clients were last told {@link #variantSources()} is. */
+    private List<net.minecraft.resources.ResourceLocation> syncedVariantSources = List.of();
+
+    /** The client copy of the picker's list rides on the block update: resend it when a card change (or a new recipe) changes it. */
+    private void syncVariantSourcesIfChanged() {
+        if (level == null || level.isClientSide) return;
+        List<net.minecraft.resources.ResourceLocation> now = hasVariantCard() ? variantSources() : List.of();
+        if (now.equals(syncedVariantSources)) return;
+        syncedVariantSources = now;
+        sync();
+    }
+
     /** True if a Chisel card is installed (the variant pop-out shows). */
     public boolean hasVariantCard() {
         return anyEffect(UpgradeEffect::selectsVariants);
@@ -1226,6 +1243,9 @@ public class FarmBlockEntity extends BlockEntity {
             entry.smeltItem().ifPresent(id -> addVariantSource(list, id));
             entry.silkItem().ifPresent(id -> addVariantSource(list, id));
         }
+        // What the Crafting card makes counts too: logs crafted into planks offer the plank variants. The crafted items join the drops
+        // before the choice is applied, so the swap sees them.
+        if (hasCraftingCard()) for (var target : craftTargets) addVariantSource(list, target);
         return list;
     }
 
@@ -1309,8 +1329,12 @@ public class FarmBlockEntity extends BlockEntity {
         }
         boolean fortune = enchantLevel(Enchantments.FORTUNE) > 0;
         boolean silk = enchantLevel(Enchantments.SILK_TOUCH) > 0;
-        boolean smelter = false;
-        for (UpgradeEffect e : effects()) smelter |= e.smelts(r);
+        boolean smelter = false, smelterXp = false;
+        for (UpgradeEffect e : effects()) {
+            boolean smelts = e.smelts(r);
+            smelter |= smelts;
+            smelterXp |= smelts && e.smeltGivesXp();
+        }
         boolean looting = kind == FarmKind.MOB && enchantLevel(Enchantments.LOOTING) > 0;
         boolean fire = enchantLevel(Enchantments.FIRE_ASPECT) > 0;
         List<ItemStack> drops = new ArrayList<>();
@@ -1319,7 +1343,7 @@ public class FarmBlockEntity extends BlockEntity {
             List<ItemStack> rolled = new ArrayList<>();
             entry.roll(server, this, fortune, looting, silk, smelter, fire, rolled);
             // A smelting Resource Farm is a furnace: it gives the furnace's experience for each smelted item.
-            if (smelter && kind == FarmKind.RESOURCE && entry.smeltItem().isPresent()) {
+            if (smelterXp && kind == FarmKind.RESOURCE && entry.smeltItem().isPresent()) {
                 int count = 0;
                 for (ItemStack s : rolled) count += s.getCount();
                 smeltXp += smeltingExperience(entry.item()) * count;

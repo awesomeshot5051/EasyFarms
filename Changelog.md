@@ -7,11 +7,26 @@ Versions are listed newest first, each with its commit and date.
 
 ### Chisel card and variant picker
 - New `easy_farms:variant_select` effect for a datapack card (the Chisel pack ships one). With it installed, an arrow on the left of the
-  farm screen (under the Crafting one) opens a **Variants** pop-out to the right of the screen: a scrollable grid of every variant of the
+  farm screen (under the Crafting one) opens a **Variants** pop-out to the left of the screen: a scrollable grid of every variant of the
   block the farm makes. Click one and the farm outputs that variant (same count); click the plain block to go back.
+- **JEI:** every recipe that makes a block with variants also shows "with the Chisel Card", with one cycling output slot holding every
+  variant, so pressing R on any variant block finds how to farm it.
+- **Crafted outputs:** with the Crafting card installed, the Chisel pop-out also lists the Crafting card's target items. So a Plant farm
+  with a Crafting card set to planks (logs are crafted into planks) offers the plank variants (Chisel's wood variants are plank variants).
+  JEI shows the combination: the farm recipe "With: Crafting Card + Chisel Card", with one cycling slot of every variant. It works with any
+  crafting grid and any recipe, found through the grid's own recipe type.
 - Variants are **data**: every item tag under `variants/` (any namespace, e.g. `easy_farms_chisel:variants/cobblestone`) is a group of
   interchangeable items, so any pack can add variants for any mod with one tag file. The choice is saved with the farm and copied by the
   Memory Card and a Silk Touch pickup.
+
+### Tool abilities (a tool that gives the farm effects by itself)
+- New `easy_farms:tool_ability` datapack registry (`data/<ns>/easy_farms/tool_ability/*.json`): when the tool in the farm's tool slot has
+  the listed data `components` (and none of the `unless` matches), the farm gets the listed `effects`, exactly as if those cards were
+  installed. So a mod's tool upgrades work with one JSON file and no code, e.g. a Just Dire Things tool with the Smelter upgrade smelts
+  the drops. `display_tools` lists the tools for recipe viewers; `kinds` limits the farm kinds.
+- `easy_farms:smelt` takes `"xp": false` (default true): smelting without the furnace experience, as the tool upgrade does.
+- **JEI:** every recipe a tool ability (or Smelter card) changes also shows "With: <ability>" with the upgraded tools in the tool slot and
+  the changed outputs, so looking up a smelted item finds it. Smelter-card recipes now list their smelted outputs too.
 
 ### Auto Importer cards (storage networks)
 - New `easy_farms:network_import` effect (`network`: `ae2`, `refinedstorage` or `dimstorage`). The farm stores its output straight into the
