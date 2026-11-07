@@ -2,15 +2,15 @@
   "type": "easy_farms:liquid_farm",
   "inputs": [
     {
-      "item": "minecraft:milk_bucket",
+      "ingredient": "minecraft:milk_bucket",
       "count": 1
     },
     {
-      "item": "minecraft:cauldron",
+      "ingredient": "minecraft:cauldron",
       "count": 1
     },
     {
-      "item": "minecraft:wheat",
+      "ingredient": "minecraft:wheat",
       "count": 1
     }
   ],

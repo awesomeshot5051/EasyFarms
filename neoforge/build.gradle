@@ -35,6 +35,7 @@ dependencies {
         // localRuntime "maven.modrinth:extended-ae:${extendedae_version}"
         localRuntime "maven.modrinth:advancedae:${advancedae_version}"
         localRuntime "maven.modrinth:geckolib:${geckolib_version}"
+        localRuntime "curse.maven:just-dire-things-1002348:${jdt_version}"
         // localRuntime "maven.modrinth:glodium:${glodium_version}"
         localRuntime "maven.modrinth:guideme:${guideme_version}"
         if (project.findProperty('with_integrated')?.toString() == 'true') {

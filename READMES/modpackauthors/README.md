@@ -23,7 +23,7 @@ and their effects. This guide covers all of it.
 * A `fluid_container` registry for bottling a Liquid Farm's tank and for virtual fluids (see [Fluid containers](#fluid-containers-fluid_container)).
 * New effects: `efficiency`, `chunk_loader`, `void_overflow`, `output_filter`, `auto_export`, `experience` (see [Built-in effects](#built-in-effects)).
 * `farm_upgrade` field `kind_max_counts` (per farm kind stack limit) and `Powered` no longer takes `energy_mods`.
-* New config values (`xpEnabled`, `xpMultiplier`, `voidCardEnabled`, `filterCardEnabled`, `autoExport*`, `difficultyPreset`, `comparatorMode`, `cycleSoundVolume`, `cycleParticles`).
+* New config values (`xpEnabled`, `xpMultiplier`, `voidCardEnabled`, `filterCardEnabled`, `autoExport*`, `difficultyPreset`, `comparatorMode`, `cycleParticles`).
 * All upgrade cards stack to 64; JEI can move a recipe's items into an open farm.
 
 ## Where files go
@@ -135,7 +135,7 @@ Liquid recipes have no `drops`; they add a fluid to the tank every cycle. The vi
 | `inputs` | yes | 1 to 3 inputs. Each is an ingredient (`item`, or `tag`) plus an optional `count` (default 1). |
 | `tool` | no | An **item tag** the tool must be in, for example `minecraft:pickaxes`, `minecraft:swords`, `minecraft:hoes`. Omit it for a recipe that needs no tool ("toolless"). |
 | `min_tier_rank` | no (0) | The lowest tier rank the tool must have (see [tiers](#tool-tiers)). |
-| `visual` | yes | What the glass case shows. `type` is `block`, `plant` or `mob`; `target` is the block or entity id. |
+| `visual` | yes | What the glass case shows. `type` is `block`, `plant`, `mob` or `goo`; `target` is the block or entity id. `goo` also takes optional `input` and `result` block ids: the target block sits beside the input block, which shrinks into the result block over `visual_ticks`. |
 | `base_ticks` | yes | Ticks one cycle takes at the slowest tier. The tool tier divides this. |
 | `visual_ticks` | no (80) | The length of the animation at the end of a cycle. |
 | `smeltable` | no (false) | Drops can use their `smelt_item` form when a card with the `smelt` effect is installed. |
@@ -408,8 +408,8 @@ processing (crushing, pressing, casing, alloying...) becomes a card with no code
 |---|---|---|
 | `from` | required | An item id, or `#namespace:tag` for an item tag. |
 | `per` | 1 | How many `from` items make one conversion. Leftovers are kept as they were. |
-| `with` | none | Extra ingredients the rule needs together with `from`, each `{ "from": item or #tag, "per": n, "source": "drops" or "catalyst" }`. One conversion uses up `per` of `from` and of every extra; as many conversions happen as the scarcest ingredient allows. `source: "drops"` (default) takes the extra from the same cycle's drops. `source: "catalyst"` takes it from the card's catalyst slot, see below. |
-| `to` | required | One output or a list. An output is an item id, or `{ "item", "count" (1), "chance" (1.0) }`; the chance is rolled once per conversion. |
+| `with` | none | Extra ingredients the rule needs together with `from`, each `{ "from": item or #tag, "per": n, "source": "drops" or "catalyst", "consume_chance": 0..1 }`. `consume_chance` (default 1) is the chance that each conversion actually uses the ingredient up (it must still be present); the Infinity card still keeps catalysts. One conversion uses up `per` of `from` and of every extra; as many conversions happen as the scarcest ingredient allows. `source: "drops"` (default) takes the extra from the same cycle's drops. `source: "catalyst"` takes it from the card's catalyst slot, see below. |
+| `to` | required | One output or a list. An output is an item id, or `{ "item", "count" (1), "chance" (1.0), "fortune_bonus" (0) }`; the chance is rolled once per conversion. `fortune_bonus` adds a random 0 to `fortune_bonus x Fortune level` extra items per conversion when the farm's tool has Fortune. |
 
 A drop stack is handled by the first rule that matches it. A rule whose output items do not exist (the other mod is
 not installed) is skipped, so the drops stay unchanged. Cards run in slot order, so conversions can be chained: a

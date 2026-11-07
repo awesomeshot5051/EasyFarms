@@ -75,7 +75,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.easy_farms.memory_empty", "Sneak-click a farm first to copy its settings");
         add("easy_farms.configuration.difficultyPreset", "Difficulty Preset");
         add("easy_farms.configuration.comparatorMode", "Comparator Mode");
-        add("easy_farms.configuration.cycleSoundVolume", "Cycle Sound Volume");
         add("easy_farms.configuration.cycleParticles", "Cycle Particles");
         add(ModItems.MEMORY_CARD.get(), "Memory Card");
         add("gui.easy_farms.jei.loot_table", "From the loot table %s");
@@ -149,6 +148,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.easy_farms.catalyst_slot", "Catalyst for %s");
         add("gui.easy_farms.catalyst_accepts", "Accepts: %s");
         add("tooltip.easy_farms.card_catalyst", "Needs a catalyst: %s (put it in the farm's Catalysts screen)");
+        add("tooltip.easy_farms.card_catalyst_chance", "%s is only used up %s%% of the time");
         add("gui.easy_farms.restriction.no_catalyst_slots", "Not enough catalyst slots (the farm has %s in all)");
         add("gui.easy_farms.restriction.requires_block_below", "Needs one of these under the farm: %s");
         add("gui.easy_farms.restriction.requires", "Requires: %s");

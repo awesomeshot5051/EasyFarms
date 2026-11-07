@@ -1,7 +1,9 @@
 {
   "item": "easy_farms:experience_upgrade",
   "kinds": [
-    "mob"
+    "mob",
+    "resource",
+    "plant"
   ],
   "requires": "experience",
   "effects": [

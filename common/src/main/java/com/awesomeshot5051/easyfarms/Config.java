@@ -145,8 +145,6 @@ public final class Config {
             "1 = casual (farms twice as fast, inputs last twice as long), 2 = balanced, 3 = hard (twice as slow, inputs last half as long).");
     public static final Value<Integer> COMPARATOR_MODE = new Value<>("comparatorMode", 0, 0, 2, Integer::parseInt,
             "What a comparator reads from a farm: 0 = cycle progress, 1 = how full the output slots are, 2 = how full the Liquid Farm tank is.");
-    public static final Value<Double> WORK_SOUND_VOLUME = new Value<>("cycleSoundVolume", 0.3, 0.0, 1.0, Double::parseDouble,
-            "Volume of the soft chime a farm plays when it finishes a cycle (0 = silent).");
     public static final Value<Boolean> CYCLE_PARTICLES = new Value<>("cycleParticles", true, false, true, Boolean::parseBoolean,
             "A few particles above a farm each time it finishes a cycle.");
 

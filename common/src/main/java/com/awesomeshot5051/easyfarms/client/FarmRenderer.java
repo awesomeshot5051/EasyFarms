@@ -34,6 +34,7 @@ import java.util.Map;
  * "block"  - the ore/soil block with a tool swinging at it (resource farms)
  * "plant"  - the plant growing during the last visual_ticks of the cycle (plant farms)
  * "mob"    - the mob shown at 0.3 scale during the last visual_ticks of the cycle (mob farms)
+ * "goo"    - a goo block beside an input block that shrinks into a result block during the last visual_ticks
  */
 public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRenderState> {
     private final BlockEntityRendererProvider.Context context;
@@ -54,6 +55,8 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
         BlockEntityRenderer.super.extractRenderState(farm, state, partialTick, cameraPos, crumbling);
         state.type = null;
         state.block = null;
+        state.gooInput = null;
+        state.gooResult = null;
         state.mob = null;
         state.tool.clear();
         state.fluidSprite = null;
@@ -85,8 +88,14 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
                     state.shovel = farm.getTool().is(net.minecraft.tags.ItemTags.SHOVELS);
                     Minecraft.getInstance().getItemModelResolver().updateForTopItem(state.tool, farm.getTool(),
                             ItemDisplayContext.GROUND, level, null, 0);
-                    ToolSwing.tickSound(level, farm.getBlockPos(), state.facing, state.timer, state.shovel);
                 }
+            }
+            case "goo" -> {
+                state.type = "goo";
+                state.block = movingBlock(level, farm, BuiltInRegistries.BLOCK.getValue(visual.target()).defaultBlockState());
+                state.gooProgress = farm.visualProgress();
+                visual.input().ifPresent(id -> state.gooInput = movingBlock(level, farm, BuiltInRegistries.BLOCK.getValue(id).defaultBlockState()));
+                visual.result().ifPresent(id -> state.gooResult = movingBlock(level, farm, BuiltInRegistries.BLOCK.getValue(id).defaultBlockState()));
             }
             case "plant" -> {
                 if (!visible) return;
@@ -143,6 +152,16 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
         }
     }
 
+    /** A block of the given size standing on the glass floor, centred at x (0..1) in the middle of the case. */
+    private static void gooBlock(PoseStack pose, SubmitNodeCollector collector, @Nullable MovingBlockRenderState block, float x, float size) {
+        if (block == null || size < 0.02f) return;
+        pose.pushPose();
+        pose.translate(x - size / 2f, 1f / 16f, 0.5f - size / 2f);
+        pose.scale(size, size, size);
+        collector.submitMovingBlock(pose, block);
+        pose.popPose();
+    }
+
     @Override
     public void submit(FarmRenderState state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.type == null) return;
@@ -161,6 +180,13 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
                     state.tool.submit(pose, collector, state.lightCoords, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0);
                     pose.popPose();
                 }
+            }
+            case "goo" -> {
+                // The goo on the left; on the right the input block shrinks away while the result block grows in its place.
+                float p = state.gooProgress;
+                gooBlock(pose, collector, state.block, 0.25f, 0.4f);
+                gooBlock(pose, collector, state.gooInput, 0.75f, 0.4f * (1f - p));
+                gooBlock(pose, collector, state.gooResult, 0.75f, 0.4f * p);
             }
             case "tank" -> {
                 var sprite = state.fluidSprite;

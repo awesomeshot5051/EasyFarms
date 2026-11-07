@@ -474,7 +474,7 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     private FarmRecipe.Visual resolvedVisual(FarmRecipe r) {
-        return r.dyeable() ? new FarmRecipe.Visual(r.visual().type(), DyeColors.recolor(r.visual().target(), color)) : r.visual();
+        return r.dyeable() ? new FarmRecipe.Visual(r.visual().type(), DyeColors.recolor(r.visual().target(), color), r.visual().input(), r.visual().result()) : r.visual();
     }
 
     public DyeColor getColor() {
@@ -600,6 +600,13 @@ public class FarmBlockEntity extends BlockEntity {
             }
         }
         return false;
+    }
+
+    /** Progress 0..1 through the end-of-cycle visual window (0 before it starts). */
+    public float visualProgress() {
+        double window = clientVisualTicksOr();
+        if (window <= 0) return 0;
+        return (float) Math.max(0, Math.min(1, (getTimer() - visualStart()) / window));
     }
 
     public double visualStart() {
@@ -772,6 +779,11 @@ public class FarmBlockEntity extends BlockEntity {
     }
 
     // ---- enchantments on the tool ----
+
+    /** Fortune level on the farm's tool (0 if none). */
+    public int fortuneLevel() {
+        return enchantLevel(Enchantments.FORTUNE);
+    }
 
     private int enchantLevel(ResourceKey<Enchantment> key) {
         if (level == null) return 0;
@@ -1255,8 +1267,6 @@ public class FarmBlockEntity extends BlockEntity {
         }
         if (r.xp() > 0 && hasExperienceCard()) addXp(r.xp());
         addXp(smeltXp);
-        double volume = Config.WORK_SOUND_VOLUME.get();
-        if (volume > 0) server.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.BLOCKS, (float) volume, 1.2F);
         if (Config.CYCLE_PARTICLES.get()) server.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, worldPosition.getX() + 0.5, worldPosition.getY() + 1.05, worldPosition.getZ() + 0.5, 3, 0.25, 0.05, 0.25, 0.0);
         setChanged();
     }
@@ -1425,6 +1435,8 @@ public class FarmBlockEntity extends BlockEntity {
             FarmRecipe.Visual visual = resolvedVisual(r);
             tag.putString("VisualType", visual.type());
             tag.putString("VisualTarget", visual.target().toString());
+            visual.input().ifPresent(id -> tag.putString("VisualInput", id.toString()));
+            visual.result().ifPresent(id -> tag.putString("VisualResult", id.toString()));
             tag.putDouble("CycleTicks", cycleTicks());
             tag.putInt("VisualTicks", (int) Math.round(visualWindow()));
         }
@@ -1467,7 +1479,9 @@ public class FarmBlockEntity extends BlockEntity {
         color = DyeColor.byName(tag.getStringOr("Color", "white"), DyeColor.WHITE);
         var visualType = tag.getString("VisualType");
         if (visualType.isPresent()) {
-            clientVisual = new FarmRecipe.Visual(visualType.get(), net.minecraft.resources.Identifier.parse(tag.getStringOr("VisualTarget", "minecraft:air")));
+            clientVisual = new FarmRecipe.Visual(visualType.get(), net.minecraft.resources.Identifier.parse(tag.getStringOr("VisualTarget", "minecraft:air")),
+                    tag.getString("VisualInput").map(net.minecraft.resources.Identifier::parse),
+                    tag.getString("VisualResult").map(net.minecraft.resources.Identifier::parse));
             clientCycleTicks = Math.max(1, tag.getDoubleOr("CycleTicks", 1));
             clientVisualTicks = tag.getIntOr("VisualTicks", 0);
         } else {

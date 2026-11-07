@@ -2,15 +2,15 @@
   "type": "easy_farms:liquid_farm",
   "inputs": [
     {
-      "item": "minecraft:honey_bottle",
+      "ingredient": "minecraft:honey_bottle",
       "count": 1
     },
     {
-      "item": "minecraft:cauldron",
+      "ingredient": "minecraft:cauldron",
       "count": 1
     },
     {
-      "item": "minecraft:honeycomb",
+      "ingredient": "minecraft:honeycomb",
       "count": 1
     }
   ],

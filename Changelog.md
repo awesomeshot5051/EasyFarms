@@ -3,7 +3,17 @@
 This is the changelog for the `26.1.2` branch (Minecraft 26.1.2, NeoForge 26.1.2.126), written from the commit history.
 Versions are listed newest first, each with its commit and date.
 
-## Unreleased
+## 3.1.0
+
+### New datapack options
+- `convert_drops` ingredients (`with`) take `consume_chance` (0..1, default 1): the chance each conversion uses the ingredient up. The card tooltip shows it.
+- `convert_drops` outputs (`to`) take `fortune_bonus`: up to `fortune_bonus x Fortune level` extra items per conversion when the tool has Fortune.
+- New `goo` recipe visual (`target` + optional `input` and `result` blocks): the input block shrinks into the result block at the end of a cycle.
+- The Experience card now fits Resource and Plant farms as well as Mob farms.
+
+### Removed
+- All of the mod's own sounds: the pickaxe and shovel swing sounds, the chime at the end of a cycle, and the `cycleSoundVolume`
+  config. (Vanilla feedback sounds, such as filling a bucket or a tool breaking, are unchanged.)
 
 ### New upgrade card
 - **Crafting Upgrade** (`easy_farms:auto_craft` effect): the farm crafts its own outputs into other items. An arrow on the left of

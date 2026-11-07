@@ -9,12 +9,16 @@ import org.jspecify.annotations.Nullable;
 
 /** What the farm renderer needs for one frame; filled on extract so the submit step touches no game state. */
 public class FarmRenderState extends BlockEntityRenderState {
-    /** "block", "plant" or "mob"; null = draw nothing. */
+    /** "block", "plant", "mob" or "goo"; null = draw nothing. */
     public @Nullable String type;
     public Direction facing = Direction.NORTH;
     public long timer;
     /** The ore / soil block (resource farm) or the plant (plant farm). */
     public @Nullable MovingBlockRenderState block;
+    /** "goo" visual: the block beside the goo that is consumed, the block it becomes, and the 0..1 progress. */
+    public @Nullable MovingBlockRenderState gooInput;
+    public @Nullable MovingBlockRenderState gooResult;
+    public float gooProgress;
     public final ItemStackRenderState tool = new ItemStackRenderState();
     public boolean shovel;
     public @Nullable EntityRenderState mob;
