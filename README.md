@@ -289,4 +289,4 @@ version table above current, and a post-commit hook copies `README.md` and `READ
 
 ## License
 
-All Rights Reserved. Contact the author before redistributing.
+MIT. You may use the mod in your modpack, just be sure to give me credit. Any datapacks made for this mod will be considered your own derivative work.
