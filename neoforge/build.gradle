@@ -20,6 +20,16 @@ dependencies {
     compileOnly "dev.emi:emi-neoforge:${emi_version}"
     if (project.findProperty('with_emi')?.toString() == 'true') localRuntime "dev.emi:emi-neoforge:${emi_version}"
 
+    // Applied Energistics 2: the Auto Importer card stores a farm's output in an ME network (only used while AE2 is loaded).
+    compileOnly("maven.modrinth:ae2:${ae2_version}") { transitive = false }
+    // Refined Storage 2: same card for its network.
+    compileOnly("maven.modrinth:refined-storage:${refined_storage_neoforge_version}") { transitive = false }
+    localRuntime "maven.modrinth:refined-storage:${refined_storage_neoforge_version}"
+    // DimStorage: the Auto Importer stores into a Dim Chest's frequency.
+    compileOnly("maven.modrinth:dimstorage:${dimstorage_version}") { transitive = false }
+    localRuntime "maven.modrinth:dimstorage:${dimstorage_version}"
+    localRuntime "curse.maven:edivadlib-638508:${edivadLib_version}"
+
     compileOnly "curse.maven:jade-324717:${jade_neoforge_id}"
     localRuntime "curse.maven:jade-324717:${jade_neoforge_id}"
     compileOnly "curse.maven:theoneprobe-245211:${top_id}"

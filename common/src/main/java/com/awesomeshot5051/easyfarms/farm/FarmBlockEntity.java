@@ -258,6 +258,10 @@ public class FarmBlockEntity extends BlockEntity {
     /** Crafting card: the items the farm crafts its outputs into (in order), set on the card's screen. */
     private final List<net.minecraft.resources.ResourceLocation> craftTargets = new ArrayList<>();
     public static final int CRAFT_TARGETS = 6;
+    /** Chisel card: for each output item, the variant of it the farm makes instead (a missing entry = the item itself). */
+    private final java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.resources.ResourceLocation> variantChoice = new java.util.HashMap<>();
+    /** Client copy of {@link #variantSources()}: the server writes it into the update tag. */
+    private List<net.minecraft.resources.ResourceLocation> clientVariantSources = List.of();
     /** Auto-Export card: what each face does, indexed by relative face (front, back, left, right, top, bottom). */
     private final byte[] sideModes = new byte[6];
     public static final int SIDE_BOTH = 0, SIDE_INPUT = 1, SIDE_OUTPUT = 2, SIDE_OFF = 3;
@@ -943,6 +947,7 @@ public class FarmBlockEntity extends BlockEntity {
         int fluidCap = fluidCapacity();
         if (fluidAmount > fluidCap) fluidAmount = fluidCap;
         exportTick();
+        importTick();
         updateComparator();
         if (recipe == null || isPaused() || !hasOutputRoom() || !environmentOk() || !fluidInputOk()) return;
 
@@ -1162,6 +1167,89 @@ public class FarmBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    private long importTick;
+
+    /** Auto Importer cards: push the outputs into the storage network the card names (next to a cable, or via the card's link). */
+    private void importTick() {
+        if (!(level instanceof ServerLevel server) || !anyEffect(UpgradeEffect::importsToNetwork)) return;
+        if (++importTick < Config.AUTO_EXPORT_INTERVAL.get()) return;
+        importTick = 0;
+        java.util.Set<String> done = new java.util.HashSet<>();
+        for (UpgradeEffect effect : effects()) {
+            if (!effect.importsToNetwork() || !done.add(effect.networkId())) continue;
+            var importer = com.awesomeshot5051.easyfarms.farm.network.NetworkImporters.get(effect.networkId());
+            if (importer == null) continue;
+            int budget = Config.AUTO_EXPORT_ITEMS.get();
+            for (int i = 0; i < outputs.getSlots() && budget > 0; i++) {
+                ItemStack stack = outputs.getStackInSlot(i);
+                if (stack.isEmpty()) continue;
+                ItemStack offer = stack.copyWithCount(Math.min(budget, stack.getCount()));
+                ItemStack rest = importer.insert(server, worldPosition, importerCard(effect.networkId()), offer);
+                int moved = offer.getCount() - rest.getCount();
+                if (moved > 0) {
+                    stack.shrink(moved);
+                    budget -= moved;
+                    setChanged();
+                }
+            }
+        }
+    }
+
+    /** The installed Auto Importer card for a network (it carries the card's link or frequency); empty if there is none. */
+    private ItemStack importerCard(String network) {
+        if (level == null) return ItemStack.EMPTY;
+        for (int i = 0; i < upgrades.getSlots(); i++) {
+            ItemStack stack = upgrades.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            var upgrade = com.awesomeshot5051.easyfarms.tier.FarmUpgrade.find(level.registryAccess(), stack);
+            if (upgrade == null) continue;
+            for (UpgradeEffect e : upgrade.effects()) if (e.importsToNetwork() && e.networkId().equals(network)) return stack;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /** True if a Chisel card is installed (the variant pop-out shows). */
+    public boolean hasVariantCard() {
+        return anyEffect(UpgradeEffect::selectsVariants);
+    }
+
+    /**
+     * The items this farm's recipe makes that have variants, in a stable order (the picker lists variants of each). Server side it is
+     * read from the recipe; the client gets the list through the update tag.
+     */
+    public List<net.minecraft.resources.ResourceLocation> variantSources() {
+        if (level != null && level.isClientSide) return clientVariantSources;
+        List<net.minecraft.resources.ResourceLocation> list = new ArrayList<>();
+        if (recipe == null) return list;
+        for (DropEntry entry : recipe.value().drops()) {
+            addVariantSource(list, entry.item());
+            entry.smeltItem().ifPresent(id -> addVariantSource(list, id));
+            entry.silkItem().ifPresent(id -> addVariantSource(list, id));
+        }
+        return list;
+    }
+
+    private static void addVariantSource(List<net.minecraft.resources.ResourceLocation> list, net.minecraft.resources.ResourceLocation id) {
+        if (list.contains(id)) return;
+        Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id);
+        if (item != Items.AIR && VariantGroups.hasVariants(item)) list.add(id);
+    }
+
+    /** The variant chosen for an output item, or the item itself when none is chosen. */
+    public net.minecraft.resources.ResourceLocation variantChoice(net.minecraft.resources.ResourceLocation source) {
+        return variantChoice.getOrDefault(source, source);
+    }
+
+    /** Picks the {@code index}-th variant of {@code source} (0 = the item itself, which clears the choice). */
+    public void chooseVariant(net.minecraft.resources.ResourceLocation source, int index) {
+        if (!variantSources().contains(source)) return;
+        List<Item> group = VariantGroups.variants(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(source));
+        if (index < 0 || index >= group.size()) return;
+        if (index == 0) variantChoice.remove(source);
+        else variantChoice.put(source, net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(group.get(index)));
+        sync();
+    }
+
     /** Pushes outputs (and the tank) into neighbouring containers on faces set to output. */
     private void exportTick() {
         if (!(level instanceof ServerLevel server) || !anyEffect(UpgradeEffect::exportsOutputs)) return;
@@ -1242,6 +1330,14 @@ public class FarmBlockEntity extends BlockEntity {
         for (UpgradeEffect e : effects()) e.modifyDrops(this, server, r, drops);
         if (anyEffect(UpgradeEffect::filtersOutputs)) {
             drops.removeIf(d -> isOutputBlocked(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(d.getItem())));
+        }
+        if (!variantChoice.isEmpty() && anyEffect(UpgradeEffect::selectsVariants)) {
+            for (int i = 0; i < drops.size(); i++) {
+                ItemStack drop = drops.get(i);
+                var chosen = variantChoice.get(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(drop.getItem()));
+                Item variant = chosen == null ? Items.AIR : net.minecraft.core.registries.BuiltInRegistries.ITEM.get(chosen);
+                if (variant != Items.AIR) drops.set(i, new ItemStack(variant, drop.getCount()));
+            }
         }
         boolean voidOverflow = anyEffect(UpgradeEffect::voidsOverflow);
         for (ItemStack drop : drops) {
@@ -1422,6 +1518,9 @@ public class FarmBlockEntity extends BlockEntity {
             visual.result().ifPresent(id -> tag.putString("VisualResult", id.toString()));
             tag.putDouble("CycleTicks", cycleTicks());
             tag.putInt("VisualTicks", (int) Math.round(visualWindow()));
+            net.minecraft.nbt.ListTag sources = new net.minecraft.nbt.ListTag();
+            for (var id : variantSources()) sources.add(net.minecraft.nbt.StringTag.valueOf(id.toString()));
+            tag.put("VariantSources", sources);
         }
     }
 
@@ -1460,6 +1559,12 @@ public class FarmBlockEntity extends BlockEntity {
         timer = tag.getLong("Timer");
         operatingTicks = tag.getLong("OperatingTicks");
         color = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
+        List<net.minecraft.resources.ResourceLocation> sourceList = new ArrayList<>();
+        for (net.minecraft.nbt.Tag t : tag.getList("VariantSources", net.minecraft.nbt.Tag.TAG_STRING)) {
+            var id = net.minecraft.resources.ResourceLocation.tryParse(t.getAsString());
+            if (id != null) sourceList.add(id);
+        }
+        clientVariantSources = sourceList;
         if (tag.contains("VisualType")) {
             clientVisual = new FarmRecipe.Visual(tag.getString("VisualType"), net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualTarget")),
                     tag.contains("VisualInput") ? java.util.Optional.of(net.minecraft.resources.ResourceLocation.parse(tag.getString("VisualInput"))) : java.util.Optional.empty(),
@@ -1489,6 +1594,9 @@ public class FarmBlockEntity extends BlockEntity {
         net.minecraft.nbt.ListTag craft = new net.minecraft.nbt.ListTag();
         for (var id : craftTargets) craft.add(net.minecraft.nbt.StringTag.valueOf(id.toString()));
         tag.put("Craft", craft);
+        CompoundTag variants = new CompoundTag();
+        for (var entry : variantChoice.entrySet()) variants.putString(entry.getKey().toString(), entry.getValue().toString());
+        tag.put("Variants", variants);
     }
 
     private void readSettings(CompoundTag tag) {
@@ -1499,6 +1607,13 @@ public class FarmBlockEntity extends BlockEntity {
         for (net.minecraft.nbt.Tag t : tag.getList("Craft", net.minecraft.nbt.Tag.TAG_STRING)) {
             var id = net.minecraft.resources.ResourceLocation.tryParse(t.getAsString());
             if (id != null && craftTargets.size() < CRAFT_TARGETS) craftTargets.add(id);
+        }
+        variantChoice.clear();
+        CompoundTag variants = tag.getCompound("Variants");
+        for (String key : variants.getAllKeys()) {
+            var source = net.minecraft.resources.ResourceLocation.tryParse(key);
+            var chosen = net.minecraft.resources.ResourceLocation.tryParse(variants.getString(key));
+            if (source != null && chosen != null) variantChoice.put(source, chosen);
         }
         blockedOutputs.clear();
         for (net.minecraft.nbt.Tag t : tag.getList("Blocked", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
@@ -1597,7 +1712,7 @@ public class FarmBlockEntity extends BlockEntity {
 
     @Override
     public void removeComponentsFromTag(CompoundTag tag) {
-        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color", "Energy", "FluidId", "FluidAmount", "Xp", "SideModes", "Blocked"}) tag.remove(key);
+        for (String key : new String[]{"Inputs", "Tool", "Outputs", "Upgrades", "Catalysts", "CatalystOwners", "OperatingTicks", "Color", "Energy", "FluidId", "FluidAmount", "Xp", "SideModes", "Blocked", "Variants", "VariantSources"}) tag.remove(key);
     }
 
     @Override

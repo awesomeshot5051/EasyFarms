@@ -27,6 +27,8 @@ dependencies {
     modCompileOnly "maven.modrinth:jade:${jade_fabric_version}"
     modLocalRuntime "maven.modrinth:jade:${jade_fabric_version}"
 
+    // Refined Storage 2: the Auto Importer card stores a farm's output in its network (only used while it is loaded).
+    modCompileOnly("maven.modrinth:refined-storage:${refined_storage_version}") { transitive = false }
     modCompileOnly "teamreborn:energy:${team_reborn_energy_version}"
     modCompileOnly "curse.maven:configured-457570:${configured_id}"
     modLocalRuntime "curse.maven:configured-457570:${configured_id}"

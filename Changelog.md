@@ -3,6 +3,32 @@
 This is the changelog for the `master` branch (Minecraft 1.21.1, NeoForge 21.1.265), written from the commit history.
 Versions are listed newest first, each with its commit and date.
 
+## 3.2.0
+
+### Chisel card and variant picker
+- New `easy_farms:variant_select` effect for a datapack card (the Chisel pack ships one). With it installed, an arrow on the left of the
+  farm screen (under the Crafting one) opens a **Variants** pop-out to the right of the screen: a scrollable grid of every variant of the
+  block the farm makes. Click one and the farm outputs that variant (same count); click the plain block to go back.
+- Variants are **data**: every item tag under `variants/` (any namespace, e.g. `easy_farms_chisel:variants/cobblestone`) is a group of
+  interchangeable items, so any pack can add variants for any mod with one tag file. The choice is saved with the farm and copied by the
+  Memory Card and a Silk Touch pickup.
+
+### Auto Importer cards (storage networks)
+- New `easy_farms:network_import` effect (`network`: `ae2`, `refinedstorage` or `dimstorage`). The farm stores its output straight into the
+  storage network, leaving whatever does not fit in the output slots. Two ways to connect: put the farm **next to** a network block (cable,
+  interface, Dimensional Chest), or **wirelessly**: link the card to the network and the farm imports while it is **within range of the
+  network's wireless hardware**, the same rule a wireless terminal follows. AE2: link it like a terminal (the Wireless Access Point's
+  link slot, or use it on a network block); the farm must be in range of an active Wireless Access Point, in the same dimension.
+  Refined Storage: use the card on a network block; a Wireless Transmitter of that network must reach the farm (its Range Upgrades count).
+  The linked block's chunk must be loaded (pair it with a Chunk Loader). Sneak-use on a block links to blocks that have a screen (a Grid, an Interface); sneak-use in the air clears the link (`easy_farms:link` component). Only real network blocks are accepted, with a message either way.
+- **AE Auto Importer** card built in (needs AE2); it uses no channel and pays the normal AE power. Refined Storage and DimStorage cards
+  ship in their datapacks. Those mods' code is only touched while they are installed.
+- **DimStorage** has frequencies, not a network: using the DimStorage Auto Importer card opens a screen to set its **frequency** (channel
+  number, public or private/owned by you; stored on the card as `easy_farms:frequency`). The farm stores into that frequency's Dim Chest
+  storage from any distance. With no frequency set it falls back to an adjacent unlocked Dim Chest.
+- Refined Storage import works on **both NeoForge and Fabric**; AE2 and DimStorage are NeoForge only (no Fabric 1.21.1 build).
+- Fixed: a card's link was shared by every importer card in the farm; each network now uses its own card's link.
+
 ## 3.1.0
 
 ### New datapack options

@@ -74,6 +74,11 @@ public class ModMenus {
     public static final Supplier<MenuType<FarmCraftingMenu>> FARM_CRAFTING = Services.PLATFORM.register(Registries.MENU, "farm_crafting",
             () -> Services.PLATFORM.createMenuType((id, inv, pos) -> new FarmCraftingMenu(id, inv, pos, null), FARM_CODEC));
 
+    /** The DimStorage Auto Importer card's frequency screen: the server sends which hand holds the card. */
+    public static final Supplier<MenuType<CardFrequencyMenu>> CARD_FREQUENCY = Services.PLATFORM.register(Registries.MENU, "card_frequency",
+            () -> Services.PLATFORM.createMenuType((id, inv, hand) -> new CardFrequencyMenu(id, inv, hand),
+                    net.minecraft.network.codec.ByteBufCodecs.VAR_INT.cast()));
+
     public static void init() {
         // class load registers the menus
     }

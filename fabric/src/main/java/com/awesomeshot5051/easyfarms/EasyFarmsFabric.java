@@ -44,6 +44,12 @@ public class EasyFarmsFabric implements ModInitializer {
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) ->
                 com.awesomeshot5051.easyfarms.farm.LootPreview.send(player.server, player));
 
+        // Auto Importer cards: the Refined Storage code is only touched when that mod is installed.
+        if (Services.PLATFORM.isModLoaded("refinedstorage")) {
+            com.awesomeshot5051.easyfarms.farm.network.NetworkImporters.register("refinedstorage",
+                    new com.awesomeshot5051.easyfarms.compat.refinedstorage.RefinedStorageImporter());
+        }
+
         FarmEvents.registerDispenserBehaviors();
     }
 }

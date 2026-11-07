@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "ae2"
+      ]
+    }
+  ],
+  "item": "easy_farms:upgrade_card",
+  "card": "easy_farms:ae2_importer",
+  "name": "AE Auto Importer Card",
+  "description": "Stores the farm's output in your ME network. Touch the farm to an ME cable, or link the card like a wireless terminal (in a Wireless Access Point's link slot) to import wirelessly while the farm is within that access point's range.",
+  "kinds": [
+    "resource",
+    "plant",
+    "mob"
+  ],
+  "requires": "any",
+  "effects": [
+    {
+      "type": "easy_farms:network_import",
+      "network": "ae2"
+    }
+  ]
+}

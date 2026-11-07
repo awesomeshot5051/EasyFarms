@@ -54,6 +54,7 @@ public class EasyFarmsNeoForgeClient {
         event.register(ModMenus.FARM_CATALYSTS.get(), FarmCatalystScreen::new);
         event.register(ModMenus.FARM_FILTER.get(), com.awesomeshot5051.easyfarms.client.FarmFilterScreen::new);
         event.register(ModMenus.FARM_CRAFTING.get(), com.awesomeshot5051.easyfarms.client.FarmCraftingScreen::new);
+        event.register(ModMenus.CARD_FREQUENCY.get(), com.awesomeshot5051.easyfarms.client.CardFrequencyScreen::new);
     }
 
     private static void registerExtensions(RegisterClientExtensionsEvent event) {

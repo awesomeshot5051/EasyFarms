@@ -1,0 +1,16 @@
+{
+  "name": "AE Auto Importer",
+  "category": "easy_farms:cards",
+  "icon": "easy_farms:upgrade_card[easy_farms:card=\"easy_farms:ae2_importer\"]",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Farms$(): Resource, Plant, Mob. Needs $(item)Applied Energistics 2$().$(br2)The farm stores everything it makes straight into your ME network, using no channel. It pays the normal AE power for it, and anything the network cannot hold stays in the output slots."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Next to a cable$(): put the farm against an ME cable, interface or other network block.$(br2)$(thing)Wireless$(): link the card exactly like a $(item)Wireless Terminal$(): put it in the $(item)Wireless Access Point$()'s link slot (or use it on a network block). The farm then imports from anywhere within that access point's $(thing)range$() (boosters extend it), in the same dimension.$(br2)The access point's chunk must be loaded, so pair it with a $(item)Chunk Loader$(). Sneak-use the card on a block to link it even if the block has a screen (a Grid, an Interface); sneak-use it in the air to unlink it."
+    }
+  ],
+  "flag": "mod:ae2"
+}

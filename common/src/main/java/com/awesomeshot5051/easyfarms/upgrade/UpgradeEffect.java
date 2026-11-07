@@ -102,6 +102,21 @@ public interface UpgradeEffect {
         return false;
     }
 
+    /** True if this card lets the farm swap its outputs for variants of them (Chisel card; the choice is made in the farm's GUI). */
+    default boolean selectsVariants() {
+        return false;
+    }
+
+    /** True if this card pushes the farm's outputs into the storage network named by {@link #networkId()} (Auto Importer cards). */
+    default boolean importsToNetwork() {
+        return false;
+    }
+
+    /** The storage network this card imports into ("ae2", "refinedstorage" or "dimstorage"); empty for other cards. */
+    default String networkId() {
+        return "";
+    }
+
     /** True if this card keeps the farm's chunk loaded (Chunk Loader card). */
     default boolean loadsChunk() {
         return false;

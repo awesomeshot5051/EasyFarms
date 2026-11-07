@@ -93,7 +93,7 @@ public class FarmMenu extends AbstractContainerMenu {
                     case 13 -> Math.min(32767, farm.fluidCapacity());
                     case 14 -> farm.fluidId() == null ? -1 : net.minecraft.core.registries.BuiltInRegistries.FLUID.getId(
                             net.minecraft.core.registries.BuiltInRegistries.FLUID.get(farm.fluidId()));
-                    case 15 -> (farm.hasFilterCard() ? 1 : 0) | (farm.hasExportCard() ? 2 : 0) | (farm.showsXp() ? 4 : 0) | (farm.hasCraftingCard() ? 8 : 0);
+                    case 15 -> (farm.hasFilterCard() ? 1 : 0) | (farm.hasExportCard() ? 2 : 0) | (farm.showsXp() ? 4 : 0) | (farm.hasCraftingCard() ? 8 : 0) | (farm.hasVariantCard() ? 16 : 0);
                     case 16 -> farm.packedSideModes();
                     case 17 -> Math.min(32767, farm.xp());
                     default -> farm.environmentOk() ? 1 : 0;
@@ -208,6 +208,26 @@ public class FarmMenu extends AbstractContainerMenu {
         return (data.get(15) & 8) != 0;
     }
 
+    /** True while a Chisel card is installed (the variant pop-out is available). */
+    public boolean hasVariantCard() {
+        return (data.get(15) & 16) != 0;
+    }
+
+    /** The output items of the farm's recipe that have variants (from the farm's client copy on the client). */
+    public java.util.List<net.minecraft.resources.ResourceLocation> variantSources() {
+        if (farm != null) return farm.variantSources();
+        return level != null && level.getBlockEntity(pos) instanceof FarmBlockEntity be ? be.variantSources() : java.util.List.of();
+    }
+
+    /** The variant currently chosen for an output item (the item itself when none). */
+    public net.minecraft.resources.ResourceLocation variantChoice(net.minecraft.resources.ResourceLocation source) {
+        FarmBlockEntity be = farm != null ? farm : level != null && level.getBlockEntity(pos) instanceof FarmBlockEntity b ? b : null;
+        return be == null ? source : be.variantChoice(source);
+    }
+
+    /** Variant picker buttons are numbered from here: {@code VARIANT_BUTTON + sourceIndex * VARIANT_STRIDE + variantIndex}. */
+    public static final int VARIANT_BUTTON = 1000, VARIANT_STRIDE = 4096;
+
     /** True while an Experience card is installed (the collect button is shown). */
     public boolean hasExperienceCard() {
         return (data.get(15) & 4) != 0;
@@ -249,6 +269,13 @@ public class FarmMenu extends AbstractContainerMenu {
         }
         if (button == 10 && farm != null && farm.hasCraftingCard() && player instanceof ServerPlayer server) {
             MenuOpener.openCrafting(server, pos, farm, Component.translatable("gui.easy_farms.crafting"));
+            return true;
+        }
+        if (button >= VARIANT_BUTTON && farm != null && farm.hasVariantCard()) {
+            int n = button - VARIANT_BUTTON;
+            var sources = farm.variantSources();
+            int source = n / VARIANT_STRIDE;
+            if (source < sources.size()) farm.chooseVariant(sources.get(source), n % VARIANT_STRIDE);
             return true;
         }
         if (button >= 4 && button < 10 && farm != null && farm.hasExportCard()) {
