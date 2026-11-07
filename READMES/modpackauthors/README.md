@@ -24,7 +24,7 @@ and their effects. This guide covers all of it.
 * New effects: `efficiency`, `chunk_loader`, `void_overflow`, `output_filter`, `auto_export`, `experience` (see [Built-in effects](#built-in-effects)).
 * `farm_upgrade` field `kind_max_counts` (per farm kind stack limit) and `Powered` no longer takes `energy_mods`.
 * New config values (`xpEnabled`, `xpMultiplier`, `voidCardEnabled`, `filterCardEnabled`, `autoExport*`, `difficultyPreset`, `comparatorMode`, `cycleParticles`).
-* All upgrade cards stack to 64; JEI can move a recipe's items into an open farm.
+* All upgrade cards stack to 64; JEI (and EMI on 1.21.1) can move a recipe's items into an open farm.
 
 ## Where files go
 
@@ -624,7 +624,7 @@ them only when that mod is installed. See Patchouli's documentation for the page
 |---|---|
 | `xp` | Experience per cycle (float, default 0). Only given by farms with an Experience card. Smelting Resource Farms also give the vanilla furnace experience of each smelted item. Config: `xpEnabled`, `xpMultiplier`. |
 | `fluid_input` | `{"fluid": "minecraft:water", "amount": 250}`: fluid taken from the farm's tank each cycle. The farm stops without it. Pipes and the Auto-Export card can fill the tank with that fluid only. |
-| drops `loot_table` | A drop entry may name a loot table instead of an item: `{"loot_table": "minecraft:gameplay/fishing"}`. Fishing tables see the farm's tool, its Luck of the Sea level and a fishing bobber in open water (so treasure can drop). The built-in fishing recipe is `resource_farm/fishing.json` (Luck of the Sea, as for a vanilla fishing rod); chest tables work too. Entity and block tables are not supported (they need an entity or block). `item` is optional on such an entry. |
+| drops `loot_table` | A drop entry may name a loot table instead of an item: `{"loot_table": "minecraft:gameplay/fishing"}`. Fishing tables see the farm's tool, its Luck of the Sea level and a fishing bobber in open water (so treasure can drop). The built-in fishing recipe is `resource_farm/fishing.json`; Lure on the tool shortens any recipe with a loot-table drop (Luck of the Sea, as for a vanilla fishing rod); chest tables work too. Entity and block tables are not supported (they need an entity or block). `item` is optional on such an entry. |
 
 
 ## Fluid containers (`fluid_container`)
