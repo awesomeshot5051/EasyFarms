@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "easy_farms:auto_export_upgrade"
+        "recipes": "easy_farms:auto_export_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

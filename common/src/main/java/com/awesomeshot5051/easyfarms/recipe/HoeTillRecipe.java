@@ -1,7 +1,6 @@
 package com.awesomeshot5051.easyfarms.recipe;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -16,7 +15,7 @@ public class HoeTillRecipe extends CustomRecipe {
         int hoes = 0, grass = 0, other = 0;
         for (ItemStack stack : input.items()) {
             if (stack.isEmpty()) continue;
-            if (stack.getItem() instanceof HoeItem && stack.isDamageableItem()) hoes++;
+            if (stack.is(net.minecraft.tags.ItemTags.HOES) && stack.isDamageableItem()) hoes++;
             else if (stack.is(Items.GRASS_BLOCK)) grass++;
             else other++;
         }
@@ -33,7 +32,7 @@ public class HoeTillRecipe extends CustomRecipe {
         NonNullList<ItemStack> remaining = NonNullList.withSize(input.size(), ItemStack.EMPTY);
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
-            if (stack.getItem() instanceof HoeItem && stack.isDamageableItem()) {
+            if (stack.is(net.minecraft.tags.ItemTags.HOES) && stack.isDamageableItem()) {
                 ItemStack worn = stack.copy();
                 worn.setDamageValue(worn.getDamageValue() + 1);
                 remaining.set(i, worn.getDamageValue() >= worn.getMaxDamage() ? ItemStack.EMPTY : worn);

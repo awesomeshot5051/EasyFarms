@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "easy_farms:chunk_loader_upgrade"
+        "recipes": "easy_farms:chunk_loader_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

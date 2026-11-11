@@ -1,8 +1,8 @@
 package com.awesomeshot5051.easyfarms.data;
 
 import com.awesomeshot5051.easyfarms.EasyFarms;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import com.awesomeshot5051.easyfarms.registry.ModDataComponents;
 import net.minecraft.world.level.block.Block;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 /** Each farm drops itself. With Silk Touch the contents stay inside the item; otherwise the block entity spills them. */
 public class ModBlockLoot extends BlockLootSubProvider {
-    public ModBlockLoot(HolderLookup.Provider registries) {
+    public ModBlockLoot(LootTableSubProvider.Context registries) {
         super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
     }
 
@@ -34,7 +34,7 @@ public class ModBlockLoot extends BlockLootSubProvider {
             // Anything else: just the farm; the block entity spills its contents separately.
             LootPoolEntryContainer.Builder<?> plain = LootItem.lootTableItem(block);
             add(block, LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool()
-                    .setRolls(ConstantValue.exactly(1))
+                    .setRolls(ContextIntProviders.exactly(1))
                     .add(AlternativesEntry.alternatives(keepContents, plain)))));
         }
     }

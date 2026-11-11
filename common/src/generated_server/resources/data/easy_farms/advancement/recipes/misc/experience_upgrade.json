@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "easy_farms:experience_upgrade"
+        "recipes": "easy_farms:experience_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

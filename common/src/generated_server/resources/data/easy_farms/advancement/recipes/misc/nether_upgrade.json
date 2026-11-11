@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "easy_farms:nether_upgrade"
+        "recipes": "easy_farms:nether_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

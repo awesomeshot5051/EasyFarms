@@ -13,7 +13,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
-import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -52,7 +52,7 @@ public record ToolAbility(Optional<Component> name, DataComponentExactPredicate 
             ComponentSerialization.CODEC.optionalFieldOf("name").forGetter(ToolAbility::name),
             DataComponentExactPredicate.CODEC.fieldOf("components").forGetter(ToolAbility::components),
             DataComponentExactPredicate.CODEC.listOf().optionalFieldOf("unless", List.of()).forGetter(ToolAbility::unless),
-            RegistryCodecs.homogeneousList(Registries.ITEM).optionalFieldOf("display_tools").forGetter(ToolAbility::displayTools),
+            RegistryCodecs.holderSet(Registries.ITEM).optionalFieldOf("display_tools").forGetter(ToolAbility::displayTools),
             FarmKind.CODEC.listOf().optionalFieldOf("kinds", List.of(FarmKind.values())).forGetter(ToolAbility::kinds),
             UpgradeEffect.CODEC.listOf().fieldOf("effects").forGetter(ToolAbility::effects)
     ).apply(i, ToolAbility::new));

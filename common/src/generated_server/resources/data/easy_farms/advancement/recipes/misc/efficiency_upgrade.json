@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "easy_farms:efficiency_upgrade"
+        "recipes": "easy_farms:efficiency_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

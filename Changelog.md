@@ -1,7 +1,25 @@
 # Changelog
 
-This is the changelog for the `26.1.2` branch (Minecraft 26.1.2, NeoForge 26.1.2.126), written from the commit history.
+This is the changelog for the `26.3` branch (Minecraft 26.3, NeoForge 26.3.0.102), written from the commit history.
 Versions are listed newest first, each with its commit and date.
+
+## 3.3.0
+
+### Minecraft 26.3
+- Ported to **Minecraft 26.3** on NeoForge 26.3.0.102 and Fabric (Fabric API 0.166.0+26.3). Rendering, advancement triggers, recipes,
+  loot and tag code follow the 26.3 API changes; the NeoForge data generators now bootstrap recipes and loot tables through the
+  data pack registries.
+- NeoForge mod metadata uses `iconFile` (the square icon) instead of the deprecated `logoFile`.
+
+### New recipes for the blocks added in 26.2 and 26.3
+- **Plant Farm:** the **Poplar** tree (sapling, log, stripped log and the orange, red and yellow Poplar leaves) and **Red Shrub**.
+- **Resource Farm:** the **Sulfur** and **Cinnabar** stone families (the plain block, polished, bricks and chiseled), generated from the
+  block registry like every other full block.
+- Guide book: the new recipes are listed (Poplar under Trees, Red Shrub under Flowers, Sulfur and Cinnabar under Stone, Soil and Sand).
+
+### Development
+- The NeoForge data generation runs use their own game directory (`neoforge/run_data`), so mods in `run/mods` no longer break them.
+- `with_patchouli` (gradle.properties) turns the dev-only Patchouli dependency off while it has no build for the Minecraft version.
 
 ## 3.2.0
 

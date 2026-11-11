@@ -113,7 +113,7 @@ public record DropEntry(Identifier item, int min, int max, float chance,
         var set = loot.getParamSet();
         if (set == net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.FISHING) {
             builder.withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.TOOL, tool);
-            var bobber = net.minecraft.world.entity.EntityType.FISHING_BOBBER.create(level, net.minecraft.world.entity.EntitySpawnReason.LOAD);
+            var bobber = net.minecraft.world.entity.EntityTypes.FISHING_BOBBER.create(level, net.minecraft.world.entity.EntitySpawnReason.LOAD);
             if (bobber != null) {
                 bobber.setPos(origin);
                 builder.withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY, bobber);

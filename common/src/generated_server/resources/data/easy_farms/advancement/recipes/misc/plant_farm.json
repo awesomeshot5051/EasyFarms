@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "easy_farms:plant_farm"
+        "recipes": "easy_farms:plant_farm"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

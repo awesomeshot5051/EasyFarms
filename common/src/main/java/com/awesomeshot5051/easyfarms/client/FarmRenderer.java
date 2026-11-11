@@ -158,7 +158,7 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
         pose.pushPose();
         pose.translate(x - size / 2f, 1f / 16f, 0.5f - size / 2f);
         pose.scale(size, size, size);
-        collector.submitMovingBlock(pose, block);
+        collector.submitMovingBlock(pose, block, 0);
         pose.popPose();
     }
 
@@ -171,7 +171,7 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
                     pose.pushPose();
                     pose.scale(0.5f, 0.5f, 0.5f);
                     pose.translate(0.5, 0, 0.5);
-                    collector.submitMovingBlock(pose, state.block);
+                    collector.submitMovingBlock(pose, state.block, 0);
                     pose.popPose();
                 }
                 if (!state.tool.isEmpty()) {
@@ -216,16 +216,16 @@ public class FarmRenderer implements BlockEntityRenderer<FarmBlockEntity, FarmRe
                     default -> {
                     }
                 }
-                pose.mulPose(Axis.YP.rotationDegrees(-state.facing.toYRot()));
+                pose.rotateDegrees(Axis.YP, -state.facing.toYRot());
                 pose.scale(0.7F, 0.7F, 0.7F);
-                collector.submitMovingBlock(pose, state.block);
+                collector.submitMovingBlock(pose, state.block, 0);
                 pose.popPose();
             }
             case "mob" -> {
                 if (state.mob == null) return;
                 pose.pushPose();
                 pose.translate(0.5D, 1D / 16D, 0.5D);
-                pose.mulPose(Axis.YP.rotationDegrees(-Direction.SOUTH.toYRot()));
+                pose.rotateDegrees(Axis.YP, -Direction.SOUTH.toYRot());
                 pose.translate(0D, 0D, 3D / 16D);
                 pose.scale(0.3F, 0.3F, 0.3F);
                 context.entityRenderer().submit(state.mob, camera, 0, 0, 0, pose, collector);

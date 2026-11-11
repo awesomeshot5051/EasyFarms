@@ -15,6 +15,6 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        EasyFarms.FARM_BLOCKS.values().forEach(b -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(b.get()));
+        EasyFarms.FARM_BLOCKS.values().forEach(b -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getResourceKey(b.get()).orElseThrow()));
     }
 }

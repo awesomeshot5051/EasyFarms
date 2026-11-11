@@ -25,6 +25,10 @@
     },
     {
       "type": "patchouli:text",
+      "text": "$(thing)Poplar Sapling$()$(br)In: Grass Block + Poplar Sapling$(br)Out: Poplar Sapling x1-4 (50%), Poplar Log, Stripped Poplar Log (0%), Orange Poplar Leaves (34%), Red Poplar Leaves (34%), Yellow Poplar Leaves (34%)$(br)$(7)Tool: axe$()"
+    },
+    {
+      "type": "patchouli:text",
       "text": "$(thing)Spruce Sapling$()$(br)In: Grass Block + Spruce Sapling$(br)Out: Spruce Sapling x1-4 (50%), Spruce Log, Spruce Leaves$(br)$(7)Tool: axe$()"
     }
   ]

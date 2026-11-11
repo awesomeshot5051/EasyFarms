@@ -3,8 +3,9 @@
   "base_ticks": 600,
   "drops": [
     {
+      "fortune_max": 5,
       "item": "minecraft:ice",
-      "silk_only": true
+      "max": 3
     }
   ],
   "inputs": [

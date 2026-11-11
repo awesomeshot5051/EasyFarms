@@ -19,7 +19,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -73,14 +73,14 @@ public class NeoForgePlatform implements IPlatform {
         net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, payload);
     }
 
-    private static void onNewDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
+    private static void onNewDatapackRegistry(NewDatapackRegistryEvent event) {
         DatapackRegistrar.event = event;
         DATAPACK_REGISTRIES.forEach(Runnable::run);
         DatapackRegistrar.event = null;
     }
 
     private static final class DatapackRegistrar {
-        static DataPackRegistryEvent.NewRegistry event;
+        static NewDatapackRegistryEvent event;
     }
 
     @SuppressWarnings("unchecked")
@@ -180,7 +180,7 @@ public class NeoForgePlatform implements IPlatform {
 
     @Override
     public <T> void registerSyncedDatapackRegistry(ResourceKey<Registry<T>> key, Codec<T> codec) {
-        DATAPACK_REGISTRIES.add(() -> DatapackRegistrar.event.dataPackRegistry(key, codec, codec));
+        DATAPACK_REGISTRIES.add(() -> DatapackRegistrar.event.worldRegistry(key, codec, codec));
     }
 
     @Override

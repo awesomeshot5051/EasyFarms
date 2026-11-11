@@ -5,8 +5,9 @@ import com.awesomeshot5051.easyfarms.farm.FarmKind;
 import com.awesomeshot5051.easyfarms.recipe.HoeTillRecipe;
 import com.awesomeshot5051.easyfarms.recipe.ModRecipes;
 import com.awesomeshot5051.easyfarms.registry.ModItems;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -22,7 +23,6 @@ import com.awesomeshot5051.easyfarms.recipe.SizedIngredient;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Crafting recipes for the three farm blocks and the upgrade cards. What a farm does is NOT here: that is the
@@ -31,29 +31,9 @@ import java.util.concurrent.CompletableFuture;
 public class ModRecipeProvider extends RecipeProvider {
     private final java.nio.file.Path resourceRecipes;
 
-    public ModRecipeProvider(HolderLookup.Provider registries, RecipeOutput output, java.nio.file.Path resourceRecipes) {
-        super(registries, output);
+    public ModRecipeProvider(BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements, java.nio.file.Path resourceRecipes) {
+        super(recipes, advancements, EasyFarms.MODID);
         this.resourceRecipes = resourceRecipes;
-    }
-
-    /** The data provider the generator runs; it builds a {@link ModRecipeProvider} with the right output. */
-    public static class Runner extends RecipeProvider.Runner {
-        private final java.nio.file.Path resourceRecipes;
-
-        public Runner(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-            super(output, registries);
-            this.resourceRecipes = output.getOutputFolder().resolve("../../main/resources/data/easy_farms/recipe/resource_farm").normalize();
-        }
-
-        @Override
-        protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-            return new ModRecipeProvider(registries, output, resourceRecipes);
-        }
-
-        @Override
-        public String getName() {
-            return "Easy Farms recipes";
-        }
     }
 
     @Override

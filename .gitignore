@@ -5,3 +5,10 @@ run/
 *.iml
 .cache/
 dist/
+
+# Secrets: never commit these (the CurseForge API token lives in CFAPI.env)
+CFAPI.env
+MRAPI.env
+.env
+*.env
+run_data/

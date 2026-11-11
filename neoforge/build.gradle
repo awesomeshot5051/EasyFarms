@@ -29,7 +29,7 @@ dependencies {
     compileOnly("maven.modrinth:dimstorage:${dimstorage_version}") { transitive = false }
 
     // Patchouli: the Easy Farms guide book is plain data, so it is only needed at runtime to see it.
-    localRuntime "maven.modrinth:patchouli:${patchouli_neoforge_version}"
+    if (project.findProperty('with_patchouli')?.toString() != 'false') localRuntime "maven.modrinth:patchouli:${patchouli_neoforge_version}"
 
     boolean datagen = gradle.startParameter.taskNames.any { it.toLowerCase().contains('data') }
     if (project.findProperty('with_content_mods')?.toString() == 'true' && !datagen) {
@@ -73,11 +73,13 @@ neoForge {
         // Client and server data go to separate folders: they share one cache per folder and would delete each other's files.
         clientData {
             clientData()
+            gameDirectory = project.file('run_data')   // not run/: datagen must not load the mods dropped into run/mods
             programArguments.addAll '--mod', project.mod_id, '--output', rootProject.file('common/src/generated/resources/').getAbsolutePath(),
                     '--existing', rootProject.file('common/src/main/resources/').getAbsolutePath()
         }
         serverData {
             serverData()
+            gameDirectory = project.file('run_data')
             programArguments.addAll '--mod', project.mod_id, '--output', rootProject.file('common/src/generated_server/resources/').getAbsolutePath(),
                     '--existing', rootProject.file('common/src/main/resources/').getAbsolutePath()
         }

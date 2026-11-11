@@ -21,11 +21,11 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Poppy$()$(br)In: Grass Block + Poppy$(br)Out: Poppy x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Red Tulip$()$(br)In: Grass Block + Red Tulip$(br)Out: Red Tulip x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Rose Bush$()$(br)In: Grass Block + Rose Bush$(br)Out: Rose Bush x1-4$(br)$(7)No tool needed$()"
+      "text": "$(thing)Poppy$()$(br)In: Grass Block + Poppy$(br)Out: Poppy x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Red Tulip$()$(br)In: Grass Block + Red Tulip$(br)Out: Red Tulip x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Red Shrub$()$(br)In: Grass Block + Red Shrub$(br)Out: Red Shrub x1-4$(br)$(7)No tool needed$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Sunflower$()$(br)In: Grass Block + Sunflower$(br)Out: Sunflower x1-4$(br)$(7)No tool needed$()$(br2)$(thing)White Tulip$()$(br)In: Grass Block + White Tulip$(br)Out: White Tulip x1-4$(br)$(7)No tool needed$()"
+      "text": "$(thing)Rose Bush$()$(br)In: Grass Block + Rose Bush$(br)Out: Rose Bush x1-4$(br)$(7)No tool needed$()$(br2)$(thing)Sunflower$()$(br)In: Grass Block + Sunflower$(br)Out: Sunflower x1-4$(br)$(7)No tool needed$()$(br2)$(thing)White Tulip$()$(br)In: Grass Block + White Tulip$(br)Out: White Tulip x1-4$(br)$(7)No tool needed$()"
     }
   ]
 }

@@ -5,31 +5,35 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "These blocks drop themselves (usually 1-3). The tool is a pickaxe unless noted.$(br)$(7)(shovel) / (hoe) mark other tools.$()$(br2)$(thing)Amethyst Block, Blue Ice, Bone Block, Bricks, Chiseled Copper [stone+], Chiseled Deepslate, Chiseled Nether Bricks, Chiseled Polished Blackstone$()"
+      "text": "These blocks drop themselves (usually 1-3). The tool is a pickaxe unless noted.$(br)$(7)(shovel) / (hoe) mark other tools.$()$(br2)$(thing)Amethyst Block, Blue Ice, Bone Block, Bricks, Chiseled Cinnabar, Chiseled Copper [stone+], Chiseled Deepslate, Chiseled Nether Bricks$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Chiseled Quartz Block, Chiseled Red Sandstone, Chiseled Resin Bricks, Chiseled Sandstone, Chiseled Stone Bricks, Chiseled Tuff, Chiseled Tuff Bricks, Coal Block$()$(br2)$(thing)Coarse Dirt (shovel), Copper Block [stone+], Copper Bulb [stone+], Copper Grate [stone+], Cracked Deepslate Bricks, Cracked Deepslate Tiles, Cracked Nether Bricks, Cracked Polished Blackstone Bricks$()"
+      "text": "$(thing)Chiseled Polished Blackstone, Chiseled Quartz Block, Chiseled Red Sandstone, Chiseled Resin Bricks, Chiseled Sandstone, Chiseled Stone Bricks, Chiseled Sulfur, Chiseled Tuff$()$(br2)$(thing)Chiseled Tuff Bricks, Cinnabar, Cinnabar Bricks, Coal Block, Coarse Dirt (shovel), Copper Block [stone+], Copper Bulb [stone+], Copper Grate [stone+]$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Cracked Stone Bricks, Crying Obsidian [diamond+], Cut Copper [stone+], Cut Red Sandstone, Cut Sandstone, Dark Prismarine, Dead Brain Coral Block, Dead Bubble Coral Block$()$(br2)$(thing)Dead Fire Coral Block, Dead Horn Coral Block, Dead Tube Coral Block, Diamond Block [iron+], Dried Kelp Block (hoe), Dripstone Block, Emerald Block [iron+], End Stone Bricks$()"
+      "text": "$(thing)Cracked Deepslate Bricks, Cracked Deepslate Tiles, Cracked Nether Bricks, Cracked Polished Blackstone Bricks, Cracked Stone Bricks, Crying Obsidian [diamond+], Cut Copper [stone+], Cut Red Sandstone$()$(br2)$(thing)Cut Sandstone, Dark Prismarine, Dead Brain Coral Block, Dead Bubble Coral Block, Dead Fire Coral Block, Dead Horn Coral Block, Dead Tube Coral Block, Diamond Block [iron+]$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Exposed Chiseled Copper [stone+], Exposed Copper [stone+], Exposed Copper Bulb [stone+], Exposed Copper Grate [stone+], Exposed Cut Copper [stone+], Gilded Blackstone, Gold Block [iron+], Hay Block (hoe)$()$(br2)$(thing)Ice, Iron Block [stone+], Lapis Block [stone+], Magma Block, Moss Block (hoe), Mossy Cobblestone, Mossy Stone Bricks, Mud Bricks$()"
+      "text": "$(thing)Dried Kelp Block (hoe), Dripstone Block, Emerald Block [iron+], End Stone Bricks, Exposed Chiseled Copper [stone+], Exposed Copper [stone+], Exposed Copper Bulb [stone+], Exposed Copper Grate [stone+]$()$(br2)$(thing)Exposed Cut Copper [stone+], Gilded Blackstone, Gold Block [iron+], Hay Block (hoe), Ice, Iron Block [stone+], Lapis Block [stone+], Magma Block$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Muddy Mangrove Roots (shovel), Nether Wart Block (hoe), Oxidized Chiseled Copper [stone+], Oxidized Copper [stone+], Oxidized Copper Bulb [stone+], Oxidized Copper Grate [stone+], Oxidized Cut Copper [stone+], Packed Ice$()$(br2)$(thing)Packed Mud, Pale Moss Block (hoe), Polished Andesite, Polished Basalt, Polished Blackstone, Polished Deepslate, Polished Diorite, Polished Granite$()"
+      "text": "$(thing)Moss Block (hoe), Mossy Cobblestone, Mossy Stone Bricks, Mud Bricks, Muddy Mangrove Roots (shovel), Nether Wart Block (hoe), Oxidized Chiseled Copper [stone+], Oxidized Copper [stone+]$()$(br2)$(thing)Oxidized Copper Bulb [stone+], Oxidized Copper Grate [stone+], Oxidized Cut Copper [stone+], Packed Ice, Packed Mud, Pale Moss Block (hoe), Polished Andesite, Polished Basalt$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Polished Tuff, Prismarine, Prismarine Bricks, Purpur Pillar, Quartz Bricks, Quartz Pillar, Raw Copper Block [stone+], Raw Gold Block [iron+]$()$(br2)$(thing)Raw Iron Block [stone+], Red Nether Bricks, Redstone Block, Resin Bricks, Rooted Dirt (shovel), Sculk (hoe), Sculk Vein (hoe), Shroomlight (hoe)$()"
+      "text": "$(thing)Polished Blackstone, Polished Cinnabar, Polished Deepslate, Polished Diorite, Polished Granite, Polished Sulfur, Polished Tuff, Prismarine$()$(br2)$(thing)Prismarine Bricks, Purpur Pillar, Quartz Bricks, Quartz Pillar, Raw Copper Block [stone+], Raw Gold Block [iron+], Raw Iron Block [stone+], Red Nether Bricks$()"
     },
     {
       "type": "patchouli:text",
-      "text": "$(thing)Smooth Basalt, Smooth Quartz, Smooth Red Sandstone, Smooth Sandstone, Smooth Stone, Sponge (hoe), Terracotta, Tuff Bricks$()$(br2)$(thing)Warped Wart Block (hoe), Weathered Chiseled Copper [stone+], Weathered Copper [stone+], Weathered Copper Bulb [stone+], Weathered Copper Grate [stone+], Weathered Cut Copper [stone+]$()"
+      "text": "$(thing)Redstone Block, Resin Bricks, Rooted Dirt (shovel), Sculk (hoe), Sculk Vein (hoe), Shroomlight (hoe), Smooth Basalt, Smooth Quartz$()$(br2)$(thing)Smooth Red Sandstone, Smooth Sandstone, Smooth Stone, Sponge (hoe), Sulfur, Sulfur Bricks, Terracotta, Tuff Bricks$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Warped Wart Block (hoe), Weathered Chiseled Copper [stone+], Weathered Copper [stone+], Weathered Copper Bulb [stone+], Weathered Copper Grate [stone+], Weathered Cut Copper [stone+]$()"
     }
   ]
 }

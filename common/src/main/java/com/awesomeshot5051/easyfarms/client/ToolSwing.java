@@ -14,26 +14,26 @@ final class ToolSwing {
     /** Positions the pose for the swinging tool; the item itself is submitted by the renderer afterwards. */
     static void transform(PoseStack pose, Direction direction, long timer, boolean shovel) {
         pose.translate(0.2, 0.55, 0.5);
-        if (shovel) pose.mulPose(ZP.rotationDegrees(90));
+        if (shovel) pose.rotateDegrees(ZP, 90);
 
         switch (direction) {
             case EAST -> {
-                pose.mulPose(YP.rotationDegrees(90));
+                pose.rotateDegrees(YP, 90);
                 pose.translate(shovel ? -0.2 : -0.3, shovel ? -0.6 : 0, shovel ? 0 : 0.3);
             }
             case WEST -> {
-                pose.mulPose(YP.rotationDegrees(270));
+                pose.rotateDegrees(YP, 270);
                 pose.translate(shovel ? -0.2 : -0.3, shovel ? -0.6 : 0, shovel ? 0 : -0.3);
             }
             case NORTH -> {
-                pose.mulPose(YP.rotationDegrees(180));
+                pose.rotateDegrees(YP, 180);
                 pose.translate(shovel ? -0.4 : -0.6, shovel ? -0.6 : 0, 0);
             }
             default -> {
                 if (shovel) pose.translate(0, -0.6, 0);
             }
         }
-        pose.mulPose(ZP.rotationDegrees(angle(timer, shovel)));
+        pose.rotateDegrees(ZP, angle(timer, shovel));
         pose.scale(0.5f, 0.5f, 0.5f);
     }
 

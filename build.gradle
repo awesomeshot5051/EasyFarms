@@ -1,8 +1,18 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
+plugins {
+    id 'net.darkhax.curseforgegradle' version '1.3.33'
+}
+
 // Root project: one entry point for building everything.
 //
 //   ./gradlew buildAll   builds the NeoForge and Fabric jars and copies them to dist/
 //   ./gradlew build      same builds, without the copy (also runs checks)
 //   ./gradlew cleanAll   removes build output and dist/
+//   ./gradlew publishCurseForge   runs buildAll first, then uploads the NeoForge and Fabric jars to CurseForge with this version's changelog
+//   ./gradlew previewCurseForge   prints exactly what publishCurseForge would upload (no token needed, uploads nothing)
+//   ./gradlew publishModrinth     same for Modrinth (see below)
+//   ./gradlew publishAll / checkAll / previewAll   do both sites
 
 // Task paths, resolved lazily because the root script is evaluated before the subprojects.
 def releaseTasks = [':neoforge:jar', ':fabric:jar']
@@ -26,3 +36,268 @@ tasks.register('cleanAll') {
     dependsOn subprojects.collect { it.tasks.named('clean') }
     doLast { delete layout.projectDirectory.dir('dist') }
 }
+
+// ---- CurseForge ----------------------------------------------------------------------------------------------------------------
+// One file per loader for THIS branch's Minecraft version (minecraft_version, java_version and mod_version come from gradle.properties,
+// so every version branch uploads its own jars with no change here). Needs:
+//   CFAPI.env          in the project root (git-ignored, never committed): your API token from
+//                      https://legacy.curseforge.com/account/api-tokens, either alone on a line or as NAME=TOKEN
+//   curseforge_project_id in gradle.properties (the number on the project's CurseForge page).
+// The token file is only opened when a task that needs it runs, and the token is never printed. (For CI without the file, the
+// CURSEFORGE_TOKEN environment variable or a curseforge_token Gradle property still work.)
+
+def curseLoaders = [neoforge: 'NeoForge', fabric: 'Fabric']
+
+def curseSetting = { String name, String env = null ->
+    def value = findProperty(name) ?: (env ? System.getenv(env) : null)
+    value?.toString()?.trim() ?: null
+}
+
+// The token file: CFAPI.env in the project root (curseforge_token_file points somewhere else).
+def curseTokenFile = {
+    def custom = findProperty('curseforge_token_file')
+    custom ? file(custom.toString()) : layout.projectDirectory.file('CFAPI.env').asFile
+}
+
+// The API token, read only when it is asked for and never logged or put in an error message. CFAPI.env may hold the bare token, or
+// NAME=TOKEN lines (an "export " prefix, quotes and # comments are fine); if there are several, the one named like TOKEN/KEY/CF wins.
+def curseToken = {
+    def tokenFile = curseTokenFile()
+    if (tokenFile.isFile()) {
+        def values = [:]
+        def bare = null
+        tokenFile.eachLine('UTF-8') { raw ->
+            def line = raw.replace('\uFEFF', '').trim()
+            if (!line || line.startsWith('#')) return
+            if (line.startsWith('export ')) line = line.substring(7).trim()
+            def eq = line.indexOf('=')
+            if (eq < 0) {
+                bare = bare ?: line
+                return
+            }
+            def value = line.substring(eq + 1).trim()
+            if (value.length() >= 2 && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))) {
+                value = value.substring(1, value.length() - 1)
+            }
+            values[line.substring(0, eq).trim().toUpperCase()] = value
+        }
+        def named = values.find { name, value -> value && (name.contains('TOKEN') || name.contains('KEY') || name.contains('CF')) }
+        def token = named?.value ?: values.values().find { it } ?: bare
+        if (token) return token
+    }
+    curseSetting('curseforge_token', 'CURSEFORGE_TOKEN')   // CI fallback
+}
+
+// The jar buildAll copies to dist/ for a loader.
+def curseJar = { String loader ->
+    layout.projectDirectory.file("dist/${mod_name.replace(' ', '')}-${loader}-${minecraft_version}-${mod_version}.jar").asFile
+}
+
+// This version's changelog: the "## <mod_version>" section of Changelog.md.
+def curseChangelog = {
+    def matcher = file('Changelog.md').text =~ /(?ms)^## ${java.util.regex.Pattern.quote(mod_version)}[ \t]*\r?\n(.*?)(?=^## |\z)/
+    if (!matcher.find() || !matcher.group(1).trim()) {
+        throw new GradleException("Changelog.md has no '## ${mod_version}' section: write it before publishing")
+    }
+    matcher.group(1).trim()
+}
+
+tasks.register('previewCurseForge') {
+    group = 'publishing'
+    description = 'Prints what publishCurseForge would upload (uploads nothing, never opens the token file).'
+    doLast {
+        logger.lifecycle("CurseForge project: ${curseSetting('curseforge_project_id') ?: '(curseforge_project_id is not set)'}")
+        curseLoaders.each { loader, loaderName ->
+            def jar = curseJar(loader)
+            logger.lifecycle("  ${loaderName}: ${jar.name} ${jar.exists() ? '' : '(not built yet: buildAll builds it)'}")
+        }
+        logger.lifecycle("  Minecraft ${minecraft_version}, Java ${java_version}, release type ${curseSetting('curseforge_release_type') ?: 'release'}")
+        logger.lifecycle("  Fabric requires: ${curseSetting('curseforge_fabric_requirements') ?: 'fabric-api'}")
+        // Only checks that the file exists: the preview never opens it.
+        logger.lifecycle("  Token file: ${curseTokenFile().isFile() ? curseTokenFile().name + ' present' : curseTokenFile().name + ' MISSING'}")
+        logger.lifecycle("\nChangelog for ${mod_version}:\n${curseChangelog()}")
+    }
+}
+
+// Fails in a second, before the long build, if something needed to publish is missing.
+tasks.register('checkCurseForge') {
+    group = 'publishing'
+    description = 'Checks the project id, the token and this version\'s changelog section (publishCurseForge runs it before building).'
+    doLast {
+        if (!curseSetting('curseforge_project_id')) throw new GradleException('Set curseforge_project_id in gradle.properties (the number on your CurseForge project page)')
+        if (!curseToken()) throw new GradleException("No CurseForge token: put it in ${curseTokenFile().name} (project root), alone on a line or as NAME=TOKEN")
+        curseChangelog()   // throws if Changelog.md has no section for this version
+    }
+}
+tasks.named('buildAll') { mustRunAfter 'checkCurseForge' }
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    group = 'publishing'
+    description = 'Runs buildAll, then uploads the NeoForge and Fabric jars to CurseForge with this version\'s changelog.'
+    dependsOn 'checkCurseForge', 'buildAll'   // checked first, then the jars are built (and copied to dist/), then uploaded
+
+    def projectId = curseSetting('curseforge_project_id')
+    apiToken = ''   // filled in just before the upload (doFirst below), so a normal configure never opens the token file
+    disableVersionDetection()   // the game versions below are explicit
+
+    def changelog = curseChangelog()
+    def fabricRequirements = (curseSetting('curseforge_fabric_requirements') ?: 'fabric-api').split(',')*.trim().findAll { it }
+
+    curseLoaders.each { loader, loaderName ->
+        def file = upload(projectId ?: '0', curseJar(loader))
+        file.displayName = "${mod_name} ${mod_version} (${loaderName} ${minecraft_version})"
+        file.changelog = changelog
+        file.changelogType = 'markdown'
+        file.releaseType = curseSetting('curseforge_release_type') ?: 'release'
+        file.addModLoader(loaderName)
+        file.addGameVersion(minecraft_version)
+        file.addJavaVersion("Java ${java_version}")
+        file.addEnvironment('Client', 'Server')
+        if (loader == 'fabric') fabricRequirements.each { file.addRequirement(it) }
+    }
+
+    doFirst {
+        apiToken = curseToken() ?: ''
+        curseLoaders.keySet().each { loader ->
+            if (!curseJar(loader).exists()) throw new GradleException("Missing ${curseJar(loader).name}: buildAll did not produce it")
+        }
+        logger.lifecycle("Uploading ${mod_name} ${mod_version} for Minecraft ${minecraft_version} to CurseForge project ${projectId}...")
+    }
+}
+
+// ---- Modrinth ------------------------------------------------------------------------------------------------------------------
+// publishModrinth is independent of publishCurseForge; publishAll runs both. Same jars, same changelog, same version-branch behaviour as CurseForge. Needs:
+//   MRAPI.env          in the project root (git-ignored, never committed): a Modrinth personal access token with the "Create versions"
+//                      scope (https://modrinth.com/settings/pats), alone on a line or as NAME=TOKEN
+//   modrinth_project_id in gradle.properties (the project's slug or ID from its Modrinth page).
+// The upload is a plain HTTPS call to the Modrinth API (no plugin); the token is never printed. (CI fallback: MODRINTH_TOKEN env var.)
+
+def modrinthToken = {
+    def custom = findProperty('modrinth_token_file')
+    def tokenFile = custom ? file(custom.toString()) : layout.projectDirectory.file('MAPI.env').asFile
+    if (tokenFile.isFile()) {
+        def values = [:]
+        def bare = null
+        tokenFile.eachLine('UTF-8') { raw ->
+            def line = raw.replace('﻿', '').trim()
+            if (!line || line.startsWith('#')) return
+            if (line.startsWith('export ')) line = line.substring(7).trim()
+            def eq = line.indexOf('=')
+            if (eq < 0) { bare = bare ?: line; return }
+            def value = line.substring(eq + 1).trim()
+            if (value.length() >= 2 && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))) {
+                value = value.substring(1, value.length() - 1)
+            }
+            values[line.substring(0, eq).trim().toUpperCase()] = value
+        }
+        def named = values.find { name, value -> value && (name.contains('TOKEN') || name.contains('KEY') || name.contains('MR') || name.contains('MODRINTH')) }
+        def token = named?.value ?: values.values().find { it } ?: bare
+        if (token) return token
+    }
+    curseSetting('modrinth_token', 'MODRINTH_TOKEN')
+}
+
+tasks.register('checkModrinth') {
+    group = 'publishing'
+    description = 'Checks the Modrinth project id, token file and this version\'s changelog section.'
+    doLast {
+        if (!curseSetting('modrinth_project_id')) throw new GradleException('Set modrinth_project_id in gradle.properties (the slug or ID from your Modrinth project page)')
+        if (!modrinthToken()) throw new GradleException('No Modrinth token: put it in MRAPI.env (project root), alone on a line or as NAME=TOKEN')
+        curseChangelog()
+    }
+}
+
+tasks.register('publishModrinth') {
+    group = 'publishing'
+    description = 'Uploads the NeoForge and Fabric jars (from dist/) to Modrinth with this version\'s changelog. Runs buildAll first.'
+    dependsOn 'checkModrinth', 'buildAll'
+    doLast {
+        def projectId = curseSetting('modrinth_project_id')
+        def token = modrinthToken()
+        def changelog = curseChangelog()
+        def releaseType = curseSetting('modrinth_release_type') ?: curseSetting('curseforge_release_type') ?: 'release'
+        def fabricDeps = (curseSetting('modrinth_fabric_dependencies') ?: 'P7dR8mSH').split(',')*.trim().findAll { it }   // P7dR8mSH = Fabric API
+
+        curseLoaders.each { loader, loaderName ->
+            def jar = curseJar(loader)
+            if (!jar.exists()) throw new GradleException("Missing ${jar.name}: buildAll did not produce it")
+            def data = [
+                    name          : "${mod_name} ${mod_version} (${loaderName} ${minecraft_version})".toString(),
+                    version_number: "${mod_version}+${loader}-${minecraft_version}".toString(),
+                    changelog     : changelog,
+                    dependencies  : loader == 'fabric' ? fabricDeps.collect { [project_id: it, dependency_type: 'required'] } : [],
+                    game_versions : [minecraft_version.toString()],
+                    version_type  : releaseType,
+                    loaders       : [loader],
+                    featured      : false,
+                    project_id    : projectId,
+                    file_parts    : ['file'],
+                    primary_file  : 'file'
+            ]
+            def boundary = "----EasyFarms${UUID.randomUUID().toString().replace('-', '')}"
+            def body = new ByteArrayOutputStream()
+            def write = { String s -> body.write(s.getBytes('UTF-8')) }
+            write("--${boundary}\r\nContent-Disposition: form-data; name=\"data\"\r\nContent-Type: application/json\r\n\r\n")
+            write(groovy.json.JsonOutput.toJson(data))
+            write("\r\n--${boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"${jar.name}\"\r\nContent-Type: application/java-archive\r\n\r\n")
+            body.write(jar.bytes)
+            write("\r\n--${boundary}--\r\n")
+
+            logger.lifecycle("Uploading ${jar.name} to Modrinth project ${projectId}...")
+            def conn = (HttpURLConnection) new URL('https://api.modrinth.com/v2/version').openConnection()
+            conn.requestMethod = 'POST'
+            conn.doOutput = true
+            conn.setRequestProperty('Authorization', token)
+            conn.setRequestProperty('User-Agent', "${mod_name.replace(' ', '')}-gradle-publisher/${mod_version}")
+            conn.setRequestProperty('Content-Type', "multipart/form-data; boundary=${boundary}")
+            conn.setFixedLengthStreamingMode(body.size())
+            conn.outputStream.withCloseable { it.write(body.toByteArray()) }
+            int status = conn.responseCode
+            def text = ((status < 400 ? conn.inputStream : conn.errorStream)?.getText('UTF-8')) ?: ''
+            if (status >= 300) throw new GradleException("Modrinth rejected ${jar.name} (HTTP ${status}): ${text}")
+            logger.lifecycle("  Modrinth accepted ${loaderName} (HTTP ${status})")
+        }
+    }
+}
+
+tasks.named('buildAll') { mustRunAfter 'checkModrinth' }
+
+tasks.register('previewModrinth') {
+    group = 'publishing'
+    description = 'Prints what publishModrinth would upload (uploads nothing, never opens the token file).'
+    doLast {
+        logger.lifecycle("Modrinth project: ${curseSetting('modrinth_project_id') ?: '(modrinth_project_id is not set)'}")
+        curseLoaders.each { loader, loaderName ->
+            def jar = curseJar(loader)
+            logger.lifecycle("  ${loaderName}: ${jar.name} ${jar.exists() ? '' : '(not built yet: buildAll builds it)'} as version ${mod_version}+${loader}-${minecraft_version}")
+        }
+        logger.lifecycle("  Minecraft ${minecraft_version}, release type ${curseSetting('modrinth_release_type') ?: curseSetting('curseforge_release_type') ?: 'release'}")
+        logger.lifecycle("  Fabric requires (project ids): ${curseSetting('modrinth_fabric_dependencies') ?: 'P7dR8mSH'}")
+        def mrFile = findProperty('modrinth_token_file') ? file(findProperty('modrinth_token_file').toString()) : layout.projectDirectory.file('MRAPI.env').asFile
+        logger.lifecycle("  Token file: ${mrFile.isFile() ? mrFile.name + ' present' : mrFile.name + ' MISSING'}")
+        logger.lifecycle("\nChangelog for ${mod_version}:\n${curseChangelog()}")
+    }
+}
+
+// ---- Both sites ----------------------------------------------------------------------------------------------------------------
+tasks.register('checkAll') {
+    group = 'publishing'
+    description = 'Runs checkCurseForge and checkModrinth.'
+    dependsOn 'checkCurseForge', 'checkModrinth'
+}
+
+tasks.register('previewAll') {
+    group = 'publishing'
+    description = 'Runs previewCurseForge and previewModrinth (uploads nothing).'
+    dependsOn 'previewCurseForge', 'previewModrinth'
+}
+tasks.named('previewModrinth') { mustRunAfter 'previewCurseForge' }
+
+tasks.register('publishAll') {
+    group = 'publishing'
+    description = 'Checks both sites, builds once, then publishes to CurseForge and Modrinth.'
+    dependsOn 'checkAll', 'publishCurseForge', 'publishModrinth'
+}
+// In publishAll, nothing is built or uploaded until both checks have passed, and CurseForge goes before Modrinth.
+['buildAll', 'publishCurseForge', 'publishModrinth'].each { tasks.named(it) { mustRunAfter 'checkAll' } }
+tasks.named('publishModrinth') { mustRunAfter 'publishCurseForge' }

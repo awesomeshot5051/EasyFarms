@@ -1,0 +1,22 @@
+{
+  "type": "easy_farms:resource_farm",
+  "base_ticks": 600,
+  "drops": [
+    {
+      "fortune_max": 5,
+      "item": "minecraft:polished_sulfur",
+      "max": 3
+    }
+  ],
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:polished_sulfur"
+    }
+  ],
+  "tool": "minecraft:pickaxes",
+  "visual": {
+    "type": "block",
+    "target": "minecraft:polished_sulfur"
+  }
+}

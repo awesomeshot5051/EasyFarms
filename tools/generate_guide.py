@@ -478,7 +478,7 @@ def build_recipes():
     category("plant_recipes", "Plant Farm Recipes", "Every plant the Plant Farm can grow, with its outputs.", "minecraft:wheat_seeds", 4)
     plants = load_recipes("plant")
     pg = {}
-    FLOWERS = {"allium", "azure", "cornflower", "daisy", "dandelion", "lilac", "lily", "orange", "orchid", "peony", "pink", "poppy", "red", "rose", "sunflower", "white"}
+    FLOWERS = {"allium", "azure", "cornflower", "daisy", "dandelion", "lilac", "lily", "orange", "orchid", "peony", "pink", "poppy", "red", "red_shrub", "rose", "sunflower", "white"}
     CROPS = {"beetroot", "berry", "carrot", "gcarrot", "melon", "potato", "pumpkin", "wheat", "coco", "nether_wart", "sugar", "bamboo", "kelp", "cgrass", "pad", "leaf", "vine"}
     for r in plants:
         rid = r["_id"]
